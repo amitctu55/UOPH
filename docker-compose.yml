@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  auth-service:
+    build:
+      context: ./services/auth
+    env_file:
+      - ./services/auth/.env.example
+    ports:
+      - '4000:4000'
+
+  gateway:
+    build:
+      context: ./services/gateway
+    env_file:
+      - ./services/gateway/.env.example
+    ports:
+      - '3000:3000'
+    depends_on:
+      - auth-service

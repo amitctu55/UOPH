@@ -1,0 +1,35 @@
+{
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "services/*",
+        "libs/*",
+        "mobile/*"
+    ],
+    "name": "upchar-enterprise-platform",
+    "version": "0.1.0",
+    "scripts": {
+        "start": "npm run start --workspace=apps/admin-dashboard",
+        "test": "npm test --workspaces --if-present",
+        "test:cov": "npm test --workspaces --if-present -- --coverage",
+        "lint": "npm run lint --workspaces --if-present",
+        "lint:fix": "npm run lint --workspaces --if-present",
+        "format": "prettier --write \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
+        "build": "npm run build --workspaces --if-present",
+        "build:all": "npm run build --workspaces",
+        "prepare": "husky install"
+    },
+    "devDependencies": {
+        "@rushstack/eslint-patch": "^1.16.1",
+        "@typescript-eslint/eslint-plugin": "^8.62.0",
+        "@typescript-eslint/parser": "^8.62.0",
+        "eslint": "^8.57.0",
+        "eslint-config-react-app": "^7.0.1",
+        "eslint-plugin-import": "^2.29.0",
+        "eslint-plugin-n": "^16.6.0",
+        "eslint-plugin-promise": "^6.1.1",
+        "fast-glob": "^3.3.3",
+        "husky": "^9.0.0",
+        "prettier": "^3.0.0"
+    }
+}

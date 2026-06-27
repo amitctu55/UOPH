@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(node *)",
+      "Bash(xxd)",
+      "PowerShell(Get-Command *)",
+      "Bash(npm config *)",
+      "Bash(tasklist)",
+      "Bash(findstr node *)",
+      "Bash(rimraf node_modules *)",
+      "Bash(npm run *)",
+      "Bash(pwd -P)",
+      "Bash(npx-eslint src/App.tsx)",
+      "Bash(npx eslint *)",
+      "Bash(npm *)",
+      "Bash(findstr /i \"node\")"
+    ]
+  }
+}

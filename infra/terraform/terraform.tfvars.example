@@ -1,0 +1,9 @@
+prefix = "upchar"
+location = "eastus"
+environment = "dev"
+aks_node_count = 3
+aks_node_vm_size = "Standard_D4s_v4"
+
+[tags]
+owner = "upchar-team"
+project = "upchar"

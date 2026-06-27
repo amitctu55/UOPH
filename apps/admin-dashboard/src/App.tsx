@@ -1,0 +1,2048 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import './App.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAuthStore } from './store/useAuthStore';
+import { useQuery } from '@tanstack/react-query';
+import { apiService } from './services/api';
+import RegisterPage from './pages/RegisterPage';
+
+const queryClient = new QueryClient();
+
+// Dashboard Page with real data fetching
+function DashboardPage() {
+  const { data: overviewStats, isLoading: loadingOverview } = useQuery({
+    queryKey: ['overviewStats'],
+    queryFn: () => apiService.admin.getOverviewStats().then(res => res.data),
+    retry: false
+  });
+
+  const { data: systemHealth = {}, isLoading: loadingHealth } = useQuery({
+    queryKey: ['systemHealth'],
+    queryFn: () => apiService.admin.getSystemHealth().then(res => res.data),
+    retry: false
+  });
+
+  const { data: recentActivity = [], isLoading: loadingActivity } = useQuery({
+    queryKey: ['recentActivity'],
+    queryFn: () => apiService.admin.getRecentActivity().then(res => res.data),
+    retry: false
+  });
+
+  const { data: userStats = {}, isLoading: loadingUsers } = useQuery({
+    queryKey: ['userStats'],
+    queryFn: () => apiService.admin.getUserStats().then(res => res.data),
+    retry: false
+  });
+
+  const isLoading = loadingOverview || loadingHealth || loadingActivity || loadingUsers;
+
+  if (isLoading) {
+    return (
+      <div className="dashboard-page">
+        <h1>Admin Dashboard</h1>
+        <div className="loading">Loading dashboard data...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-page">
+      <h1>Admin Dashboard</h1>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Total Users</h3>
+          <div className="stat-value">{overviewStats?.totalUsers || 0}</div>
+          <div className="stat-label">Registered</div>
+        </div>
+        <div className="stat-card">
+          <h3>Active Today</h3>
+          <div className="stat-value">{overviewStats?.activeToday || 0}</div>
+          <div className="stat-label">Users</div>
+        </div>
+        <div className="stat-card">
+          <h3>System Uptime</h3>
+          <div className="stat-value">{systemHealth?.uptime || '99.9%'}</div>
+          <div className="stat-label">Last 30 days</div>
+        </div>
+        <div className="stat-card">
+          <h3>API Response Time</h3>
+          <div className="stat-value">{systemHealth?.avgResponseTime || '120ms'}</div>
+          <div className="stat-label">Average</div>
+        </div>
+        <div className="stat-card">
+          <h3>Storage Used</h3>
+          <div className="stat-value">{systemHealth?.storageUsed || '45%'}</div>
+          <div className="stat-label">of Total</div>
+        </div>
+        <div className="stat-card">
+          <h3>Support Tickets</h3>
+          <div className="stat-value">{overviewStats?.openTickets || 0}</div>
+          <div className="stat-label">Open</div>
+        </div>
+      </div>
+
+      <div className="quick-actions">
+        <h2>Quick Actions</h2>
+        <div className="actions-grid">
+          <button className="action-btn">
+            <div className="action-icon">👥</div>
+            <span>Manage Users</span>
+          </button>
+          <button className="action-btn">
+            <div className="action-icon">📊</div>
+            <span>View Analytics</span>
+          </button>
+          <button className="action-btn">
+            <div className="action-icon">💾</div>
+            <span>System Backup</span>
+          </button>
+          <button className="action-btn">
+            <div className="action-icon">🔧</div>
+            <span>Run Diagnostics</span>
+          </button>
+          <button className="action-btn">
+            <div className="action-icon">📋</div>
+            <span>Generate Reports</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="dashboard-modules">
+        <div className="module">
+          <h3>System Health Overview</h3>
+          <div className="health-grid">
+            <div className="health-item">
+              <h4>Database</h4>
+              <div className="health-status">
+                <span className={`status ${systemHealth?.database?.status?.toLowerCase() || 'healthy'}`}>
+                  {systemHealth?.database?.status?.toUpperCase() || 'HEALTHY'}
+                </span>
+              </div>
+              <div className="health-details">
+                <p>Connections: {systemHealth?.database?.connections || 0}/{systemHealth?.database?.maxConnections || 100}</p>
+                <p>Query Avg: {systemHealth?.database?.queryAvgTime || '45ms'}</p>
+              </div>
+            </div>
+            <div className="health-item">
+              <h4>API Server</h4>
+              <div className="health-status">
+                <span className={`status ${systemHealth?.api?.status?.toLowerCase() || 'healthy'}`}>
+                  {systemHealth?.api?.status?.toUpperCase() || 'HEALTHY'}
+                </span>
+              </div>
+              <div className="health-details">
+                <p>Requests/min: {systemHealth?.api?.requestsPerMin || 0}</p>
+                <p>Error Rate: {systemHealth?.api?.errorRate || '0.2%'}</p>
+              </div>
+            </div>
+            <div className="health-item">
+              <h4>Cache Server</h4>
+              <div className="health-status">
+                <span className={`status ${systemHealth?.cache?.status?.toLowerCase() || 'healthy'}`}>
+                  {systemHealth?.cache?.status?.toUpperCase() || 'HEALTHY'}
+                </span>
+              </div>
+              <div className="health-details">
+                <p>Hit Rate: {systemHealth?.cache?.hitRate || '85%'}</p>
+                <p>Memory Use: {systemHealth?.cache?.memoryUse || '60%'}</p>
+              </div>
+            </div>
+            <div className="health-item">
+              <h4>Storage Service</h4>
+              <div className="health-status">
+                <span className={`status ${systemHealth?.storage?.status?.toLowerCase() || 'healthy'}`}>
+                  {systemHealth?.storage?.status?.toUpperCase() || 'HEALTHY'}
+                </span>
+              </div>
+              <div className="health-details">
+                <p>Used: {systemHealth?.storage?.used || '0'} GB</p>
+                <p>Available: {systemHealth?.storage?.available || '0'} GB</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="module">
+          <h3>User Activity (Last 24 Hours)</h3>
+          <div className="activity-list">
+            {recentActivity.slice(0, 8).map(activity => (
+              <div key={activity.id} className="activity-item">
+                <div className="activity-icon">
+                  {activity.icon || '📝'}
+                </div>
+                <div className="activity-content">
+                  <h4>{activity.title}</h4>
+                  <p>{activity.description}</p>
+                  <small>{activity.userName}</small>
+                </div>
+                <div className="activity-meta">
+                  <time>{new Date(activity.timestamp).toLocaleTimeString()}</time>
+                  {activity.type && (
+                    <span className={`activity-type ${activity.type}`}>
+                      {activity.type}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {!recentActivity || recentActivity.length === 0 ? (
+            <p className="no-activity">No recent activity</p>
+          ) : null}
+        </div>
+
+        <div className="module">
+          <h3>User Statistics</h3>
+          <div className="user-stats-grid">
+            <div className="stat-card">
+              <h3>Doctors</h3>
+              <div className="stat-value">{userStats?.doctors?.total || 0}</div>
+              <div className="stat-label">Registered</div>
+              <div className="stat-change">
+                {userStats?.doctors?.growth !== undefined ? (
+                  <span className={`change ${userStats?.doctors?.growth >= 0 ? 'positive' : 'negative'}`}>
+                    {userStats?.doctors?.growth >= 0 ? '+' : ''}{userStats?.doctors?.growth}%
+                  </span>
+                ) : (
+                  <span className="change">N/A</span>
+                )}
+              </div>
+            </div>
+            <div className="stat-card">
+              <h3>Patients</h3>
+              <div className="stat-value">{userStats?.patients?.total || 0}</div>
+              <div className="stat-label">Registered</div>
+              <div className="stat-change">
+                {userStats?.patients?.growth !== undefined ? (
+                  <span className={`change ${userStats?.patients?.growth >= 0 ? 'positive' : 'negative'}`}>
+                    {userStats?.patients?.growth >= 0 ? '+' : ''}{userStats?.patients?.growth}%
+                  </span>
+                ) : (
+                  <span className="change">N/A</span>
+                )}
+              </div>
+            </div>
+            <div className="stat-card">
+              <h3>Administrators</h3>
+              <div className="stat-value">{userStats?.admins?.total || 0}</div>
+              <div className="stat-label">Registered</div>
+              <div className="stat-change">
+                {userStats?.admins?.growth !== undefined ? (
+                  <span className={`change ${userStats?.admins?.growth >= 0 ? 'positive' : 'negative'}`}>
+                    {userStats?.admins?.growth >= 0 ? '+' : ''}{userStats?.admins?.growth}%
+                  </span>
+                ) : (
+                  <span className="change">N/A</span>
+                )}
+              </div>
+            </div>
+            <div className="stat-card">
+              <h3>Staff</h3>
+              <div className="stat-value">{userStats?.staff?.total || 0}</div>
+              <div className="stat-label">Registered</div>
+              <div className="stat-change">
+                {userStats?.staff?.growth !== undefined ? (
+                  <span className={`change ${userStats?.staff?.growth >= 0 ? 'positive' : 'negative'}`}>
+                    {userStats?.staff?.growth >= 0 ? '+' : ''}{userStats?.staff?.growth}%
+                  </span>
+                ) : (
+                  <span className="change">N/A</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Enhanced User Management Page
+function UserManagementPage() {
+  const [userType, setUserType] = React.useState('all');
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [sortBy, setSortBy] = React.useState('name');
+  const [users, setUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await apiService.admin.getUsers({ userType, searchTerm, sortBy });
+        setUsers(response.data);
+        setError(null);
+      } catch (err) {
+        setError(err.message || 'Failed to load users');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, [userType, searchTerm, sortBy]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    setUserType(e.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const handleStatusChange = (userId, newStatus) => {
+    // Update user status logic would go here
+    alert(`Changing status for user ${userId} to ${newStatus}`);
+  };
+
+  const handleDeleteUser = (userId) => {
+    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      // Delete user logic would go here
+      alert(`Deleting user ${userId}`);
+      // In reality, you would call the API and then remove from state
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <h1>User Management</h1>
+        <div className="page-content">
+          <div className="loading">Loading users...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <h1>User Management</h1>
+        <div className="page-content">
+          <p className="error-message">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <h1>User Management</h1>
+      <div className="page-content">
+        <div className="user-header">
+          <div className="search-filter">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+            <select
+              value={userType}
+              onChange={handleFilterChange}
+              className="filter-select"
+            >
+              <option value="all">All Users</option>
+              <option value="doctor">Doctors</option>
+              <option value="patient">Patients</option>
+              <option value="admin">Administrators</option>
+              <option value="staff">Staff Members</option>
+            </select>
+            <select
+              value={sortBy}
+              onChange={handleSortChange}
+              className="sort-select"
+            >
+              <option value="name">Name (A-Z)</option>
+              <option value="recent">Recently Active</option>
+              <option value="status">Status</option>
+              <option value="role">Role</option>
+            </select>
+            <button className="btn-primary" onClick={() => {
+              // Add new user
+              alert('Add new user functionality would go here');
+            }}>
+              Add User
+            </button>
+          </div>
+        </div>
+
+        <div className="user-stats-summary">
+          <div className="stat-item">
+            <span>Total Users:</span> <strong>{users.length}</strong>
+          </div>
+          <div className="stat-item">
+            <span>Active Today:</span> <strong>{users.filter(u => u.isActiveToday).length}</strong>
+          </div>
+          <div className="stat-item">
+            <span>Verified Accounts:</span> <strong>{users.filter(u => u.isVerified).length}</strong>
+          </div>
+          <div className="stat-item">
+            <span>Pending Verification:</span> <strong>{users.filter(u => !u.isVerified && u.requiresVerification).length}</strong>
+          </div>
+        </div>
+
+        <div className="users-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Active</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id} className={user.status === 'active' ? 'active-row' : user.status === 'inactive' ? 'inactive-row' : 'pending-row'}>
+                  <td>
+                    <div className="user-info">
+                      <div className="user-avatar">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="user-name">{user.name}</div>
+                    </div>
+                  </td>
+                  <td>{user.email}</td>
+                  <td>
+                    <span className={`role-badge ${user.role.toLowerCase()}`}>
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`status-badge ${user.status.toLowerCase()}`}>
+                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                    </span>
+                  </td>
+                  <td>
+                    {user.lastActive ? (
+                      <span className="last-active">
+                        {user.lastActive === 'today' ? 'Today' :
+                         user.lastActive === 'yesterday' ? 'Yesterday' :
+                         user.lastActive}
+                      </span>
+                    ) : (
+                      <span className="last-active">Never</span>
+                    )}
+                  </td>
+                  <td className="actions-cell">
+                    <div className="action-buttons">
+                      <button className="btn-action btn-sm" onClick={() => {
+                        // View user details
+                        alert(`Viewing details for user ${user.id}`);
+                      }}>
+                        Details
+                      </button>
+                      <button className="btn-action btn-sm btn-outline" onClick={() => {
+                        // Edit user
+                        alert(`Editing user ${user.id}`);
+                      }}>
+                        Edit
+                      </button>
+                      <select
+                        value={user.status}
+                        onChange={(e) => handleStatusChange(user.id, e.target.value)}
+                        className="status-select"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="pending">Pending Verification</option>
+                      </select>
+                      <button className="btn-action btn-sm btn-danger" onClick={() => {
+                        handleDeleteUser(user.id);
+                      }}>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {users.length === 0 && (
+          <div className="empty-state">
+            <h3>No Users Found</h3>
+            <p>No users match your current filters.</p>
+            <button className="btn-primary" onClick={() => {
+              // Add new user
+              alert('Add new user functionality would go here');
+            }}>
+              Add First User
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// System Monitoring Page
+function SystemMonitoringPage() {
+  const { data: metrics = {}, isLoading: loadingMetrics } = useQuery({
+    queryKey: ['systemMetrics'],
+    queryFn: () => apiService.admin.getSystemMetrics().then(res => res.data),
+    retry: false
+  });
+
+  const { data: alerts = [], isLoading: loadingAlerts } = useQuery({
+    queryKey: ['systemAlerts'],
+    queryFn: () => apiService.admin.getSystemAlerts().then(res => res.data),
+    retry: false
+  });
+
+  const { data: services = [], isLoading: loadingServices } = useQuery({
+    queryKey: ['servicesStatus'],
+    queryFn: () => apiService.admin.getServicesStatus().then(res => res.data),
+    retry: false
+  });
+
+  const isLoading = loadingMetrics || loadingAlerts || loadingServices;
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <h1>System Monitoring</h1>
+        <div className="page-content">
+          <div className="loading">Loading system data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <h1>System Monitoring</h1>
+      <div className="page-content">
+        <div className="monitoring-header">
+          <div className="monitoring-stats">
+            <div className="stat-card">
+              <h3>Overall Health</h3>
+              <div className="stat-value">
+                <span className={`status-health ${metrics?.overallHealth?.toLowerCase() || 'healthy'}`}>
+                  {metrics?.overallHealth?.toUpperCase() || 'HEALTHY'}
+                </span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <h3>CPU Usage</h3>
+              <div className="stat-value">{metrics?.cpuUsage || '0'}%</div>
+            </div>
+            <div className="stat-card">
+              <h3>Memory Usage</h3>
+              <div className="stat-value">{metrics?.memoryUsage || '0'}%</div>
+            </div>
+            <div className="stat-card">
+              <h3>Disk Usage</h3>
+              <div className="stat-value">{metrics?.diskUsage || '0'}%</div>
+            </div>
+            <div className="stat-card">
+              <h3>Network I/O</h3>
+              <div className="stat-value">{metrics?.networkIO || '0'} MB/s</div>
+            </div>
+          </div>
+          <button className="btn-outline" onClick={() => {
+            // Refresh metrics
+            alert('Refreshing system metrics...');
+          }}>
+            Refresh Data
+          </button>
+        </div>
+
+        <div className="monitoring-modules">
+          <div className="monitoring-module">
+            <h3>Service Status</h3>
+            <div className="services-list">
+              {services.map(service => (
+                <div key={service.id} className={`service-item ${service.status?.toLowerCase() || 'unknown'}`}>
+                  <div className="service-info">
+                    <h4>{service.name}</h4>
+                    <p>{service.description}</p>
+                  </div>
+                  <div className="service-status">
+                    <span className={`status ${service.status?.toLowerCase() || 'unknown'}`}>
+                      {service.status?.toUpperCase() || 'UNKNOWN'}
+                    </span>
+                    {service.responseTime && (
+                      <span className="response-time">
+                        {service.responseTime}ms
+                      </span>
+                    )}
+                  </div>
+                  <div className="service-actions">
+                    {service.status !== 'running' && (
+                      <button className="btn-action btn-sm" onClick={() => {
+                        alert(`Restarting service ${service.name}`);
+                      }}>
+                        Restart
+                      </button>
+                    )}
+                    <button className="btn-action btn-sm btn-outline" onClick={() => {
+                      alert(`View logs for ${service.name}`);
+                    }}>
+                      View Logs
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="monitoring-module">
+            <h3>Active Alerts</h3>
+            <div className="alerts-list">
+              {alerts.length > 0 ? (
+                alerts.map(alert => (
+                  <div key={alert.id} className={`alert-item alert-${alert.severity?.toLowerCase() || 'info'}`}>
+                    <div className="alert-header">
+                      <h4>{alert.title}</h4>
+                      <span className="alert-severity">
+                        {alert.severity?.toUpperCase() || 'INFO'}
+                      </span>
+                    </div>
+                    <div className="alert-body">
+                      <p>{alert.description}</p>
+                      {alert.metadata && (
+                        <div className="alert-metadata">
+                          <small>{Object.entries(alert.metadata)
+                            .map(([k, v]) => `${k}: ${v}`)
+                            .join(', ')}</small>
+                        </div>
+                      )}
+                    </div>
+                    <div className="alert-footer">
+                      <small className="alert-time">
+                        {new Date(alert.timestamp).toLocaleString()}
+                      </small>
+                      {alert.actionRequired && (
+                        <button className="btn-action btn-sm" onClick={() => {
+                          alert(`Taking action on alert ${alert.id}`);
+                        }}>
+                          Take Action
+                        </button>
+                      )}
+                      <button className="btn-action btn-sm btn-outline" onClick={() => {
+                        alert(`Acknowledging alert ${alert.id}`);
+                      }}>
+                        Acknowledge
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="no-alerts">No active alerts</p>
+              )}
+            </div>
+          </div>
+
+          <div className="monitoring-module">
+            <h3>Performance Trends</h3>
+            <div className="trends-chart">
+              <div className="chart-placeholder">
+                <h4>CPU & Memory Usage (Last 24h)</h4>
+                <p>Chart visualization would go here</p>
+                <div className="chart-controls">
+                  <button className="btn-outline btn-sm" onClick={() => {
+                    alert('Export chart data');
+                  }}>
+                    Export Data
+                  </button>
+                  <button className="btn-outline btn-sm" onClick={() => {
+                    alert('Change time range');
+                  }}>
+                    Time Range
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="monitoring-actions">
+          <button className="btn-primary" onClick={() => {
+            alert('Running system diagnostics...');
+          }}>
+            Run Diagnostics
+          </button>
+          <button className="btn-outline" onClick={() => {
+            alert('Generating system health report...');
+          }}>
+            Generate Report
+          </button>
+          <button className="btn-outline" onClick={() => {
+            alert('Opening maintenance mode...');
+          }}>
+            Maintenance Mode
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Reports & Analytics Page
+function ReportsAnalyticsPage() {
+  const [reportType, setReportType] = React.useState('usage');
+  const [dateRange, setDateRange] = React.useState('last7days');
+  const [reportData, setReportData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  const generateReport = async () => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      const mockData = {
+        usage: {
+          last7days: {
+            dailyActiveUsers: [120, 135, 110, 142, 158, 165, 140],
+            pageViews: [2400, 2650, 2100, 2980, 3200, 3400, 2800],
+            apiCalls: [15000, 16500, 14000, 18200, 20500, 22000, 18500]
+          },
+          last30days: {
+            weeklyActiveUsers: [850, 920, 880, 950],
+            monthlyGrowth: 12.5,
+            peakConcurrentUsers: 450
+          }
+        },
+        performance: {
+          last7days: {
+            avgResponseTime: [120, 115, 130, 110, 105, 100, 115],
+            errorRate: [0.2, 0.1, 0.3, 0.1, 0.0, 0.2, 0.1],
+            uptime: [99.8, 99.9, 99.7, 99.9, 100.0, 99.8, 99.9]
+          },
+          last30days: {
+            avgResponseTime: 115,
+            errorRate: 0.15,
+            uptime: 99.85
+          }
+        },
+        security: {
+          last7days: {
+            loginAttempts: [450, 480, 420, 520, 580, 610, 550],
+            failedLogins: [25, 30, 20, 35, 40, 45, 35],
+            blockedIPs: [5, 8, 3, 12, 15, 18, 10]
+          },
+          last30days: {
+            totalLoginAttempts: 18500,
+            securityIncidents: 3,
+            dataBreaches: 0
+          }
+        }
+      }[reportType][dateRange] || {};
+
+      setReportData(mockData);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      alert('Failed to generate report. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="page-container">
+      <h1>Reports & Analytics</h1>
+      <div className="page-content">
+        <div className="report-controls">
+          <div className="control-group">
+            <label htmlFor="reportType">Report Type:</label>
+            <select
+              id="reportType"
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+              className="form-select"
+            >
+              <option value="usage">Usage Statistics</option>
+              <option value="performance">Performance Metrics</option>
+              <option value="security">Security Reports</option>
+              <option value="financial">Financial Reports</option>
+              <option value="compliance">Compliance Reports</option>
+            </select>
+          </div>
+          <div className="control-group">
+            <label htmlFor="dateRange">Date Range:</label>
+            <select
+              id="dateRange"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className="form-select"
+            >
+              {reportType === 'usage' && (
+                <>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last90days">Last 90 Days</option>
+                  <option value="ytd">Year to Date</option>
+                </>
+              )}
+              {reportType === 'performance' && (
+                <>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last90days">Last 90 Days</option>
+                </>
+              )}
+              {reportType === 'security' && (
+                <>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last90days">Last 90 Days</option>
+                </>
+              )}
+              {reportType === 'financial' && (
+                <>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last90days">Last 90 Days</option>
+                  <option value="ytd">Year to Date</option>
+                </>
+              )}
+              {reportType === 'compliance' && (
+                <>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last90days">Last 90 Days</option>
+                  <option value="ytd">Year to Date</option>
+                </>
+              )}
+            </select>
+          </div>
+          <button
+            className="btn-primary"
+            onClick={generateReport}
+            disabled={loading}
+          >
+            {loading ? 'Generating...' : 'Generate Report'}
+          </button>
+        </div>
+
+        {reportData && (
+          <div className="report-results">
+            <h3>
+              {reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report -
+              {dateRange.replace(/([A-Z])/g, ' $1').toUpperCase()}
+            </h3>
+            <div className="report-content">
+              {reportType === 'usage' && (
+                <>
+                  <div className="report-section">
+                    <h4>Daily Active Users</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.dailyActiveUsers?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  <div className="report-section">
+                    <h4>Page Views</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.pageViews?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  <div className="report-section">
+                    <h4>API Calls</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.apiCalls?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  {reportData.monthlyGrowth && (
+                    <div className="report-section">
+                      <h4>Monthly Growth</h4>
+                      <p><strong>{reportData.monthlyGrowth}%</strong></p>
+                    </div>
+                  )}
+                  {reportData.peakConcurrentUsers && (
+                    <div className="report-section">
+                      <h4>Peak Concurrent Users</h4>
+                      <p><strong>{reportData.peakConcurrentUsers}</strong> users</p>
+                    </div>
+                  )}
+                </>
+              )}
+              {reportType === 'performance' && (
+                <>
+                  <div className="report-section">
+                    <h4>Average Response Time (ms)</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.avgResponseTime?.join(', ') || 'No data'}</p>
+                    </div>
+                    {reportData.avgResponseTime !== undefined && (
+                      <p className="report-summary">
+                        Average: <strong>{reportData.avgResponseTime.reduce((a, b) => a + b, 0) / reportData.avgResponseTime.length}ms</strong>
+                      </p>
+                    )}
+                  </div>
+                  <div className="report-section">
+                    <h4>Error Rate (%)</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.errorRate?.join(', ') || 'No data'}</p>
+                    </div>
+                    {reportData.errorRate !== undefined && (
+                      <p className="report-summary">
+                        Average: <strong>{(reportData.errorRate.reduce((a, b) => a + b, 0) / reportData.errorRate.length).toFixed(2)}%</strong>
+                      </p>
+                    )}
+                  </div>
+                  <div className="report-section">
+                    <h4>System Uptime (%)</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.uptime?.join(', ') || 'No data'}</p>
+                    </div>
+                    {reportData.uptime !== undefined && (
+                      <p className="report-summary">
+                        Average: <strong>{(reportData.uptime.reduce((a, b) => a + b, 0) / reportData.uptime.length).toFixed(2)}%</strong>
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+              {reportType === 'security' && (
+                <>
+                  <div className="report-section">
+                    <h4>Login Attempts</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.loginAttempts?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  <div className="report-section">
+                    <h4>Failed Login Attempts</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.failedLogins?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  <div className="report-section">
+                    <h4>Blocked IP Addresses</h4>
+                    <div className="chart-placeholder">
+                      <p>{reportData.blockedIPs?.join(', ') || 'No data'}</p>
+                    </div>
+                  </div>
+                  {reportData.securityIncidents !== undefined && (
+                    <div className="report-section">
+                      <h4>Security Incidents</h4>
+                      <p><strong>{reportData.securityIncidents}</strong> incidents</p>
+                    </div>
+                  )}
+                  {reportData.dataBreaches !== undefined && (
+                    <div className="report-section">
+                      <h4>Data Breaches</h4>
+                      <p><strong>{reportData.dataBreaches}</strong> breaches</p>
+                    </div>
+                  )}
+                </>
+              )}
+              {reportType === 'financial' && (
+                <>
+                  <div className="report-section">
+                    <h4>Monthly Revenue</h4>
+                    <p><strong>$245,000</strong></p>
+                  </div>
+                  <div className="report-section">
+                    <h4>Monthly Expenses</h4>
+                    <p><strong>$198,000</strong></p>
+                  </div>
+                  <div className="report-section">
+                    <h4>Net Income</h4>
+                    <p><strong>$47,000</strong></p>
+                  </div>
+                  <div className="report-section">
+                    <h4>ROI</h4>
+                    <p><strong>12.3%</strong></p>
+                  </div>
+                </>
+              )}
+              {reportType === 'compliance' && (
+                <>
+                  <div className="report-section">
+                    <h4>HIPAA Compliance Score</h4>
+                    <p><strong>98.5%</strong></p>
+                  </div>
+                  <div className="report-section">
+                    <h4>Data Privacy Compliance</h4>
+                    <p><strong>Compliant</strong></p>
+                  </div>
+                  <div className="report-section">
+                    <h4>Audit Trail Completeness</h4>
+                    <p><strong>99.2%</strong></p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!reportData && !loading && (
+          <div className="report-placeholder">
+            <p>Select report type and date range, then click "Generate Report" to view results.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Settings Page for System Admin
+function SettingsPage() {
+  const [activeTab, setActiveTab] = React.useState('general');
+  const [loading, setLoading] = React.useState(false);
+
+  return (
+    <div className="page-container">
+      <h1>System Settings</h1>
+      <div className="page-content">
+        <div className="settings-tabs">
+          <button
+            className={`${activeTab === 'general' ? 'active' : ''}`}
+            onClick={() => setActiveTab('general')}
+          >
+            General Settings
+          </button>
+          <button
+            className={`${activeTab === 'security' ? 'active' : ''}`}
+            onClick={() => setActiveTab('security')}
+          >
+            Security Settings
+          </button>
+          <button
+            className={`${activeTab === 'integrations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('integrations')}
+          >
+            Integrations
+          </button>
+          <button
+            className={`${activeTab === 'notifications' ? 'active' : ''}`}
+            onClick={() => setActiveTab('notifications')}
+          >
+            Notification Settings
+          </button>
+          <button
+            className={`${activeTab === 'backup' ? 'active' : ''}`}
+            onClick={() => setActiveTab('backup')}
+          >
+            Backup & Recovery
+          </button>
+        </div>
+
+        {activeTab === 'general' && (
+          <div className="settings-section">
+            <h2>General System Settings</h2>
+            <form className="settings-form" onSubmit={(e) => {
+              e.preventDefault();
+              // Save settings logic
+              alert('General settings saved');
+              setLoading(true);
+              setTimeout(() => setLoading(false), 1000);
+            }}>
+              <div className="form-group">
+                <label htmlFor="systemName">System Name:</label>
+                <input
+                  type="text"
+                  id="systemName"
+                  defaultValue="UPCHAR Platform"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="organization">Organization:</label>
+                <input
+                  type="text"
+                  id="organization"
+                  defaultValue="UPCHAR Healthcare Systems"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="contactEmail">Contact Email:</label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  defaultValue="admin@upchar.com"
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="timezone">System Timezone:</label>
+                <select id="timezone" className="form-input">
+                  <option value="UTC">UTC</option>
+                  <option value="EST">Eastern Standard Time</option>
+                  <option value="PST">Pacific Standard Time</option>
+                  <option value="GMT">Greenwich Mean Time</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="dateFormat">Date Format:</label>
+                <select id="dateFormat" className="form-input">
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="language">Default Language:</label>
+                <select id="language" className="form-input">
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                </select>
+              </div>
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Settings'}
+                </button>
+                <button type="button" className="btn-outline">
+                  Reset to Defaults
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {activeTab === 'security' && (
+          <div className="settings-section">
+            <h2>Security Settings</h2>
+            <div className="security-settings">
+              <div className="setting-group">
+                <h3>Authentication</h3>
+                <div className="setting-item">
+                  <label htmlFor="passwordPolicy">
+                    Password Policy
+                  </label>
+                  <select id="passwordPolicy" className="form-select">
+                    <option value="standard">Standard (8+ chars)</option>
+                    <option value="strong">Strong (12+ chars, numbers, special)</option>
+                    <option value="strict">Strict (16+ chars, uppercase, lowercase, numbers, special)</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="mfaRequirement">
+                    Multi-Factor Authentication
+                  </label>
+                  <select id="mfaRequirement" className="form-select">
+                    <option value="optional">Optional</option>
+                    <option value="requiredForAdmins">Required for Admins</option>
+                    <option value="requiredForAll">Required for All Users</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="sessionTimeout">
+                    Session Timeout
+                  </label>
+                  <select id="sessionTimeout" className="form-select">
+                    <option value="15">15 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="240">4 hours</option>
+                    <option value="1440">24 hours</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="loginAttempts">
+                    Max Login Attempts
+                  </label>
+                  <select id="loginAttempts" className="form-select">
+                    <option value="3">3 attempts</option>
+                    <option value="5">5 attempts</option>
+                    <option value="10">10 attempts</option>
+                  </select>
+                </div>
+              </div>
+              <div className="setting-group">
+                <h3>Data Protection</h3>
+                <div className="setting-item">
+                  <label htmlFor="dataEncryption">
+                    Data Encryption at Rest
+                  </label>
+                  <select id="dataEncryption" className="form-select">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="dataEncryption">
+                    Data Encryption in Transit
+                  </label>
+                  <select id="dataEncryption" className="form-select">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="backupEncryption">
+                    Backup Encryption
+                  </label>
+                  <select id="backupEncryption" className="form-select">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="auditLogging">
+                    Audit Logging
+                  </label>
+                  <select id="auditLogging" className="form-select">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                </div>
+              </div>
+              <div className="setting-group">
+                <h3>Access Control</h3>
+                <div className="setting-item">
+                  <label htmlFor="ipWhitelisting">
+                    IP Whitelisting
+                  </label>
+                  <select id="ipWhitelisting" className="form-select">
+                    <option value="none">None</option>
+                    <option value="adminOnly">Admin Only</option>
+                    <option value="custom">Custom List</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="rateLimiting">
+                    Rate Limiting
+                  </label>
+                  <select id="rateLimiting" className="form-select">
+                    <option value="disabled">Disabled</option>
+                    <option value="enabled">Enabled</option>
+                  </select>
+                </div>
+                <div className="setting-item">
+                  <label htmlFor="contentFiltering">
+                    Content Filtering
+                  </label>
+                  <select id="contentFiltering" className="form-select">
+                    <option value="disabled">Disabled</option>
+                    <option value="enabled">Enabled</option>
+                  </select>
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : 'Save Settings'}
+                  </button>
+                  <button type="button" className="btn-outline">
+                    Reset to Defaults
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'integrations' && (
+          <div className="settings-section">
+            <h2>Third-Party Integrations</h2>
+            <div className="integrations-list">
+              <div className="integration-item">
+                <h3>Electronic Health Records (EHR)</h3>
+                <div className="integration-status">
+                  <span className="status connected">Connected</span>
+                </div>
+                <div className="integration-details">
+                  <p><strong>Provider:</strong> Epic Systems</p>
+                  <p><strong>Last Sync:</strong> Today, 2:30 AM</p>
+                  <p><strong>Records Synced:</strong> 12,450</p>
+                </div>
+                <div className="integration-actions">
+                  <button className="btn-action" onClick={() => {
+                    alert('Force sync with EHR system');
+                  }}>
+                    Force Sync
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('View integration logs');
+                  }}>
+                    View Logs
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('Configure EHR integration settings');
+                  }}>
+                    Configure
+                  </button>
+                </div>
+              </div>
+              <div className="integration-item">
+                <h3>Medical Billing System</h3>
+                <div className="integration-status">
+                  <span className="status connected">Connected</span>
+                </div>
+                <div className="integration-details">
+                  <p><strong>Provider:</strong> Medisoft</p>
+                  <p><strong>Last Sync:</strong> Today, 1:15 AM</p>
+                  <p><strong>Claims Processed:</strong> 8,920</p>
+                </div>
+                <div className="integration-actions">
+                  <button className="btn-action" onClick={() => {
+                    alert('Force sync with billing system');
+                  }}>
+                    Force Sync
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('View integration logs');
+                  }}>
+                    View Logs
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('Configure billing integration settings');
+                  }}>
+                    Configure
+                  </button>
+                </div>
+              </div>
+              <div className="integration-item">
+                <h3>Laboratory Information System (LIS)</h3>
+                <div className="integration-status">
+                  <span className="status connected">Connected</span>
+                </div>
+                <div className="integration-details">
+                  <p><strong>Provider:</strong> Cerner Lab</p>
+                  <p><strong>Last Sync:</strong> Today, 3:00 AM</p>
+                  <p><strong>Test Results:</strong> 15,680</p>
+                </div>
+                <div className="integration-actions">
+                  <button className="btn-action" onClick={() => {
+                    alert('Force sync with LIS system');
+                  }}>
+                    Force Sync
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('View integration logs');
+                  }}>
+                    View Logs
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('Configure LIS integration settings');
+                  }}>
+                    Configure
+                  </button>
+                </div>
+              </div>
+              <div className="integration-item">
+                <h3>Pharmacy Management System</h3>
+                <div className="integration-status">
+                  <span className="status connected">Connected</span>
+                </div>
+                <div className="integration-details">
+                  <p><strong>Provider:</strong> McKesson Pharmacy</p>
+                  <p><strong>Last Sync:</strong> Today, 2:45 AM</p>
+                  <p><strong>Prescriptions Processed:</strong> 22,150</p>
+                </div>
+                <div className="integration-actions">
+                  <button className="btn-action" onClick={() => {
+                    alert('Force sync with pharmacy system');
+                  }}>
+                    Force Sync
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('View integration logs');
+                  }}>
+                    View Logs
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('Configure pharmacy integration settings');
+                  }}>
+                    Configure
+                  </button>
+                </div>
+              </div>
+              <div className="integration-item">
+                <h3>Appointment Scheduling System</h3>
+                <div className="integration-status">
+                  <span className="status connected">Connected</span>
+                </div>
+                <div className="integration-details">
+                  <p><strong>Provider:</strong> Zocdoc Healthcare</p>
+                  <p><strong>Last Sync:</strong> Yesterday, 11:30 PM</p>
+                  <p><strong>Appointments Synced:</strong> 5,420</p>
+                </div>
+                <div className="integration-actions">
+                  <button className="btn-action" onClick={() => {
+                    alert('Force sync with scheduling system');
+                  }}>
+                    Force Sync
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('View integration logs');
+                  }}>
+                    View Logs
+                  </button>
+                  <button className="btn-action" onClick={() => {
+                    alert('Configure scheduling integration settings');
+                  }}>
+                    Configure
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button className="btn-primary" onClick={() => {
+              alert('Add new integration');
+            }}>
+              Add Integration
+            </button>
+          </div>
+        )}
+
+        {activeTab === 'notifications' && (
+          <div className="settings-section">
+            <h2>Notification Settings</h2>
+            <div className="notification-preferences">
+              <div className="preference-group">
+                <h3>Email Notifications</h3>
+                <div className="preference-item">
+                  <label htmlFor="emailSystemAlerts">
+                    <input
+                      type="checkbox"
+                      id="emailSystemAlerts"
+                      checked={true}
+                    />
+                    System Alerts
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="emailSecurityAlerts">
+                    <input
+                      type="checkbox"
+                      id="emailSecurityAlerts"
+                      checked={true}
+                    />
+                    Security Alerts
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="emailWeeklyReports">
+                    <input
+                      type="checkbox"
+                      id="emailWeeklyReports"
+                      checked={false}
+                    />
+                    Weekly Reports
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="emailMonthlyReports">
+                    <input
+                      type="checkbox"
+                      id="emailMonthlyReports"
+                      checked={true}
+                    />
+                    Monthly Reports
+                  </label>
+                </div>
+              </div>
+              <div className="preference-group">
+                <h3>In-App Notifications</h3>
+                <div className="preference-item">
+                  <label htmlFor="inAppSystemUpdates">
+                    <input
+                      type="checkbox"
+                      id="inAppSystemUpdates"
+                      checked={true}
+                    />
+                    System Updates
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="inAppMessageAlerts">
+                    <input
+                      type="checkbox"
+                      id="inAppMessageAlerts"
+                      checked={true}
+                    />
+                    Message Alerts
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="inAppReminders">
+                    <input
+                      type="checkbox"
+                      id="inAppReminders"
+                      checked={false}
+                    />
+                    Reminders
+                  </label>
+                </div>
+              </div>
+              <div className="preference-group">
+                <h3>Notification Channels</h3>
+                <div className="preference-item">
+                  <label htmlFor="slackIntegration">
+                    <input
+                      type="checkbox"
+                      id="slackIntegration"
+                      checked={false}
+                    />
+                    Slack Notifications
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="emailNotifications">
+                    <input
+                      type="checkbox"
+                      id="emailNotifications"
+                      checked={true}
+                    />
+                    Email Notifications
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="smsNotifications">
+                    <input
+                      type="checkbox"
+                      id="smsNotifications"
+                      checked={false}
+                    />
+                    SMS Notifications
+                  </label>
+                </div>
+                <div className="preference-item">
+                  <label htmlFor="webhookNotifications">
+                    <input
+                      type="checkbox"
+                      id="webhookNotifications"
+                      checked={false}
+                    />
+                    Webhook Notifications
+                  </label>
+                </div>
+              </div>
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Settings'}
+                </button>
+                <button type="button" className="btn-outline">
+                  Reset to Defaults
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'backup' && (
+          <div className="settings-section">
+            <h2>Backup & Recovery</h2>
+            <div className="backup-status">
+              <div className="backup-item">
+                <h3>Last Backup</h3>
+                <p><strong>Date:</strong> Today, 2:00 AM</p>
+                <p><strong>Type:</strong> Full Backup</p>
+                <p><strong>Size:</strong> 45.2 GB</p>
+                <p><strong>Location:</strong> Primary Storage</p>
+              </div>
+              <div className="backup-item">
+                <h3>Backup Schedule</h3>
+                <p><strong>Frequency:</strong> Daily</p>
+                <p><strong>Time:</strong> 2:00 AM</p>
+                <p><strong>Retention:</strong> 30 days</p>
+              </div>
+              <div className="backup-item">
+                <h3>Disaster Recovery</h3>
+                <p><strong>RPO:</strong> 4 hours</p>
+                <p><strong>RTO:</strong> 2 hours</p>
+                <p><strong>Secondary Site:</strong> Active</p>
+              </div>
+            </div>
+            <div className="backup-actions">
+              <button className="btn-primary" onClick={() => {
+                alert('Initiate manual backup');
+              }}>
+                Backup Now
+              </button>
+              <button className="btn-outline" onClick={() => {
+                alert('Test disaster recovery plan');
+              }}>
+                Test Recovery
+              </button>
+              <button className="btn-outline" onClick={() => {
+                alert('Modify backup schedule');
+              }}>
+                Modify Schedule
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Chat Page
+function ChatPage() {
+  const [conversations, setConversations] = React.useState([]);
+  const [messages, setMessages] = React.useState([]);
+  const [inputValue, setInputValue] = React.useState('');
+  const [selectedConversationId, setSelectedConversationId] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
+  const messagesEndRef = React.useRef(null);
+
+  React.useEffect(() => {
+    // Load conversations
+    const loadConversations = async () => {
+      setIsLoading(true);
+      try {
+        // In a real app, this would call an API
+        // For now, we'll simulate with mock data
+        const mockConversations = [
+          {
+            id: '1',
+            participants: [{ id: 'staff1', name: 'Dr. Smith', role: 'physician' }],
+            lastMessage: 'Patient in room 305 needs immediate attention',
+            lastUpdated: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+            unreadCount: 2
+          },
+          {
+            id: '2',
+            participants: [{ id: 'staff2', name: 'Nurse Johnson', role: 'nurse' }],
+            lastMessage: 'Medication administered for patient in ICU',
+            lastUpdated: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
+            unreadCount: 0
+          },
+          {
+            id: '3',
+            participants: [{ id: 'staff3', name: 'Dr. Williams', role: 'surgeon' }],
+            lastMessage: 'OR 2 is ready for the 3PM procedure',
+            lastUpdated: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+            unreadCount: 0
+          }
+        ];
+        setConversations(mockConversations);
+        if (mockConversations.length > 0) {
+          setSelectedConversationId(mockConversations[0].id);
+          loadMessages(mockConversations[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to load conversations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadConversations();
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedConversationId) {
+      // Load messages for selected conversation
+      const loadMessages = async (conversationId: string) => {
+        setIsLoading(true);
+        try {
+          // In a real app, this would call an API
+          // For now, we'll simulate with mock data
+          const mockMessages = [
+            {
+              id: '1',
+              conversationId: conversationId,
+              senderId: 'staff1',
+              content: 'Patient in room 305 needs immediate attention',
+              timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
+            },
+            {
+              id: '2',
+              conversationId: conversationId,
+              senderId: 'user',
+              content: 'On my way to check on them now',
+              timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString() // 8 minutes ago
+            },
+            {
+              id: '3',
+              conversationId: conversationId,
+              senderId: 'staff1',
+              content: 'Thanks, they\'re experiencing chest pain',
+              timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
+            }
+          ];
+          setMessages(mockMessages);
+        } catch (error) {
+          console.error('Failed to load messages:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadMessages(selectedConversationId);
+    }
+  }, [selectedConversationId]);
+
+  // Simulate typing indicator (would be replaced with real-time updates)
+  React.useEffect(() => {
+    if (selectedConversationId) {
+      const typingInterval = setInterval(() => {
+        // Simulate random typing indicators
+        if (Math.random() > 0.7) {
+          setTypingUsers(['Someone is typing...']);
+        } else {
+          setTypingUsers([]);
+        }
+      }, 3000);
+      return () => clearInterval(typingInterval);
+    }
+  }, [selectedConversationId]);
+
+  // Scroll to bottom when messages change
+  React.useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || !selectedConversationId) return;
+
+    try {
+      // In a real app, this would call an API
+      // For now, we'll simulate the message sending
+      const newMessage = {
+        id: Date.now().toString(),
+        conversationId: selectedConversationId,
+        senderId: 'user',
+        content: inputValue,
+        timestamp: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, newMessage]);
+      setInputValue('');
+      // Scroll to bottom after sending
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      alert('Failed to send message. Please try again.');
+    }
+  };
+
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(e); // Actually send the message when Enter is pressed
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <h1>Messages</h1>
+        <div className="page-content">
+          <div className="loading">Loading messages...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <h1>Messages</h1>
+      <div className="page-content">
+        <div className="chat-container">
+          <div className="chat-sidebar">
+            <h3>Conversations</h3>
+            <button className="btn-primary" onClick={() => {
+              // Start new conversation
+              alert('Start new conversation functionality would go here');
+            }}>
+              New Message
+            </button>
+            <div className="conversations-list">
+              {conversations.length > 0 ? (
+                conversations.map(conversation => (
+                  <div
+                    key={conversation.id}
+                    className={`conversation-item ${conversation.id === selectedConversationId ? 'active' : ''}`}
+                    onClick={() => setSelectedConversationId(conversation.id)}
+                  >
+                    <div className="conversation-avatar">
+                      {conversation.participants[0]?.name.charAt(0).toUpperCase() || '?'}
+                    </div>
+                    <div className="conversation-info">
+                      <h4>{conversation.participants[0]?.name || 'Unknown User'}</h4>
+                      <p className="conversation-preview">{conversation.lastMessage || 'No messages yet'}</p>
+                    </div>
+                    <div className="conversation-meta">
+                      <small>{conversation.lastUpdated ? new Date(conversation.lastUpdated).toLocaleTimeString() : ''}</small>
+                      {conversation.unreadCount > 0 && (
+                        <span className="unread-badge">{conversation.unreadCount}</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="empty-state">No conversations yet. Start a new conversation!</p>
+              )}
+            </div>
+          </div>
+          <div className="chat-main">
+            {!selectedConversationId ? (
+              <div className="chat-empty">
+                <h3>Select a conversation to get started</h3>
+                <p>Choose a conversation from the list or start a new one.</p>
+              </div>
+            ) : (
+              <div>
+                <div className="chat-header">
+                  <div className="chat-user-info">
+                    <div className="chat-user-avatar">
+                      {conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name.charAt(0).toUpperCase() || '?'}
+                    </div>
+                    <div className="chat-user-details">
+                      <h4>{conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name || 'Unknown User'}</h4>
+                      <p className="chat-user-status">Online</p>
+                    </div>
+                  </div>
+                  <div className="chat-actions">
+                    <button className="btn-icon" onClick={() => {
+                      // Video call
+                      alert('Start video call');
+                    }}>
+                      📹
+                    </button>
+                    <button className="btn-icon" onClick={() => {
+                      // Audio call
+                      alert('Start audio call');
+                    }}>
+                      📞
+                    </button>
+                    <button className="btn-icon" onClick={() => {
+                      // Contact info
+                      alert('View contact info');
+                    }}>
+                      ℹ️
+                    </button>
+                  </div>
+                </div>
+
+                <div className="chat-window">
+                  <div className="chat-messages">
+                    {/* Group messages by date */}
+                    {messages.reduce((groups, message) => {
+                      const date = new Date(message.timestamp).toDateString();
+                      if (!groups[date]) {
+                        groups[date] = [];
+                      }
+                      groups[date].push(message);
+                      return groups;
+                    }, {} as Record<string, typeof messages>)}
+
+                    {(Object.keys(groups) as string[]).map((date, dateIndex) => (
+                      <>
+                        {/* Date header */}
+                        <div key={`date-${date}`} className="message-date-header">
+                          <span>{new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+
+                        {/* Messages for this date */}
+                        {groups[date].map((message, msgIndex) => (
+                          <div key={`${date}-${msgIndex}`} className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}>
+                            <div className="message-content">
+                              <p>{message.content}</p>
+                              <small className="message-time">{new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ))}
+
+                    {/* Typing indicator */}
+                    {typingUsers.map((user, index) => (
+                      <div key={index} className="typing-indicator">
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <span>{user}</span>
+                      </div>
+                    ))}
+
+                    {messages.length === 0 && typingUsers.length === 0 && (
+                      <div ref={messagesEndRef} className="chat-empty">
+                        <p>No messages yet. Start the conversation!</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <form onSubmit={sendMessage} className="chat-input-form">
+                    <div className="chat-input-wrapper">
+                      <div className="chat-input-actions">
+                        <button type="button" className="btn-icon" onClick={() => {
+                          // Emoji picker
+                          alert('Emoji picker would open here');
+                        }}>
+                          😊
+                        </button>
+                        <button type="button" className="btn-icon" onClick={() => {
+                          // File attachment
+                          alert('File picker would open here');
+                        }}>
+                          📎
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type a message..."
+                        className="chat-input"
+                      />
+                      <button type="submit" className="btn-primary">
+                        Send
+                      </button>
+                    </div>
+                  </form>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Login Page
+function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => Promise<void> }) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await onLogin(email, password);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>System Administrator Sign In</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit" disabled={loading} className="auth-button">
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+        <div className="auth-footer">
+          <p>Don't have an account? <a href="/register">Register</a></p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <div className="page-container">
+      <h1>Page Not Found</h3>
+      <div className="page-content">
+        <p>The page you're looking for doesn't exist.</p>
+      </div>
+    </div>
+  );
+}
+
+const queryClientInstance = new QueryClient();
+
+function App() {
+  const { user, login, logout } = useAuthStore();
+
+  if (!user) {
+    return (
+      <>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LoginPage onLogin={login} />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClientInstance}>
+      <BrowserRouter>
+        <div className="App">
+          <header className="app-header">
+            <div className="header-content">
+              <div className="header-logo">
+                <span className="logo-text">UPCHAR Admin</span>
+              </div>
+              <nav className="header-nav">
+                <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
+                <NavLink to="/users" className="nav-link">User Management</NavLink>
+                <NavLink to="/monitoring" className="nav-link">System Monitoring</NavLink>
+                <NavLink to="/reports" className="nav-link">Reports & Analytics</NavLink>
+                <NavLink to="/settings" className="nav-link">Settings</NavLink>
+                <NavLink to="/chat" className="nav-link">Chat</NavLink>
+                <button onClick={logout} className="btn-logout">Logout</button>
+              </nav>
+            </div>
+          </header>
+
+          <main className="app-main">
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/users" element={<UserManagementPage />} />
+              <Route path="/monitoring" element={<SystemMonitoringPage />} />
+              <Route path="/reports" element={<ReportsAnalyticsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </main>
+        </div>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

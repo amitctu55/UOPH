@@ -1,0 +1,50 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_run:
+    workflows: ["Build & Publish"]
+    types: [completed]
+
+jobs:
+  deploy-staging:
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS Credentials
+        run: |
+          az aks get-credentials \
+            --resource-group upchar-rg-staging \
+            --name upchar-aks-staging \
+            --overwrite-existing
+
+      - name: Deploy to AKS
+        run: |
+          helm upgrade --install upchar ./infra/helm/upchar-platform \
+            --namespace staging \
+            --values ./infra/helm/values-staging.yaml \
+            --set image.tag=${{ github.sha }} \
+            --wait
+
+      - name: Run Smoke Tests
+        run: |
+          npm run test:smoke -- --base-url=https://staging.upchar.io
+
+      - name: Notify Deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: 'Staging deployment ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
