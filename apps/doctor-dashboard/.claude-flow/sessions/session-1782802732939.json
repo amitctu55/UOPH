@@ -1,0 +1,14 @@
+{
+  "id": "session-1782802732939",
+  "startedAt": "2026-06-30T06:58:52.939Z",
+  "cwd": "E:\\UOPH\\apps\\doctor-dashboard",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-06-30T06:59:53.061Z",
+  "duration": 60122
+}

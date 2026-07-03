@@ -53,8 +53,9 @@ let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
                 return true;
             if (record.accessLevel === medical_record_entity_1.AccessLevel.SHARED)
                 return true;
-            if (record.doctorId === requestingUserId && record.accessLevel === medical_record_entity_1.AccessLevel.DOCTOR_ONLY)
+            if (record.doctorId === requestingUserId && record.accessLevel === medical_record_entity_1.AccessLevel.DOCTOR_ONLY) {
                 return true;
+            }
             return false;
         });
     }

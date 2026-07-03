@@ -14,7 +14,28 @@
       "Bash(npx-eslint src/App.tsx)",
       "Bash(npx eslint *)",
       "Bash(npm *)",
-      "Bash(findstr /i \"node\")"
+      "Bash(findstr /i \"node\")",
+      "Bash(tee /tmp/lint-output.txt)",
+      "PowerShell(claude mcp *)",
+      "PowerShell(npm run *)",
+      "PowerShell(npm ls *)",
+      "PowerShell(npx tsc --noEmit)",
+      "PowerShell(npm install *)",
+      "PowerShell(npx react-scripts build)",
+      "PowerShell(react-scripts *)",
+      "PowerShell(git ls-tree *)",
+      "PowerShell(git show *)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(npx -p typescript tsc --noEmit)",
+      "Bash(npx tsc *)",
+      "PowerShell(E:\\\\UOPH\\\\apps\\\\doctor-dashboard\\\\node_modules\\\\.bin\\\\tsc --noEmit)",
+      "PowerShell(npx --version)",
+      "PowerShell(node E:\\\\UOPH\\\\apps\\\\doctor-dashboard\\\\node_modules\\\\typescript\\\\bin\\\\tsc --noEmit)",
+      "PowerShell(ls *)",
+      "PowerShell(npm approve-scripts *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "claude-flow"
+  ]
 }

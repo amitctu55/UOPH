@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -33,14 +32,14 @@ __decorate([
     (0, common_1.Post)("login"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_dto_1.LoginRequest !== "undefined" && auth_dto_1.LoginRequest) === "function" ? _a : Object]),
+    __metadata("design:paramtypes", [auth_dto_1.LoginRequest]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof auth_dto_1.RegisterRequest !== "undefined" && auth_dto_1.RegisterRequest) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [auth_dto_1.RegisterRequest]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 exports.AuthController = AuthController = __decorate([

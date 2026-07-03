@@ -121,14 +121,14 @@ let BillingService = BillingService_1 = class BillingService {
         return wallet;
     }
     async addToWallet(userId, amount) {
-        let wallet = await this.getWallet(userId);
+        const wallet = await this.getWallet(userId);
         wallet.balance = Number((Number(wallet.balance) + amount).toFixed(2));
         wallet.transactionCount += 1;
         wallet.lastTransactionAt = new Date();
         return await this.walletRepository.save(wallet);
     }
     async deductFromWallet(userId, amount) {
-        let wallet = await this.getWallet(userId);
+        const wallet = await this.getWallet(userId);
         if (Number(wallet.balance) < amount) {
             throw new common_1.BadRequestException("Insufficient wallet balance");
         }
