@@ -1,4 +1,4 @@
-import { Controller, Get, Query, HttpCode, HttpStatus } from "@nestjs/common";
+import { Controller, Get, Query, Post, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { AnalyticsService } from "./analytics.service";
 import { BookingAnalyticsEntity } from "./entities/booking-analytics.entity";

@@ -3,23 +3,23 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeor
 @Entity("user_analytics")
 export class UserAnalyticsEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column("date")
-  date: string; // YYYY-MM-DD
+  date!: string; // YYYY-MM-DD
 
   @Column("int", { default: 0 })
-  totalUsers: number;
+  totalUsers!: number;
 
   @Column("int", { default: 0 })
-  newPatients: number;
+  newPatients!: number;
 
   @Column("int", { default: 0 })
-  newDoctors: number;
+  newDoctors!: number;
 
   @Column("int", { default: 0 })
-  activeUsers: number;
+  activeUsers!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

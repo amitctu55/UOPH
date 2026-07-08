@@ -32,7 +32,10 @@
       "PowerShell(npx --version)",
       "PowerShell(node E:\\\\UOPH\\\\apps\\\\doctor-dashboard\\\\node_modules\\\\typescript\\\\bin\\\\tsc --noEmit)",
       "PowerShell(ls *)",
-      "PowerShell(npm approve-scripts *)"
+      "PowerShell(npm approve-scripts *)",
+      "Bash(timeout 5 bash -c 'while [ ! -s C:\\\\\\\\Users\\\\\\\\user\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\E--UOPH\\\\\\\\40737521-3685-4278-af00-5455fee13ab1\\\\\\\\tasks\\\\\\\\bzj4xxzq6.output ]; do sleep 1; done' 2>&1)",
+      "Bash(timeout 2 bash -c 'while true; do sleep 1; done' 2>&1)",
+      "Bash(grep *)"
     ]
   },
   "enabledMcpjsonServers": [

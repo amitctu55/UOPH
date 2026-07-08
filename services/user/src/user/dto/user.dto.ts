@@ -13,25 +13,25 @@ import { UserRole } from "../entities/user.entity";
 export class CreateUserDto {
   @ApiProperty({ example: "john@example.com" })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @ApiProperty({ example: "John" })
   @IsString()
   @MinLength(2)
   @MaxLength(50)
-  firstName: string;
+  firstName!: string;
 
   @ApiProperty({ example: "Doe" })
   @IsString()
   @MinLength(2)
   @MaxLength(50)
-  lastName: string;
+  lastName!: string;
 
   @ApiProperty({ example: "SecurePassword123!" })
   @IsString()
   @MinLength(8)
   @MaxLength(100)
-  password: string;
+  password!: string;
 
   @ApiProperty({ example: "+1234567890", required: false })
   @IsOptional()
@@ -40,7 +40,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: "patient", enum: UserRole })
   @IsEnum(UserRole)
-  role: UserRole;
+  role!: UserRole;
 }
 
 export class UpdateUserDto {
@@ -64,30 +64,38 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  @MaxLength(500)
+  bio?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   profileImage?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @MaxLength(500)
-  bio?: string;
+  preferences?: Record<string, any>;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  preferences?: Record<string, any>;
+  @IsString()
+  @MaxLength(500)
+  metadata?: Record<string, any>;
 }
 
 export class ChangePasswordDto {
   @ApiProperty()
   @IsString()
-  currentPassword: string;
+  currentPassword!: string;
 
   @ApiProperty()
   @IsString()
   @MinLength(8)
-  newPassword: string;
+  newPassword!: string;
 
   @ApiProperty()
   @IsString()
-  confirmPassword: string;
+  confirmPassword!: string;
 }

@@ -9,10 +9,10 @@ import {
 @Entity("medicines")
 export class MedicineEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "varchar", length: 255, nullable: false, unique: true })
-  name: string;
+  name!: string;
 
   @Column({ type: "varchar", length: 255, nullable: true })
   genericName?: string;
@@ -33,17 +33,17 @@ export class MedicineEntity {
   price?: number;
 
   @Column({ type: "boolean", default: false })
-  requiresPrescription: boolean;
+  requiresPrescription!: boolean;
 
   @Column("int", { default: 0 })
-  stockQuantity: number;
+  stockQuantity!: number;
 
   @Column("int", { default: 50 })
-  reorderLevel: number;
+  reorderLevel!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

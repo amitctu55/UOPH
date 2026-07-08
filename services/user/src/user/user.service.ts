@@ -44,7 +44,7 @@ export class UserService {
       const savedUser = await this.userRepository.save(user);
       const { passwordHash: __, ...userWithoutPassword } = savedUser;
       return userWithoutPassword;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error creating user: ${error.message}`);
       throw error;
     }
@@ -105,10 +105,17 @@ export class UserService {
     return { message: "Password changed successfully" };
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
-    return this.userRepository.findOne({
+  async getUserByEmail(email: string): Promise<Omit<UserEntity, "passwordHash">> {
+    const user = await this.userRepository.findOne({
       where: { email: email.toLowerCase() },
     });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    const { passwordHash: __, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   async verifyPassword(password: string, hash: string): Promise<boolean> {
@@ -152,7 +159,7 @@ export class UserService {
     }
 
     user.isMfaEnabled = false;
-    user.mfaSecret = null;
+    user.mfaSecret = undefined;
     await this.userRepository.save(user);
 
     return { message: "MFA disabled successfully" };

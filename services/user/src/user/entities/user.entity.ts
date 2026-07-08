@@ -25,56 +25,56 @@ export enum UserStatus {
 @Index(["status"])
 export class UserEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "varchar", unique: true })
-  email: string;
+  email!: string;
 
   @Column({ type: "varchar" })
-  firstName: string;
+  firstName!: string;
 
   @Column({ type: "varchar" })
-  lastName: string;
+  lastName!: string;
 
   @Column({ type: "varchar", nullable: true })
-  phone: string;
+  phone?: string;
 
   @Column({ type: "text", nullable: true })
-  profileImage: string;
+  profileImage?: string;
 
   @Column({ type: "varchar" })
-  passwordHash: string;
+  passwordHash!: string;
 
   @Column({ type: "enum", enum: UserRole, default: UserRole.PATIENT })
-  role: UserRole;
+  role!: UserRole;
 
   @Column({ type: "enum", enum: UserStatus, default: UserStatus.ACTIVE })
-  status: UserStatus;
+  status!: UserStatus;
 
   @Column({ type: "boolean", default: false })
-  isMfaEnabled: boolean;
+  isMfaEnabled!: boolean;
 
   @Column({ type: "varchar", nullable: true })
-  mfaSecret: string;
+  mfaSecret?: string;
 
   @Column({ type: "text", nullable: true })
-  bio: string;
+  bio?: string;
 
   @Column({ type: "jsonb", nullable: true })
-  preferences: Record<string, any>;
+  preferences?: Record<string, any>;
 
   @Column({ type: "jsonb", nullable: true })
-  metadata: Record<string, any>;
+  metadata?: Record<string, any>;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  lastLoginAt: Date;
+  lastLoginAt?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  deletedAt: Date;
+  deletedAt?: Date;
 }

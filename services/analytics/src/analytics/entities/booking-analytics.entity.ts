@@ -3,29 +3,29 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeor
 @Entity("booking_analytics")
 export class BookingAnalyticsEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column("date")
-  date: string; // YYYY-MM-DD
+  date!: string; // YYYY-MM-DD
 
   @Column("int", { default: 0 })
-  totalBookings: number;
+  totalBookings!: number;
 
   @Column("int", { default: 0 })
-  completedBookings: number;
+  completedBookings!: number;
 
   @Column("int", { default: 0 })
-  cancelledBookings: number;
+  cancelledBookings!: number;
 
   @Column("int", { default: 0 })
-  noShowBookings: number;
+  noShowBookings!: number;
 
   @Column("decimal", { precision: 12, scale: 2, default: 0 })
-  revenueGenerated: number;
+  revenueGenerated!: number;
 
   @Column("int", { default: 0 })
-  uniquePatients: number;
+  uniquePatients!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

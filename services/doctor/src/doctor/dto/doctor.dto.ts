@@ -15,19 +15,19 @@ import { DoctorSpecialization } from "../entities/doctor.entity";
 export class CreateDoctorDto {
   @ApiProperty()
   @IsUUID()
-  userId: string;
+  userId!: string;
 
   @ApiProperty()
   @IsUUID()
-  hospitalId: string;
+  hospitalId!: string;
 
   @ApiProperty()
   @IsString()
-  licenseNumber: string;
+  licenseNumber!: string;
 
   @ApiProperty({ enum: DoctorSpecialization })
   @IsEnum(DoctorSpecialization)
-  specialization: DoctorSpecialization;
+  specialization!: DoctorSpecialization;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -41,23 +41,23 @@ export class CreateDoctorDto {
 
   @ApiProperty()
   @IsNumber()
-  yearsOfExperience: number;
+  yearsOfExperience!: number;
 
   @ApiProperty()
   @IsNumber()
-  consultationFee: number;
+  consultationFee!: number;
 
   @ApiProperty()
   @IsString()
-  workStartTime: string;
+  workStartTime!: string;
 
   @ApiProperty()
   @IsString()
-  workEndTime: string;
+  workEndTime!: string;
 
   @ApiProperty({ type: [String] })
   @IsArray()
-  workingDays: string[];
+  workingDays!: string[];
 }
 
 export class UpdateDoctorDto {

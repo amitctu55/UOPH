@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class CreateMedicineDto {
   @ApiProperty({ description: "Medicine name" })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({ description: "Generic name", required: false })
   @IsOptional()
@@ -29,7 +29,7 @@ export class CreateMedicineDto {
   @ApiProperty({ description: "HSN code", required: false })
   @IsOptional()
   @IsString()
-  hsCode?: string;
+  hsnCode?: string;
 
   @ApiProperty({ description: "Price per unit", required: false })
   @IsOptional()

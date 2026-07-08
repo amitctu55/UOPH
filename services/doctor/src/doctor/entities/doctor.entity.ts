@@ -32,68 +32,68 @@ export enum AvailabilityStatus {
 @Index(["hospitalId"])
 export class DoctorEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "uuid" })
-  userId: string;
+  userId!: string;
 
   @Column({ type: "uuid" })
-  hospitalId: string;
+  hospitalId!: string;
 
   @Column({ type: "varchar" })
-  licenseNumber: string;
+  licenseNumber!: string;
 
   @Column({ type: "varchar", unique: true })
-  licenseNumber2: string;
+  licenseNumber2!: string;
 
   @Column({ type: "enum", enum: DoctorSpecialization })
-  specialization: DoctorSpecialization;
+  specialization!: DoctorSpecialization;
 
   @Column({ type: "text", nullable: true })
-  qualifications: string;
+  qualifications!: string;
 
   @Column({ type: "text", nullable: true })
-  experience: string;
+  experience!: string;
 
   @Column({ type: "int", default: 0 })
-  yearsOfExperience: number;
+  yearsOfExperience!: number;
 
   @Column({ type: "decimal", precision: 3, scale: 2, default: 0 })
-  averageRating: number;
+  averageRating!: number;
 
   @Column({ type: "int", default: 0 })
-  totalRatings: number;
+  totalRatings!: number;
 
   @Column({ type: "int", default: 0 })
-  consultationCount: number;
+  consultationCount!: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
-  consultationFee: number;
+  consultationFee!: number;
 
   @Column({ type: "enum", enum: AvailabilityStatus, default: AvailabilityStatus.AVAILABLE })
-  availabilityStatus: AvailabilityStatus;
+  availabilityStatus!: AvailabilityStatus;
 
   @Column({ type: "time", nullable: true })
-  workStartTime: string;
+  workStartTime!: string;
 
   @Column({ type: "time", nullable: true })
-  workEndTime: string;
+  workEndTime!: string;
 
   @Column({ type: "simple-array", default: "MON,TUE,WED,THU,FRI" })
-  workingDays: string[];
+  workingDays!: string[];
 
   @Column({ type: "jsonb", nullable: true })
-  preferences: Record<string, any>;
+  preferences!: Record<string, any>;
 
   @Column({ type: "boolean", default: true })
-  isVerified: boolean;
+  isVerified!: boolean;
 
   @Column({ type: "boolean", default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

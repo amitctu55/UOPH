@@ -26,7 +26,7 @@ export class DoctorService {
 
       const doctor = this.doctorRepository.create(dto);
       return await this.doctorRepository.save(doctor);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error creating doctor profile: ${error.message}`);
       throw error;
     }

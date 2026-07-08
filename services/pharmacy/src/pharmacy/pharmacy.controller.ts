@@ -58,7 +58,7 @@ export class PharmacyController {
   })
   async getMedicines(
     @Query("search") search?: string,
-    @Query("requiresPrescription") requiresPrescription?: boolean
+    @Query("requiresPrescription") requiresPrescription?: string
   ): Promise<MedicineEntity[]> {
     return this.pharmacyService.getMedicines(
       search,

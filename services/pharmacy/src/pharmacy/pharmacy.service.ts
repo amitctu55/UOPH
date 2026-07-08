@@ -57,8 +57,10 @@ export class PharmacyService {
     if (search) {
       // Simple search on name or genericName
       return this.medicineRepository.find({
-        where: [{ name: `%${search}%` }, { genericName: `%${search}%` }],
-        where: filters,
+        where: [
+          { name: `%${search}%`, ...filters },
+          { genericName: `%${search}%`, ...filters },
+        ],
         order: { name: "ASC" },
       });
     }
