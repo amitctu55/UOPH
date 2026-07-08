@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # UPCHAR Enterprise Healthcare Platform
 
 **Status:** Phase 1 (100% Complete ✅) + Phase 2 (35% Complete - 5 Backend Services)  
@@ -331,3 +332,6 @@ For comprehensive details, refer to:
 ---
 
 🎉 **The UPCHAR Healthcare Platform is ready for Phase 2 development!**
+=======
+# UOPH
+>>>>>>> f11b5976b58edbe01edbaa4766aa5f338b4745f3
