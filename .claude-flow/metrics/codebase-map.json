@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-11T11:08:11.930Z",
+  "timestamp": "2026-07-11T11:53:12.500Z",
   "projectRoot": "E:\\UOPH",
   "structure": {
     "hasPackageJson": true,
@@ -7,5 +7,5 @@
     "hasClaudeConfig": true,
     "hasClaudeFlow": true
   },
-  "scannedAt": 1783768091930
+  "scannedAt": 1783770792500
 }
