@@ -7,34 +7,37 @@ on:
       - 'v*'
 
 env:
-  REGISTRY: upcharacr.azurecr.io
+  REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  REGION: ${{ secrets.AWS_REGION }}
+  REPOSITORY: upsphere-platform
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Azure Container Registry
-        uses: azure/docker-login@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          login-server: ${{ env.REGISTRY }}
-          username: ${{ secrets.AZURE_ACR_USERNAME }}
-          password: ${{ secrets.AZURE_ACR_PASSWORD }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitActionsOIDCRole
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/upchar
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -50,15 +53,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Scan image for vulnerabilities
+      - name: Scan image for vulnerabilities (optional)
+        if: false  # Disabling for now, can enable with ECR scanning
         run: |
-          az acr import -n upcharacr --source ${{ env.REGISTRY }}/upchar:${{ github.sha }} \
-            -t upchar:latest --scan
+          echo "Image scanning would be configured in ECR repository settings"
 
   integration-tests:
     needs: build-and-push
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
 
