@@ -17,3 +17,23 @@ services:
       - '3000:3000'
     depends_on:
       - auth-service
+
+  patient-service:
+    build:
+      context: ./services/patient
+    env_file:
+      - ./services/patient/.env.example
+    ports:
+      - '3001:3000'
+    depends_on:
+      - auth-service
+
+  clinical-charting-service:
+    build:
+      context: ./services/clinical-charting
+    env_file:
+      - ./services/clinical-charting/.env.example
+    ports:
+      - '3002:3000'
+    depends_on:
+      - auth-service

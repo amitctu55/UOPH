@@ -37,7 +37,9 @@
       "Bash(timeout 2 bash -c 'while true; do sleep 1; done' 2>&1)",
       "Bash(grep *)",
       "Bash(gh pr *)",
-      "Bash(env)"
+      "Bash(env)",
+      "Bash(find /e/UOPH/services/clinical-charting -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")",
+      "Bash(find /e/UOPH/services/patient -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")"
     ]
   },
   "enabledMcpjsonServers": [
