@@ -43,7 +43,8 @@
       "Bash(find /e/UOPH/infra -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")",
       "Bash(yarn *)",
       "Bash(pnpm *)",
-      "Skill(ruflo-metaharness:harness-mint)"
+      "Skill(ruflo-metaharness:harness-mint)",
+      "Bash(git add *)"
     ]
   },
   "enabledMcpjsonServers": [
