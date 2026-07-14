@@ -33,23 +33,23 @@ export enum Gender {
 @Index(["medicalRecordNumber"])
 export class PatientEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "uuid" })
-  userId: string;
+  userId!: string;
 
   @OneToOne(() => UserEntity)
   @JoinColumn({ name: "userId" })
   user: UserEntity;
 
   @Column({ type: "date" })
-  dateOfBirth: Date;
+  dateOfBirth!: Date;
 
   @Column({
     type: "enum",
     enum: Gender,
   })
-  gender: Gender;
+  gender!: Gender;
 
   @Column({ type: "varchar", length: 20, nullable: true, unique: true })
   medicalRecordNumber?: string;
@@ -94,14 +94,14 @@ export class PatientEntity {
   chronicConditions?: string;
 
   @Column({ type: "boolean", default: false })
-  isDeceased: boolean;
+  isDeceased!: boolean;
 
   @Column({ type: "timestamp", nullable: true })
   deceasedAt?: Date;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

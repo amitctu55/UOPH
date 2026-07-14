@@ -12,15 +12,15 @@ import { Gender } from "../entities/patient.entity";
 export class CreatePatientDto {
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  userId!: string;
 
   @IsNotEmpty()
   @IsDate()
-  dateOfBirth: Date;
+  dateOfBirth!: Date;
 
   @IsNotEmpty()
   @IsEnum(Gender)
-  gender: Gender;
+  gender!: Gender;
 
   @IsOptional()
   @IsString()
@@ -71,7 +71,7 @@ export class CreatePatientDto {
   @MaxLength(20)
   emergencyContactPhone?: string;
 
-  @isOptional()
+  @IsOptional()
   @IsString()
   @MaxLength(100)
   primaryCarePhysician?: string;
