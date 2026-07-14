@@ -5,6 +5,7 @@ import {
   BadRequestException,
   ForbiddenException,
 } from "@nestjs/common";
+import { IsNull } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { MedicalRecordEntity, RecordType, AccessLevel } from "./entities/medical-record.entity";
@@ -54,7 +55,7 @@ export class MedicalRecordService {
     requestingUserId: string
   ): Promise<MedicalRecordEntity[]> {
     const records = await this.recordRepository.find({
-      where: { patientId, deletedAt: null },
+      where: { patientId, deletedAt: IsNull() },
       order: { recordDate: "DESC" },
     });
 
@@ -70,7 +71,7 @@ export class MedicalRecordService {
 
   async getRecord(recordId: string, requestingUserId: string): Promise<MedicalRecordEntity> {
     const record = await this.recordRepository.findOne({
-      where: { id: recordId, deletedAt: null },
+      where: { id: recordId, deletedAt: IsNull() },
     });
 
     if (!record) {
@@ -147,7 +148,7 @@ export class MedicalRecordService {
     recordType: RecordType
   ): Promise<MedicalRecordEntity[]> {
     return this.recordRepository.find({
-      where: { patientId, recordType, deletedAt: null },
+      where: { patientId, recordType, deletedAt: IsNull() },
       order: { recordDate: "DESC" },
     });
   }

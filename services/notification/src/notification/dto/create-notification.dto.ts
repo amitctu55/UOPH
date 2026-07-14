@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl, IsUUID } from "class-validator";
-import { NotificationType, NotificationChannel } from "../entities/notification.entity";
+import { NotificationType, NotificationChannel, NotificationStatus } from "../entities/notification.entity";
 
 export class CreateNotificationDto {
   @IsNotEmpty()

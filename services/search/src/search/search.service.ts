@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, ILike } from "typeorm";
-import { HospitalEntity } from "../hospital/src/hospital/entities/hospital.entity";
-import { DoctorEntity } from "../doctor/src/doctor/entities/doctor.entity";
+import { HospitalEntity } from "../../../hospital/src/hospital/entities/hospital.entity";
+import { DoctorEntity } from "../../../doctor/src/doctor/entities/doctor.entity";
 
 @Injectable()
 export class SearchService {

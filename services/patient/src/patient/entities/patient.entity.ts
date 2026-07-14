@@ -8,7 +8,7 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { UserEntity } from "../user/src/user/entities/user.entity";
+import { UserEntity } from "../../../user/src/user/entities/user.entity";
 
 export enum BloodType {
   A_POSITIVE = "A+",
