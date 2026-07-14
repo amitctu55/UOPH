@@ -40,7 +40,10 @@
       "Bash(env)",
       "Bash(find /e/UOPH/services/clinical-charting -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")",
       "Bash(find /e/UOPH/services/patient -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")",
-      "Bash(find /e/UOPH/infra -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")"
+      "Bash(find /e/UOPH/infra -type f -not -path \"*/node_modules/*\" -not -path \"*/\\\\.*\")",
+      "Bash(yarn *)",
+      "Bash(pnpm *)",
+      "Skill(ruflo-metaharness:harness-mint)"
     ]
   },
   "enabledMcpjsonServers": [
