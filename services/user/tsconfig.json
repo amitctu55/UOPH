@@ -23,5 +23,6 @@
       "@app/*": ["apps/*"],
       "@libs/*": ["libs/*"]
     }
-  }
+  },
+  "composite": true
 }

@@ -118,6 +118,13 @@ export class UserService {
     return userWithoutPassword;
   }
 
+  async getUserByEmailWithPassword(email: string): Promise<UserEntity | null> {
+    return await this.userRepository.findOne({
+      where: { email: email.toLowerCase() },
+      select: ["id", "email", "passwordHash", "role", "firstName", "lastName", "phone", "profileImage", "isMfaEnabled", "mfaSecret", "bio", "preferences", "metadata", "createdAt", "updatedAt", "lastLoginAt", "deletedAt"]
+    });
+  }
+
   async verifyPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }

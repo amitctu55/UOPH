@@ -36,7 +36,8 @@ let NotificationService = NotificationService_1 = class NotificationService {
             return sentNotification;
         }
         catch (error) {
-            this.logger.error(`Error creating notification: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            this.logger.error(`Error creating notification: ${message}`);
             throw error;
         }
     }

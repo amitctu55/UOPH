@@ -2,10 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuthStore } from './store/useAuthStore';
+import { useAuthStore } from './store/useAuthStore.ts';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from './services/api';
-import RegisterPage from './pages/RegisterPage';
 
 const queryClient = new QueryClient();
 
@@ -1908,7 +1907,7 @@ function ChatPage() {
                     </div>
                   </form>
               </div>
-            }
+            </div>
           </div>
         </div>
       </div>
@@ -1977,11 +1976,114 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
     </div>
   );
 }
+function RegisterPage() {
+  const [email, setEmail] = React.useState('');
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const { register } = useAuthStore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await register({ email, firstName, lastName, password });
+      // On success, redirect to login
+      window.location.href = '/login';
+    } catch (err) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="page-container">
+      <h1>Register</h1>
+      <div className="page-content">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="firstName">First Name:</label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="lastName">Last Name:</label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password:</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              className="form-input"
+            />
+          </div>
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit" disabled={loading} className="auth-button">
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+          <div className="auth-footer">
+            <p>Already have an account? <a href="/login">Sign In</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 function NotFoundPage() {
   return (
     <div className="page-container">
-      <h1>Page Not Found</h3>
+      <h1>Page Not Found</h1>
       <div className="page-content">
         <p>The page you're looking for doesn't exist.</p>
       </div>

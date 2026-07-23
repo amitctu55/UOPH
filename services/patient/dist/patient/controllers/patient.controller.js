@@ -18,12 +18,12 @@ const swagger_1 = require("@nestjs/swagger");
 const patient_service_1 = require("../services/patient.service");
 const create_patient_dto_1 = require("../dto/create-patient.dto");
 const update_patient_dto_1 = require("../dto/update-patient.dto");
-const jwt_guard_1 = require("../../auth/jwt.guard");
+const jwt_guard_1 = require("../../../auth/src/auth/jwt.guard");
 let PatientController = class PatientController {
     constructor(patientService) {
         this.patientService = patientService;
     }
-    async createPatient(dto, request) {
+    async createPatient(dto, _request) {
         return this.patientService.createPatient(dto);
     }
     async getPatientById(id) {

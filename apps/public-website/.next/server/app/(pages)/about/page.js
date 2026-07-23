@@ -1,1 +1,13 @@
-(()=>{var a={};a.id=464,a.ids=[464],a.modules={3158:()=>{throw Error("Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js):\nError: You cannot have two parallel pages that resolve to the same path. Please check /(pages)/about/page and /about/page. Refer to the route group docs for more information: https://nextjs.org/docs/app/building-your-application/routing/route-groups\n    at resolveParallelSegments (E:\\UPCHAR PROJECT DESINE BY AI\\apps\\public-website\\node_modules\\next\\dist\\build\\webpack\\loaders\\next-app-loader\\index.js:472:53)\n    at createSubtreePropsFromSegmentPath (E:\\UPCHAR PROJECT DESINE BY AI\\apps\\public-website\\node_modules\\next\\dist\\build\\webpack\\loaders\\next-app-loader\\index.js:156:38)\n    at createSubtreePropsFromSegmentPath (E:\\UPCHAR PROJECT DESINE BY AI\\apps\\public-website\\node_modules\\next\\dist\\build\\webpack\\loaders\\next-app-loader\\index.js:356:61)\n    at async createTreeCodeFromPath (E:\\UPCHAR PROJECT DESINE BY AI\\apps\\public-website\\node_modules\\next\\dist\\build\\webpack\\loaders\\next-app-loader\\index.js:391:26)\n    at async Object.nextAppLoader (E:\\UPCHAR PROJECT DESINE BY AI\\apps\\public-website\\node_modules\\next\\dist\\build\\webpack\\loaders\\next-app-loader\\index.js:558:26)")},6487:()=>{},8335:()=>{}};var b=require("../../../webpack-runtime.js");b.C(a);var c=b(b.s=3158);module.exports=c})();
+var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/(pages)/about/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0pldq_x._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_14c0t8m.js")
+R.c("server/chunks/ssr/[root-of-the-server]__1um4d3q._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0100oqz._.js")
+R.c("server/chunks/ssr/apps_public-website_app_layout_tsx_0q9p-w-._.js")
+R.c("server/chunks/ssr/_01fw26j._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_0p8s4lh._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0l_sp0x.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_global-error_0-o-goa.js")
+R.c("server/chunks/ssr/apps_public-website__next-internal_server_app_(pages)_about_page_actions_092e-0u.js")
+R.m(24066)
+module.exports=R.m(24066).exports

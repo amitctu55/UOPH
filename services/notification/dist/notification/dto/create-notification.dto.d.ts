@@ -1,4 +1,4 @@
-import { NotificationType, NotificationChannel } from "../entities/notification.entity";
+import { NotificationType, NotificationChannel, NotificationStatus } from "../entities/notification.entity";
 export declare class CreateNotificationDto {
     recipientId: string;
     senderId?: string;

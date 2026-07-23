@@ -15,8 +15,9 @@ var MedicalRecordService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MedicalRecordService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
+const typeorm_1 = require("typeorm");
+const typeorm_2 = require("@nestjs/typeorm");
+const typeorm_3 = require("typeorm");
 const medical_record_entity_1 = require("./entities/medical-record.entity");
 let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
     constructor(recordRepository) {
@@ -45,7 +46,7 @@ let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
     }
     async getPatientRecords(patientId, requestingUserId) {
         const records = await this.recordRepository.find({
-            where: { patientId, deletedAt: null },
+            where: { patientId, deletedAt: (0, typeorm_1.IsNull)() },
             order: { recordDate: "DESC" },
         });
         return records.filter(record => {
@@ -61,7 +62,7 @@ let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
     }
     async getRecord(recordId, requestingUserId) {
         const record = await this.recordRepository.findOne({
-            where: { id: recordId, deletedAt: null },
+            where: { id: recordId, deletedAt: (0, typeorm_1.IsNull)() },
         });
         if (!record) {
             throw new common_1.NotFoundException("Medical record not found");
@@ -110,7 +111,7 @@ let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
     }
     async getRecordsByType(patientId, recordType) {
         return this.recordRepository.find({
-            where: { patientId, recordType, deletedAt: null },
+            where: { patientId, recordType, deletedAt: (0, typeorm_1.IsNull)() },
             order: { recordDate: "DESC" },
         });
     }
@@ -130,7 +131,7 @@ let MedicalRecordService = MedicalRecordService_1 = class MedicalRecordService {
 exports.MedicalRecordService = MedicalRecordService;
 exports.MedicalRecordService = MedicalRecordService = MedicalRecordService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(medical_record_entity_1.MedicalRecordEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(0, (0, typeorm_2.InjectRepository)(medical_record_entity_1.MedicalRecordEntity)),
+    __metadata("design:paramtypes", [typeorm_3.Repository])
 ], MedicalRecordService);
 //# sourceMappingURL=medical-record.service.js.map

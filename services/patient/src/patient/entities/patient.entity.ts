@@ -8,7 +8,7 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { UserEntity } from "../../../user/src/user/entities/user.entity";
+import { UserEntity } from "../../../../user/src/user/entities/user.entity";
 
 export enum BloodType {
   A_POSITIVE = "A+",
@@ -40,7 +40,7 @@ export class PatientEntity {
 
   @OneToOne(() => UserEntity)
   @JoinColumn({ name: "userId" })
-  user: UserEntity;
+  user!: UserEntity;
 
   @Column({ type: "date" })
   dateOfBirth!: Date;

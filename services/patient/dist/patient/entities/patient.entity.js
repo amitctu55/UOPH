@@ -12,7 +12,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PatientEntity = exports.Gender = exports.BloodType = void 0;
 const typeorm_1 = require("typeorm");
-const user_entity_1 = require("../user/src/user/entities/user.entity");
+const user_entity_1 = require("../../../user/src/user/entities/user.entity");
 var BloodType;
 (function (BloodType) {
     BloodType["A_POSITIVE"] = "A+";

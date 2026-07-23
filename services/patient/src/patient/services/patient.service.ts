@@ -6,9 +6,9 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { PatientEntity } from "./entities/patient.entity";
-import { CreatePatientDto } from "./dto/create-patient.dto";
-import { UpdatePatientDto } from "./dto/update-patient.dto";
+import { PatientEntity } from "../entities/patient.entity";
+import { CreatePatientDto } from "../dto/create-patient.dto";
+import { UpdatePatientDto } from "../dto/update-patient.dto";
 
 @Injectable()
 export class PatientService {
@@ -36,7 +36,8 @@ export class PatientService {
       const patient = this.patientRepository.create(dto);
       return this.patientRepository.save(patient);
     } catch (error) {
-      this.logger.error(`Error creating patient: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error creating patient: ${message}`);
       throw error;
     }
   }

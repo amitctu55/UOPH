@@ -1,0 +1,3 @@
+module.exports=[66193,a=>{"use strict";var b=a.i(7997);let c={title:"UPCHAR | Digital Healthcare Platform",description:"Enterprise healthcare platform for patients, doctors, and hospitals.",metadataBase:new URL("https://www.upchar.health")};a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsx)("body",{children:a})})},"metadata",0,c])},9733,a=>{a.n(a.i(66193))}];
+
+//# sourceMappingURL=apps_public-website_app_layout_tsx_0q9p-w-._.js.map

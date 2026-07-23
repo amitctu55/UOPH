@@ -1,67 +1,91 @@
 {
-    "name": "upchar-enterprise-platform",
-    "version": "0.1.0",
-    "private": true,
-    "description": "UPCHAR Enterprise Healthcare Platform",
-    "homepage": "https://github.com/amitctu55/UOPH#readme",
-    "bugs": {
-        "url": "https://github.com/amitctu55/UOPH/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/amitctu55/UOPH.git"
-    },
-    "license": "ISC",
-    "author": "",
-    "type": "commonjs",
-    "main": ".eslintrc.js",
-    "directories": {
-        "doc": "docs"
-    },
-    "workspaces": [
-        "apps/*",
-        "services/*",
-        "libs/*",
-        "mobile/*"
-    ],
-    "scripts": {
-        "start": "npm run start --workspace=apps/admin-dashboard",
-        "test": "npm test --workspaces --if-present",
-        "test:cov": "npm test --workspaces --if-present -- --coverage",
-        "lint": "npm run lint --workspaces --if-present",
-        "lint:fix": "npm run lint --workspaces --if-present",
-        "format": "prettier --write \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
-        "build": "npm run build --workspaces --if-present",
-        "build:all": "npm run build --workspaces",
-        "prepare": "husky install"
-    },
-    "dependencies": {
-        "bcrypt": "^6.0.0",
-        "express": "^5.2.1"
-    },
-    "devDependencies": {
-        "@rushstack/eslint-patch": "^1.16.1",
-        "@types/jest": "^30.0.0",
-        "@typescript-eslint/eslint-plugin": "^8.62.0",
-        "@typescript-eslint/parser": "^8.62.0",
-        "eslint": "^8.57.0",
-        "eslint-config-react-app": "^7.0.1",
-        "eslint-plugin-import": "^2.29.0",
-        "eslint-plugin-n": "^16.6.0",
-        "eslint-plugin-promise": "^6.1.1",
-        "fast-glob": "^3.3.3",
-        "husky": "^9.0.0",
-        "prettier": "^3.0.0",
-        "ts-jest": "^29.4.11",
-        "typescript": "^6.0.3",
-        "typescript-language-server": "^5.3.0"
-    },
+  "name": "upchar_group",
+  "version": "0.1.1",
+  "private": true,
+  "description": "UPCHAR Enterprise Healthcare Platform",
+  "homepage": "https://github.com/amitctu55/UOPH#readme",
+  "bugs": {
+    "url": "https://github.com/amitctu55/UOPH/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amitctu55/UOPH.git"
+  },
+  "license": "ISC",
+  "author": "Amit Kumar",
+  "type": "commonjs",
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "libs/*",
+    "mobile/*"
+  ],
+  "scripts": {
+    "start": "npm run start --workspace=apps/admin-dashboard",
+    "test": "npm test --workspaces --if-present",
+    "test:cov": "npm test --workspaces --if-present -- --coverage",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
+    "build": "npm run build --workspaces --if-present",
+    "build:all": "npm run build --workspaces",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@nestjs/cli": "11.0.24",
+    "@nestjs/common": "11.1.28",
+    "@nestjs/config": "4.0.4",
+    "@nestjs/core": "11.1.28",
+    "@nestjs/jwt": "11.0.2",
+    "@nestjs/platform-express": "11.1.28",
+    "@nestjs/schematics": "11.1.0",
+    "@nestjs/swagger": "11.4.5",
+    "@nestjs/typeorm": "11.0.3",
+    "bcrypt": "^6.0.0",
+    "class-validator": "0.15.1",
+    "express": "^5.2.1",
+    "import-local": "^3.2.0",
+    "next": "16.2.10"
+  },
+  "devDependencies": {
+    "@lavamoat/allow-scripts": "^5.1.0",
+    "@rushstack/eslint-patch": "^1.16.1",
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/parser": "^8.62.0",
+    "eslint": "^8.57.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-n": "^16.6.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "fast-glob": "^3.3.3",
+    "husky": "^9.0.0",
+    "jest": "^30.4.2",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.4.12",
+    "typescript": "^6.0.3",
+    "typescript-language-server": "^5.3.0"
+  },
+  "allowScripts": {
+    "@scarf/scarf@1.4.0": true,
+    "bcrypt@6.0.0": true,
+    "bcrypt@5.1.1": true,
+    "es5-ext@0.10.64": true,
+    "unrs-resolver@1.12.2": true,
+    "sharp@0.34.5": true
+  },
+  "lavamoat": {
     "allowScripts": {
-        "@scarf/scarf@1.4.0": true,
-        "bcrypt@6.0.0": true,
-        "bcrypt@5.1.1": true,
-        "es5-ext@0.10.64": true,
-        "unrs-resolver@1.12.2": true,
-        "sharp@0.34.5": true
+      "bcrypt": true,
+      "@nestjs/core": true,
+      "@ampproject/toolbox-optimizer": true
     }
+  },
+  "keywords": [
+    "UPCHAR"
+  ]
 }

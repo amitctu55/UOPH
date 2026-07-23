@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/co
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
-import { UserService } from "../../user/user.service";
+import { UserService } from "@user/user/user.service";
 import * as bcrypt from "bcrypt";
-import { UserRole } from "../../user/entities/user.entity";
+import { UserRole } from "@user/user/entities/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     // Find user by email (username field is email)
-    const user = await this.userService.getUserByEmail(loginDto.username);
+    const user = await this.userService.getUserByEmailWithPassword(loginDto.username);
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
@@ -37,7 +37,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     // Check if user already exists
-    const existing = await this.userService.getUserByEmail(registerDto.email);
+    const existing = await this.userService.getUserByEmailWithPassword(registerDto.email);
     if (existing) {
       throw new ConflictException("User with this email already exists");
     }
@@ -60,7 +60,7 @@ export class AuthService {
     };
 
     const user = await this.userService.createUser(createUserDto);
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    const userWithoutPassword = user;
     const payload = { sub: user.id, username: user.email, roles: [user.role] };
     return {
       ...userWithoutPassword,

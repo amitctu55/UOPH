@@ -17,7 +17,7 @@ import { PatientService } from "../services/patient.service";
 import { CreatePatientDto } from "../dto/create-patient.dto";
 import { UpdatePatientDto } from "../dto/update-patient.dto";
 import { PatientEntity } from "../entities/patient.entity";
-import { JwtGuard } from "../../auth/jwt.guard";
+import { JwtGuard } from "../../../../auth/src/auth/jwt.guard";
 
 @ApiTags("Patients")
 @Controller("patients")
@@ -36,7 +36,7 @@ export class PatientController {
   @ApiResponse({ status: 400, description: "Invalid input" })
   async createPatient(
     @Body() dto: CreatePatientDto,
-    @Req() request: any
+    @Req() _request: any
   ): Promise<PatientEntity> {
     // In a real implementation, you would validate that the user has permission
     // to create a patient profile (e.g., they are the user themselves or an admin)
