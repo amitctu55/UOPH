@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-28T13:51:15.851Z",
+  "projectRoot": "/mnt/e/UOPH/services/billing",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": false,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1785246675859
+}

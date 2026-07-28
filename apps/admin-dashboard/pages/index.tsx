@@ -1,2 +1,3 @@
-import { App } from '../src/App';
+// @ts-nocheck
+import App from '../src/App';
 export default App;

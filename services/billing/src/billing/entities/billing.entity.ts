@@ -39,49 +39,49 @@ export enum PaymentMethod {
 @Index(["status"])
 export class InvoiceEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "uuid" })
-  patientId: string;
+  patientId!: string;
 
   @Column({ type: "uuid" })
-  doctorId: string;
+  doctorId!: string;
 
   @Column({ type: "uuid", nullable: true })
-  appointmentId: string;
+  appointmentId?: string;
 
   @Column({ type: "varchar", unique: true })
-  invoiceNumber: string;
+  invoiceNumber!: string;
 
   @Column({ type: "enum", enum: InvoiceStatus, default: InvoiceStatus.DRAFT })
-  status: InvoiceStatus;
+  status!: InvoiceStatus;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
-  amount: number;
+  amount!: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
-  tax: number;
+  tax!: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
-  discount: number;
+  discount!: number;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
-  totalAmount: number;
+  totalAmount!: number;
 
   @Column({ type: "text", nullable: true })
-  description: string;
+  description?: string;
 
   @Column({ type: "timestamp", nullable: true })
-  issueDate: Date;
+  issueDate?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  dueDate: Date;
+  dueDate?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  paidDate: Date;
+  paidDate?: Date;
 
   @Column({ type: "jsonb", default: "[]" })
-  lineItems: Array<{
+  lineItems!: Array<{
     description: string;
     quantity: number;
     unitPrice: number;
@@ -89,10 +89,10 @@ export class InvoiceEntity {
   }>;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
 
 @Entity("payments")
@@ -100,69 +100,69 @@ export class InvoiceEntity {
 @Index(["status"])
 export class PaymentEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "uuid" })
-  invoiceId: string;
+  invoiceId!: string;
 
   @Column({ type: "uuid" })
-  patientId: string;
+  patientId!: string;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
-  amount: number;
+  amount!: number;
 
   @Column({ type: "enum", enum: PaymentMethod })
-  method: PaymentMethod;
+  method!: PaymentMethod;
 
   @Column({ type: "enum", enum: PaymentStatus, default: PaymentStatus.PENDING })
-  status: PaymentStatus;
+  status!: PaymentStatus;
 
   @Column({ type: "varchar", nullable: true })
-  transactionId: string;
+  transactionId?: string;
 
   @Column({ type: "varchar", nullable: true })
-  reference: string;
+  reference?: string;
 
   @Column({ type: "timestamp", nullable: true })
-  processedAt: Date;
+  processedAt?: Date;
 
   @Column({ type: "text", nullable: true })
-  failureReason: string;
+  failureReason?: string;
 
   @Column({ type: "jsonb", nullable: true })
-  metadata: Record<string, any>;
+  metadata?: Record<string, any>;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
 
 @Entity("wallets")
 @Index(["userId"], { unique: true })
 export class WalletEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({ type: "uuid", unique: true })
-  userId: string;
+  userId!: string;
 
   @Column({ type: "decimal", precision: 12, scale: 2, default: 0 })
-  balance: number;
+  balance!: number;
 
   @Column({ type: "int", default: 0 })
-  transactionCount: number;
+  transactionCount!: number;
 
   @Column({ type: "timestamp", nullable: true })
-  lastTransactionAt: Date;
+  lastTransactionAt?: Date;
 
   @Column({ type: "boolean", default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

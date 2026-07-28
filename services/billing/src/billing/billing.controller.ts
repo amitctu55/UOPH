@@ -13,7 +13,7 @@ import { BillingService } from "./billing.service";
 import { CreateInvoiceDto } from "./dto/create-invoice.dto";
 import { UpdateInvoiceDto } from "./dto/update-invoice.dto";
 import { ProcessPaymentDto } from "./dto/process-payment.dto";
-import { InvoiceEntity } from "./entities/billing.entity";
+import { Invoice, Payment, Wallet, WalletTransaction } from "../../../../libs/shared/src/database/billing.model";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 
 @ApiTags("billing")
@@ -25,7 +25,7 @@ export class BillingController {
   @ApiOperation({ summary: "Create a new invoice" })
   @ApiResponse({ status: 201, description: "Invoice created successfully" })
   @ApiBody({ type: CreateInvoiceDto })
-  async createInvoice(@Body() createInvoiceDto: CreateInvoiceDto): Promise<InvoiceEntity> {
+  async createInvoice(@Body() createInvoiceDto: CreateInvoiceDto): Promise<Invoice> {
     return this.billingService.createInvoice(
       createInvoiceDto.patientId,
       createInvoiceDto.doctorId,
@@ -39,14 +39,14 @@ export class BillingController {
   @ApiOperation({ summary: "Get invoice by ID" })
   @ApiResponse({ status: 200, description: "Invoice details" })
   @ApiResponse({ status: 404, description: "Invoice not found" })
-  async getInvoice(@Param("invoiceId") invoiceId: string): Promise<InvoiceEntity> {
+  async getInvoice(@Param("invoiceId") invoiceId: string): Promise<Invoice> {
     return this.billingService.getInvoice(invoiceId);
   }
 
   @Get("patients/:patientId/invoices")
   @ApiOperation({ summary: "Get all invoices for a patient" })
   @ApiResponse({ status: 200, description: "List of invoices" })
-  async getPatientInvoices(@Param("patientId") patientId: string): Promise<InvoiceEntity[]> {
+  async getPatientInvoices(@Param("patientId") patientId: string): Promise<Invoice[]> {
     return this.billingService.getPatientInvoices(patientId);
   }
 
@@ -55,7 +55,7 @@ export class BillingController {
   @ApiResponse({ status: 200, description: "Invoice issued successfully" })
   @ApiResponse({ status: 400, description: "Only draft invoices can be issued" })
   @ApiResponse({ status: 404, description: "Invoice not found" })
-  async issueInvoice(@Param("invoiceId") invoiceId: string): Promise<InvoiceEntity> {
+  async issueInvoice(@Param("invoiceId") invoiceId: string): Promise<Invoice> {
     return this.billingService.issueInvoice(invoiceId);
   }
 
@@ -66,7 +66,7 @@ export class BillingController {
   async recordPayment(
     @Param("invoiceId") invoiceId: string,
     @Body() processPaymentDto: ProcessPaymentDto
-  ): Promise<any> {
+  ): Promise<Payment> {
     return this.billingService.recordPayment(
       invoiceId,
       processPaymentDto.amount,
@@ -78,7 +78,7 @@ export class BillingController {
   @Get("wallets/:userId")
   @ApiOperation({ summary: "Get user wallet" })
   @ApiResponse({ status: 200, description: "Wallet details" })
-  async getWallet(@Param("userId") userId: string): Promise<any> {
+  async getWallet(@Param("userId") userId: string): Promise<Wallet> {
     return this.billingService.getWallet(userId);
   }
 
@@ -86,7 +86,7 @@ export class BillingController {
   @ApiOperation({ summary: "Add funds to wallet" })
   @ApiResponse({ status: 200, description: "Funds added successfully" })
   @ApiBody({ schema: { properties: { amount: { type: "number" } } } })
-  async addToWallet(@Param("userId") userId: string, @Body("amount") amount: number): Promise<any> {
+  async addToWallet(@Param("userId") userId: string, @Body("amount") amount: number): Promise<Wallet> {
     return this.billingService.addToWallet(userId, amount);
   }
 
@@ -97,14 +97,14 @@ export class BillingController {
   async deductFromWallet(
     @Param("userId") userId: string,
     @Body("amount") amount: number
-  ): Promise<any> {
+  ): Promise<Wallet> {
     return this.billingService.deductFromWallet(userId, amount);
   }
 
   @Get("patients/:patientId/payments")
   @ApiOperation({ summary: "Get payment history for a patient" })
   @ApiResponse({ status: 200, description: "List of payments" })
-  async getPaymentHistory(@Param("patientId") patientId: string): Promise<any[]> {
+  async getPaymentHistory(@Param("patientId") patientId: string): Promise<Payment[]> {
     return this.billingService.getPaymentHistory(patientId);
   }
 }

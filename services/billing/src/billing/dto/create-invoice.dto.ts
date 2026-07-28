@@ -3,10 +3,10 @@ import { InvoiceStatus, PaymentMethod, PaymentStatus } from "../entities/billing
 
 export class CreateInvoiceDto {
   @IsNotEmpty()
-  patientId: string;
+  patientId!: string;
 
   @IsNotEmpty()
-  doctorId: string;
+  doctorId!: string;
 
   @IsOptional()
   appointmentId?: string;
@@ -14,7 +14,7 @@ export class CreateInvoiceDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  amount: number;
+  amount!: number;
 
   @IsOptional()
   @IsString()
@@ -34,14 +34,14 @@ export class UpdateInvoiceDto {
 export class ProcessPaymentDto {
   @IsNotEmpty()
   @IsEnum(PaymentMethod)
-  method: PaymentMethod;
+  method!: PaymentMethod;
 
   @IsNotEmpty()
   @IsString()
-  transactionId: string;
+  transactionId!: string;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  amount: number;
+  amount!: number;
 }

@@ -1,6 +1,6 @@
-const { defaults: tsJestPreset } = require('ts-jest');
+const { createJestPreset } = require('ts-jest');
 
 module.exports = {
-  ...tsJestPreset,
+  ...createJestPreset(),
   testEnvironment: 'jsdom',
 };

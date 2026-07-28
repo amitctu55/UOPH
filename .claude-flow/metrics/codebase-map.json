@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-07-23T22:54:00.944Z",
-  "projectRoot": "E:\\UOPH",
+  "timestamp": "2026-07-28T22:29:48.026Z",
+  "projectRoot": "/mnt/e/UOPH",
   "structure": {
     "hasPackageJson": true,
     "hasTsConfig": true,
     "hasClaudeConfig": true,
     "hasClaudeFlow": true
   },
-  "scannedAt": 1784847240944
+  "scannedAt": 1785277788091
 }

@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { UserSchema } from "@libs/shared/src/database/user.model";
 import { ConfigService } from "@nestjs/config";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
@@ -11,6 +13,7 @@ import { UserModule } from "@user/user/user.module";
 @Module({
   imports: [
     PassportModule,
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

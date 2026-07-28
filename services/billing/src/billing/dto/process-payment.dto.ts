@@ -4,14 +4,14 @@ import { PaymentMethod } from "../entities/billing.entity";
 export class ProcessPaymentDto {
   @IsNotEmpty()
   @IsEnum(PaymentMethod)
-  method: PaymentMethod;
+  method!: PaymentMethod;
 
   @IsNotEmpty()
   @IsString()
-  transactionId: string;
+  transactionId!: string;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  amount: number;
+  amount!: number;
 }

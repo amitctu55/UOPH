@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-24T22:02:34.411Z",
+  "projectRoot": "E:\\UOPH\\libs\\shared",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": false,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1784930554412
+}

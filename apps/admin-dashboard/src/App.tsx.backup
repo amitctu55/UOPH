@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuthStore } from './store/useAuthStore.ts';
+import { useAuthStore } from './store/useAuthStore.js';
 import { useQuery } from '@tanstack/react-query';
-import { apiService } from './services/api';
+import { apiService } from './services/api.js';
 
 const queryClient = new QueryClient();
 
@@ -166,7 +166,7 @@ function DashboardPage() {
         <div className="module">
           <h3>User Activity (Last 24 Hours)</h3>
           <div className="activity-list">
-            {recentActivity.slice(0, 8).map(activity => (
+            {recentActivity.slice(0, 8).map((activity: any) => (
               <div key={activity.id} className="activity-item">
                 <div className="activity-icon">
                   {activity.icon || '📝'}
@@ -259,22 +259,43 @@ function DashboardPage() {
 }
 
 // Enhanced User Management Page
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  department?: string;
+  lastLogin: string;
+  lastActive?: string;
+  patientId?: string;
+  isActiveToday?: boolean;
+  isVerified?: boolean;
+  requiresVerification?: boolean;
+}
+
 function UserManagementPage() {
   const [userType, setUserType] = React.useState('all');
   const [searchTerm, setSearchTerm] = React.useState('');
   const [sortBy, setSortBy] = React.useState('name');
-  const [users, setUsers] = React.useState([]);
+  const [users, setUsers] = React.useState<User[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const loadUsers = async () => {
       try {
         const response = await apiService.admin.getUsers({ userType, searchTerm, sortBy });
-        setUsers(response.data);
+        // Map lastLogin to lastActive for display purposes
+        const usersWithLastActive = response.data.map(user => ({
+          ...user,
+          lastActive: user.lastLogin // Use lastLogin as the basis for lastActive display
+        }));
+        setUsers(usersWithLastActive);
         setError(null);
-      } catch (err) {
-        setError(err.message || 'Failed to load users');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        setError(message || 'Failed to load users');
       } finally {
         setLoading(false);
       }
@@ -283,24 +304,24 @@ function UserManagementPage() {
     loadUsers();
   }, [userType, searchTerm, sortBy]);
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setUserType(e.target.value);
   };
 
-  const handleSortChange = (e) => {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
   };
 
-  const handleStatusChange = (userId, newStatus) => {
+  const handleStatusChange = (userId: string, newStatus: string) => {
     // Update user status logic would go here
     alert(`Changing status for user ${userId} to ${newStatus}`);
   };
 
-  const handleDeleteUser = (userId) => {
+  const handleDeleteUser = (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       // Delete user logic would go here
       alert(`Deleting user ${userId}`);
@@ -563,7 +584,7 @@ function SystemMonitoringPage() {
           <div className="monitoring-module">
             <h3>Service Status</h3>
             <div className="services-list">
-              {services.map(service => (
+              {services.map((service: { id: string; name: string; description: string; status: string; responseTime: number }) => (
                 <div key={service.id} className={`service-item ${service.status?.toLowerCase() || 'unknown'}`}>
                   <div className="service-info">
                     <h4>{service.name}</h4>
@@ -602,19 +623,19 @@ function SystemMonitoringPage() {
             <h3>Active Alerts</h3>
             <div className="alerts-list">
               {alerts.length > 0 ? (
-                alerts.map(alert => (
-                  <div key={alert.id} className={`alert-item alert-${alert.severity?.toLowerCase() || 'info'}`}>
+                alerts.map((alertItem: { id: string; title: string; description: string; severity: string; timestamp: string; metadata?: Record<string, any>; actionRequired: boolean }) => (
+                  <div key={alertItem.id} className={`alert-item alert-${alertItem.severity?.toLowerCase() || 'info'}`}>
                     <div className="alert-header">
-                      <h4>{alert.title}</h4>
+                      <h4>{alertItem.title}</h4>
                       <span className="alert-severity">
-                        {alert.severity?.toUpperCase() || 'INFO'}
+                        {alertItem.severity?.toUpperCase() || 'INFO'}
                       </span>
                     </div>
                     <div className="alert-body">
-                      <p>{alert.description}</p>
-                      {alert.metadata && (
+                      <p>{alertItem.description}</p>
+                      {alertItem.metadata && (
                         <div className="alert-metadata">
-                          <small>{Object.entries(alert.metadata)
+                          <small>{Object.entries(alertItem.metadata)
                             .map(([k, v]) => `${k}: ${v}`)
                             .join(', ')}</small>
                         </div>
@@ -622,17 +643,17 @@ function SystemMonitoringPage() {
                     </div>
                     <div className="alert-footer">
                       <small className="alert-time">
-                        {new Date(alert.timestamp).toLocaleString()}
+                        {new Date(alertItem.timestamp).toLocaleString()}
                       </small>
-                      {alert.actionRequired && (
+                      {alertItem.actionRequired && (
                         <button className="btn-action btn-sm" onClick={() => {
-                          alert(`Taking action on alert ${alert.id}`);
+                          alert(`Taking action on alert ${alertItem.id}`);
                         }}>
                           Take Action
                         </button>
                       )}
                       <button className="btn-action btn-sm btn-outline" onClick={() => {
-                        alert(`Acknowledging alert ${alert.id}`);
+                        alert(`Acknowledging alert ${alertItem.id}`);
                       }}>
                         Acknowledge
                       </button>
@@ -694,14 +715,14 @@ function SystemMonitoringPage() {
 function ReportsAnalyticsPage() {
   const [reportType, setReportType] = React.useState('usage');
   const [dateRange, setDateRange] = React.useState('last7days');
-  const [reportData, setReportData] = React.useState(null);
+  const [reportData, setReportData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
 
   const generateReport = async () => {
     setLoading(true);
     try {
       // Simulate API call
-      const mockData = {
+      const reportDataMap = {
         usage: {
           last7days: {
             dailyActiveUsers: [120, 135, 110, 142, 158, 165, 140],
@@ -737,10 +758,16 @@ function ReportsAnalyticsPage() {
             securityIncidents: 3,
             dataBreaches: 0
           }
-        }
-      }[reportType][dateRange] || {};
+        },
+        financial: {},
+        compliance: {}
+      };
 
-      setReportData(mockData);
+      // Using any type to bypass TypeScript strictness for this mock data
+      const mockData = (reportDataMap as any)[reportType]?.[dateRange] || {};
+
+      // Explicitly type the reportData state to avoid TypeScript errors
+      setReportData(mockData as { [key: string]: any } || null);
     } catch (error) {
       console.error('Error generating report:', error);
       alert('Failed to generate report. Please try again.');
@@ -836,31 +863,31 @@ function ReportsAnalyticsPage() {
                   <div className="report-section">
                     <h4>Daily Active Users</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.dailyActiveUsers?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).dailyActiveUsers?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
                   <div className="report-section">
                     <h4>Page Views</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.pageViews?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).pageViews?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
                   <div className="report-section">
                     <h4>API Calls</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.apiCalls?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).apiCalls?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
-                  {reportData.monthlyGrowth && (
+                  {(reportData as any).monthlyGrowth && (
                     <div className="report-section">
                       <h4>Monthly Growth</h4>
-                      <p><strong>{reportData.monthlyGrowth}%</strong></p>
+                      <p><strong>{(reportData as any).monthlyGrowth}%</strong></p>
                     </div>
                   )}
-                  {reportData.peakConcurrentUsers && (
+                  {(reportData as any).peakConcurrentUsers && (
                     <div className="report-section">
                       <h4>Peak Concurrent Users</h4>
-                      <p><strong>{reportData.peakConcurrentUsers}</strong> users</p>
+                      <p><strong>{(reportData as any).peakConcurrentUsers}</strong> users</p>
                     </div>
                   )}
                 </>
@@ -870,33 +897,33 @@ function ReportsAnalyticsPage() {
                   <div className="report-section">
                     <h4>Average Response Time (ms)</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.avgResponseTime?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).avgResponseTime?.join(', ') || 'No data'}</p>
                     </div>
-                    {reportData.avgResponseTime !== undefined && (
+                    {(reportData as any).avgResponseTime !== undefined && (
                       <p className="report-summary">
-                        Average: <strong>{reportData.avgResponseTime.reduce((a, b) => a + b, 0) / reportData.avgResponseTime.length}ms</strong>
+                        Average: <strong>{((reportData as any).avgResponseTime.reduce((a: number, b: number) => a + b, 0) / (reportData as any).avgResponseTime.length)}ms</strong>
                       </p>
                     )}
                   </div>
                   <div className="report-section">
                     <h4>Error Rate (%)</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.errorRate?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).errorRate?.join(', ') || 'No data'}</p>
                     </div>
-                    {reportData.errorRate !== undefined && (
+                    {(reportData as any).errorRate !== undefined && (
                       <p className="report-summary">
-                        Average: <strong>{(reportData.errorRate.reduce((a, b) => a + b, 0) / reportData.errorRate.length).toFixed(2)}%</strong>
+                        Average: <strong>{((((reportData as any).errorRate.reduce((a: number, b: number) => a + b, 0) / (reportData as any).errorRate.length))).toFixed(2)}%</strong>
                       </p>
                     )}
                   </div>
                   <div className="report-section">
                     <h4>System Uptime (%)</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.uptime?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).uptime?.join(', ') || 'No data'}</p>
                     </div>
-                    {reportData.uptime !== undefined && (
+                    {(reportData as any).uptime !== undefined && (
                       <p className="report-summary">
-                        Average: <strong>{(reportData.uptime.reduce((a, b) => a + b, 0) / reportData.uptime.length).toFixed(2)}%</strong>
+                        Average: <strong>{((((reportData as any).uptime.reduce((a: number, b: number) => a + b, 0) / (reportData as any).uptime.length))).toFixed(2)}%</strong>
                       </p>
                     )}
                   </div>
@@ -907,31 +934,31 @@ function ReportsAnalyticsPage() {
                   <div className="report-section">
                     <h4>Login Attempts</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.loginAttempts?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).loginAttempts?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
                   <div className="report-section">
                     <h4>Failed Login Attempts</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.failedLogins?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).failedLogins?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
                   <div className="report-section">
                     <h4>Blocked IP Addresses</h4>
                     <div className="chart-placeholder">
-                      <p>{reportData.blockedIPs?.join(', ') || 'No data'}</p>
+                      <p>{(reportData as any).blockedIPs?.join(', ') || 'No data'}</p>
                     </div>
                   </div>
-                  {reportData.securityIncidents !== undefined && (
+                  {(reportData as any).securityIncidents !== undefined && (
                     <div className="report-section">
                       <h4>Security Incidents</h4>
-                      <p><strong>{reportData.securityIncidents}</strong> incidents</p>
+                      <p><strong>{(reportData as any).securityIncidents}</strong> incidents</p>
                     </div>
                   )}
-                  {reportData.dataBreaches !== undefined && (
+                  {(reportData as any).dataBreaches !== undefined && (
                     <div className="report-section">
                       <h4>Data Breaches</h4>
-                      <p><strong>{reportData.dataBreaches}</strong> breaches</p>
+                      <p><strong>{(reportData as any).dataBreaches}</strong> breaches</p>
                     </div>
                   )}
                 </>
@@ -1584,13 +1611,62 @@ function SettingsPage() {
 
 // Chat Page
 function ChatPage() {
-  const [conversations, setConversations] = React.useState([]);
-  const [messages, setMessages] = React.useState([]);
+  const [conversations, setConversations] = React.useState<Array<{
+    id: string;
+    participants: Array<{ id: string; name: string; role: string }>;
+    lastMessage: string;
+    lastUpdated: Date;
+    unreadCount: number;
+  }>>([]);
+  const [messages, setMessages] = React.useState<Array<{
+    id: string;
+    conversationId: string;
+    senderId: string;
+    content: string;
+    timestamp: string;
+  }>>([]);
   const [inputValue, setInputValue] = React.useState('');
-  const [selectedConversationId, setSelectedConversationId] = React.useState(null);
+  const [selectedConversationId, setSelectedConversationId] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
-  const messagesEndRef = React.useRef(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  // Load messages for a conversation
+  const loadMessages = async (conversationId: string) => {
+    setIsLoading(true);
+    try {
+      // In a real app, this would call an API
+      // For now, we'll simulate with mock data
+      const mockMessages = [
+        {
+          id: '1',
+          conversationId: conversationId,
+          senderId: 'staff1',
+          content: 'Patient in room 305 needs immediate attention',
+          timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
+        },
+        {
+          id: '2',
+          conversationId: conversationId,
+          senderId: 'user',
+          content: 'On my way to check on them now',
+          timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString() // 8 minutes ago
+        },
+        {
+          id: '3',
+          conversationId: conversationId,
+          senderId: 'staff1',
+          content: 'Thanks, they\'re experiencing chest pain',
+          timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
+        }
+      ];
+      setMessages(mockMessages);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   React.useEffect(() => {
     // Load conversations
@@ -1639,43 +1715,6 @@ function ChatPage() {
 
   React.useEffect(() => {
     if (selectedConversationId) {
-      // Load messages for selected conversation
-      const loadMessages = async (conversationId: string) => {
-        setIsLoading(true);
-        try {
-          // In a real app, this would call an API
-          // For now, we'll simulate with mock data
-          const mockMessages = [
-            {
-              id: '1',
-              conversationId: conversationId,
-              senderId: 'staff1',
-              content: 'Patient in room 305 needs immediate attention',
-              timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
-            },
-            {
-              id: '2',
-              conversationId: conversationId,
-              senderId: 'user',
-              content: 'On my way to check on them now',
-              timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString() // 8 minutes ago
-            },
-            {
-              id: '3',
-              conversationId: conversationId,
-              senderId: 'staff1',
-              content: 'Thanks, they\'re experiencing chest pain',
-              timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
-            }
-          ];
-          setMessages(mockMessages);
-        } catch (error) {
-          console.error('Failed to load messages:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
       loadMessages(selectedConversationId);
     }
   }, [selectedConversationId]);
@@ -1905,9 +1944,9 @@ function ChatPage() {
                         Send
                       </button>
                     </div>
-                  </form>
-              </div>
-            }
+                    </div>
+                  </form
+            </div>
           </div>
         </div>
       </div>
@@ -2083,7 +2122,7 @@ function RegisterPage() {
 function NotFoundPage() {
   return (
     <div className="page-container">
-      <h1>Page Not Found</h3>
+      <h1>Page Not Found</h1>
       <div className="page-content">
         <p>The page you're looking for doesn't exist.</p>
       </div>

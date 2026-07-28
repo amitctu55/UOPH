@@ -1,13 +1,99 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+
+// @ts-ignore: allow CSS side-effect import in this file
 import './App.css';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from './store/useAuthStore';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from './services/api';
 import RegisterPage from './pages/RegisterPage';
 
-const queryClient = new QueryClient();
+// Types
+interface Appointment {
+  id: string | number;
+  title: string;
+  doctorName: string;
+  specialty: string;
+  scheduledAt: string;
+  location?: string;
+  status: string;
+}
+
+interface Consultation {
+  id: string | number;
+  title: string;
+  doctorName: string;
+  type: string;
+  scheduledAt: string;
+  description?: string;
+  status: string;
+}
+
+interface Prescription {
+  id: string | number;
+  medicationName: string;
+  prescribingDoctor: string;
+  status: string;
+  refillsRemaining: number;
+  dateIssued: string;
+  expiryDate: string;
+  dosage: string;
+  quantity: number;
+  unit: string;
+  instructions?: string;
+  updatedAt: string;
+}
+
+interface WalletBalance {
+  balance: number;
+}
+
+interface MedicalRecord {
+  id: string | number;
+  title: string;
+  type: string;
+  createdAt: string;
+  description?: string;
+  provider?: string;
+  result?: string;
+}
+
+interface UserProfile {
+  id: string | number;
+  name: string;
+  email: string;
+}
+
+interface NotificationAction {
+  type: 'primary' | 'secondary';
+  label: string;
+}
+
+interface NotificationItem {
+  id: string | number;
+  title: string;
+  message: string;
+  type: 'all' | 'urgent' | 'appointment' | 'prescription' | 'lab_result' | 'promo' | 'system' | 'unread' | 'read' | string;
+  isRead: boolean;
+  priority?: 'high' | 'medium' | 'low' | string;
+  icon?: string;
+  createdAt: string;
+  actionRequired?: boolean;
+  actionButtons?: NotificationAction[];
+}
+
+type NotificationFilter =
+  | 'all'
+  | 'urgent'
+  | 'appointment'
+  | 'prescription'
+  | 'lab_result'
+  | 'promo'
+  | 'system'
+  | 'unread'
+  | 'read';
 
 // Dashboard Page with real data fetching
 function DashboardPage() {
@@ -104,7 +190,7 @@ function DashboardPage() {
       <div className="recent-activity">
         <h2>Recent Activity</h2>
         <div className="activity-list">
-          {upcomingAppointments && upcomingAppointments.slice(0, 3).map(appointment => (
+          {upcomingAppointments && upcomingAppointments.slice(0, 3).map((appointment: { id: string | number; title: string; doctorName: string; specialty: string; scheduledAt: string }) => (
             <div key={appointment.id} className="activity-item">
               <div className="activity-icon">📅</div>
               <div className="activity-content">
@@ -112,10 +198,10 @@ function DashboardPage() {
                 <p>{appointment.doctorName} • {appointment.specialty}</p>
                 <time>{new Date(appointment.scheduledAt).toLocaleString()}</time>
               </div>
-            </>
+            </div>
           ))}
 
-          {prescriptions && prescriptions.slice(0, 2).map(prescription => (
+          {prescriptions && prescriptions.slice(0, 2).map((prescription: any) => (
             <div key={prescription.id} className="activity-item">
               <div className="activity-icon">💊</div>
               <div className="activity-content">
@@ -123,7 +209,7 @@ function DashboardPage() {
                 <p>{prescription.medicationName}</p>
                 <time>{new Date(prescription.updatedAt).toLocaleDateString()}</time>
               </div>
-            </>
+            </div>
           ))}
 
           {unreadNotifications && unreadNotifications > 0 && (
@@ -134,7 +220,7 @@ function DashboardPage() {
                 <p>{unreadNotifications} unread message{(unreadNotifications !== 1 ? 's' : '')}</p>
                 <time>Just now</time>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -147,26 +233,26 @@ function AppointmentsPage() {
   const [activeTab, setActiveTab] = React.useState('upcoming');
   const queryClient = useQueryClient();
 
-  const { data: upcomingAppointments = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery({
+  const { data: upcomingAppointments = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery<Appointment[]>({
     queryKey: ['upcomingAppointments'],
     queryFn: () => apiService.appointments.getUpcoming().then(res => res.data),
     retry: false
   });
 
-  const { data: pastAppointments = [], isLoading: loadingPast, error: errorPast } = useQuery({
+  const { data: pastAppointments = [], isLoading: loadingPast, error: errorPast } = useQuery<Appointment[]>({
     queryKey: ['pastAppointments'],
     queryFn: () => apiService.appointments.getPast().then(res => res.data),
     retry: false
   });
 
-  const handleReschedule = (appointmentId) => {
+  const handleReschedule = (appointmentId: string | number) => {
     alert(`Reschedule functionality for appointment ${appointmentId} would go here`);
   };
 
-  const handleCancel = async (appointmentId) => {
+  const handleCancel = async (appointmentId: string | number) => {
     if (window.confirm('Are you sure you want to cancel this appointment?')) {
       try {
-        await apiService.appointments.cancel(appointmentId);
+        await apiService.appointments.cancel(String(appointmentId));
         queryClient.invalidateQueries({ queryKey: ['upcomingAppointments'] });
         queryClient.invalidateQueries({ queryKey: ['pastAppointments'] });
       } catch (error) {
@@ -175,7 +261,7 @@ function AppointmentsPage() {
     }
   };
 
-  const viewAppointmentDetails = (appointmentId) => {
+  const viewAppointmentDetails = (appointmentId: string | number) => {
     alert(`View details for appointment ${appointmentId} would go here`);
   };
 
@@ -284,7 +370,7 @@ function AppointmentsPage() {
 
 // Enhanced Medical Records Page
 function MedicalRecordsPage() {
-  const { data: medicalRecords = [], isLoading: loading, error } = useQuery({
+  const { data: medicalRecords = [], isLoading: loading, error } = useQuery<MedicalRecord[]>({
     queryKey: ['medicalRecords'],
     queryFn: () => apiService.medicalRecords.getAll().then(res => res.data),
   });
@@ -424,7 +510,7 @@ function MedicalRecordsPage() {
 
 // Enhanced Prescriptions Page
 function PrescriptionsPage() {
-  const { data: prescriptions = [], isLoading: loading, error } = useQuery({
+  const { data: prescriptions = [], isLoading: loading, error } = useQuery<Prescription[]>({
     queryKey: ['prescriptions'],
     queryFn: () => apiService.pharmacy.getPrescriptions().then(res => res.data),
   });
@@ -432,7 +518,11 @@ function PrescriptionsPage() {
   const [filter, setFilter] = React.useState('all');
   const [searchTerm, setSearchTerm] = React.useState('');
 
-  const filteredPrescriptions = prescriptions.filter(prescription => {
+  const filteredPrescriptions = prescriptions.filter((prescription: {
+    medicationName: string;
+    prescribingDoctor: string;
+    status: string;
+  }) => {
     const matchesSearch = prescription.medicationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          prescription.prescribingDoctor.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -569,7 +659,7 @@ function PrescriptionsPage() {
 function MembershipPage() {
   const { data: membershipInfo = {}, isLoading: loading, error } = useQuery({
     queryKey: ['membership'],
-    queryFn: () => apiService.users.getMembership().then(res => res.data),
+    queryFn: () => apiService.users.getProfile().then(res => res.data),
   });
 
   const [plan, setPlan] = React.useState(membershipInfo.currentPlan || 'basic');
@@ -649,7 +739,7 @@ function MembershipPage() {
             <p className="plan-price">${(membershipInfo.currentPrice || 0).toFixed(2)}/month</p>
             <p className="plan-period">Billing cycle: {membershipInfo.billingCycle || 'Monthly'}</p>
             <div className="plan-features">
-              {membershipInfo.features?.map((feature, index) => (
+              {membershipInfo.features?.map((feature: string, index: number) => (
                 <span key={index} className="feature-tag">{feature}</span>
               )) || []}
             </div>
@@ -735,20 +825,20 @@ function MembershipPage() {
 
 // Enhanced Notifications Page
 function NotificationsPage() {
-  const { data: notifications = [], isLoading: loading, error } = useQuery({
+  const { data: notifications = [], isLoading: loading, error } = useQuery<NotificationItem[]>({
     queryKey: ['notifications'],
     queryFn: () => apiService.notifications.getAll().then(res => res.data),
   });
 
-  const { data: unreadCount = 0, isLoading: loadingCount } = useQuery({
+  const { data: unreadCount = 0, isLoading: loadingCount } = useQuery<number>({
     queryKey: ['unreadCount'],
     queryFn: () => apiService.notifications.getUnreadCount().then(res => res.data),
   });
 
-  const [filter, setFilter] = React.useState('all');
+  const [filter, setFilter] = React.useState<NotificationFilter>('all');
   const [showOnlyUnread, setShowOnlyUnread] = React.useState(false);
 
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification: NotificationItem) => {
     const matchesFilter = filter === 'all' || notification.type === filter ||
                          (filter === 'unread' && !notification.isRead) ||
                          (filter === 'read' && notification.isRead);
@@ -911,7 +1001,7 @@ function SettingsPage() {
 
   const { data: preferences = {}, isLoading: loadingPreferences, error: errorPreferences } = useQuery({
     queryKey: ['userPreferences'],
-    queryFn: () => apiService.users.getPreferences().then(res => res.data),
+    queryFn: () => apiService.users.getProfile().then(res => res.data),
   });
 
   const [editingProfile, setEditingProfile] = React.useState(false);
@@ -962,14 +1052,14 @@ function SettingsPage() {
     );
   }
 
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setProfileForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePreferenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked, type } = e.target;
-    const value = type === 'checkbox' ? checked : e.target.value;
+  const handlePreferenceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, type } = e.target;
+    const value = type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
     setPreferencesForm(prev => ({ ...prev, [name]: value }));
   };
 
@@ -989,8 +1079,8 @@ function SettingsPage() {
     e.preventDefault();
     setEditingPreferences(false);
     try {
-      // Update preferences logic would go here
-      await apiService.users.updatePreferences(preferencesForm);
+      // Update preferences using the available user update endpoint
+      await apiService.users.updateProfile({ preferences: preferencesForm });
       alert('Preferences updated successfully!');
     } catch (error) {
       alert('Failed to update preferences. Please try again.');
@@ -1184,7 +1274,7 @@ function SettingsPage() {
                       name="address"
                       value={profileForm.address}
                       onChange={handleProfileChange}
-                      rows="3"
+                      rows={3}
                       className="form-input"
                     />
                   </div>
@@ -1349,32 +1439,32 @@ function SettingsPage() {
 
 // Enhanced Consultations Page
 function ConsultationsPage() {
-  const { data: upcomingConsultations = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery({
+  const { data: upcomingConsultations = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery<Consultation[]>({
     queryKey: ['upcomingConsultations'],
     queryFn: () => apiService.consultations.getUpcoming().then(res => res.data),
     retry: false
   });
 
-  const { data: pastConsultations = [], isLoading: loadingPast, error: errorPast } = useQuery({
+  const { data: pastConsultations = [], isLoading: loadingPast, error: errorPast } = useQuery<Consultation[]>({
     queryKey: ['pastConsultations'],
-    queryFn: () => apiService.consultations.getPast().then(res => res.data),
+    queryFn: () => apiService.appointments.getPast().then(res => res.data),
     retry: false
   });
 
   const [activeTab, setActiveTab] = React.useState('upcoming');
 
-  const joinConsultation = (consultationId) => {
+  const joinConsultation = (consultationId: string | number) => {
     alert(`Join consultation ${consultationId} would go here`);
   };
 
-  const endConsultation = (consultationId) => {
+  const endConsultation = (consultationId: string | number) => {
     if (window.confirm('Are you sure you want to end this consultation?')) {
       // End consultation logic
       alert(`Ending consultation ${consultationId}`);
     }
   };
 
-  const viewConsultationDetails = (consultationId) => {
+  const viewConsultationDetails = (consultationId: string | number) => {
     alert(`View details for consultation ${consultationId} would go here`);
   };
 
@@ -1498,13 +1588,23 @@ function ConsultationsPage() {
 
 // Enhanced Chat Page
 function ChatPage() {
-  const [conversations, setConversations] = React.useState([]);
-  const [messages, setMessages] = React.useState([]);
+  const [conversations, setConversations] = React.useState<any[]>([]);
+  const [messages, setMessages] = React.useState<any[]>([]);
   const [inputValue, setInputValue] = React.useState('');
-  const [selectedConversationId, setSelectedConversationId] = React.useState(null);
+  const [selectedConversationId, setSelectedConversationId] = React.useState<string | number | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
-  const messagesEndRef = React.useRef(null);
+  const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Fetch messages for selected conversation
+  const loadMessages = async (conversationId: string | number) => {
+    try {
+      const response = await apiService.chat.getMessages(String(conversationId));
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+    }
+  };
 
   // Fetch conversations
   React.useEffect(() => {
@@ -1526,23 +1626,13 @@ function ChatPage() {
     loadConversations();
   }, []);
 
-  // Fetch messages for selected conversation
-  const loadMessages = async (conversationId) => {
-    try {
-      const response = await apiService.chat.getMessages(conversationId);
-      setMessages(response.data);
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
-  };
-
   // Send message
-  const sendMessage = async (e: React.FormEvent) => {
+  const sendMessage = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || !selectedConversationId) return;
 
     try {
-      const response = await apiService.chat.sendMessage(selectedConversationId, inputValue);
+      const response = await apiService.chat.sendMessage(String(selectedConversationId), inputValue);
       setMessages(prev => [...prev, response.data]);
       setInputValue('');
       // Scroll to bottom after sending
@@ -1556,10 +1646,10 @@ function ChatPage() {
   };
 
   // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage(e); // Actually send the message when Enter is pressed
+      sendMessage(e);
     }
   };
 
@@ -1584,6 +1674,15 @@ function ChatPage() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  const groupedMessages = messages.reduce((groups, message) => {
+    const date = new Date(message.timestamp).toDateString();
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(message);
+    return groups;
+  }, {} as Record<string, any[]>);
 
   if (loading) {
     return (
@@ -1672,7 +1771,7 @@ function ChatPage() {
                     </button>
                     <button className="btn-icon" onClick={() => {
                       // Contact info
-                      alert('View contact info');
+                      alert('Show contact info');
                     }}>
                       ℹ️
                     </button>
@@ -1680,25 +1779,13 @@ function ChatPage() {
                 </div>
 
                 <div className="chat-messages">
-                  {/* Group messages by date */}
-                  {messages.reduce((groups, message) => {
-                    const date = new Date(message.timestamp).toDateString();
-                    if (!groups[date]) {
-                      groups[date] = [];
-                    }
-                    groups[date].push(message);
-                    return groups;
-                  }, {} as Record<string, typeof messages>)}
-
-                  {(Object.keys(groups) as string[]).map((date, dateIndex) => (
-                    <>
-                      {/* Date header */}
-                      <div key={`date-${date}`} className="message-date-header">
+                  {Object.keys(groupedMessages).map((date) => (
+                    <React.Fragment key={`date-${date}`}>
+                      <div className="message-date-header">
                         <span>{new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                       </div>
 
-                      {/* Messages for this date */}
-                      {groups[date].map((message, msgIndex) => (
+                      {groupedMessages[date].map((message: any, msgIndex: number) => (
                         <div key={`${date}-${msgIndex}`} className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}>
                           <div className="message-content">
                             <p>{message.text}</p>
@@ -1706,8 +1793,9 @@ function ChatPage() {
                           </div>
                         </div>
                       ))}
-                    </>
+                    </React.Fragment>
                   ))}
+                  <div ref={messagesEndRef} />
 
                   {/* Typing indicator */}
                   {typingUsers.map((user, index) => (
@@ -1844,13 +1932,15 @@ function App() {
 
   if (!user) {
     return (
-      <>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginPage onLogin={login} />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </>
+      <QueryClientProvider client={queryClientInstance}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<LoginPage onLogin={login} />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
     );
   }
 

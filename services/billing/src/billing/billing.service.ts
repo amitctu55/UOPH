@@ -1,71 +1,65 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 import {
-  InvoiceEntity,
-  PaymentEntity,
-  WalletEntity,
-  InvoiceStatus,
-  PaymentStatus,
-  PaymentMethod,
-} from "./entities/billing.entity";
+  Invoice,
+  InvoiceDocument,
+  Payment,
+  PaymentDocument,
+  Wallet,
+  WalletDocument,
+  WalletTransaction,
+  WalletTransactionDocument
+} from "../../../../libs/shared/src/database/billing.model";
 
 @Injectable()
 export class BillingService {
   private readonly logger = new Logger(BillingService.name);
 
   constructor(
-    @InjectRepository(InvoiceEntity)
-    private readonly invoiceRepository: Repository<InvoiceEntity>,
-    @InjectRepository(PaymentEntity)
-    private readonly paymentRepository: Repository<PaymentEntity>,
-    @InjectRepository(WalletEntity)
-    private readonly walletRepository: Repository<WalletEntity>
+    @InjectModel(Invoice.name)
+    private readonly invoiceModel: Model<InvoiceDocument>,
+    @InjectModel(Payment.name)
+    private readonly paymentModel: Model<PaymentDocument>,
+    @InjectModel(Wallet.name)
+    private readonly walletModel: Model<WalletDocument>,
+    @InjectModel(WalletTransaction.name)
+    private readonly walletTransactionModel: Model<WalletTransactionDocument>
   ) {}
 
   async createInvoice(
     patientId: string,
     doctorId: string,
-    appointmentId: string,
+    appointmentId: string | undefined,
     amount: number,
-    description: string
-  ): Promise<InvoiceEntity> {
+    description: string | undefined
+  ): Promise<Invoice> {
     try {
       const invoiceNumber = `INV-${Date.now()}`;
       const tax = amount * 0.18; // 18% GST
       const totalAmount = amount + tax;
 
-      const invoice = this.invoiceRepository.create({
+      const invoice = new this.invoiceModel({
         patientId,
-        doctorId,
-        appointmentId,
+        doctorId: doctorId || undefined,
+        appointmentId: appointmentId || undefined,
         invoiceNumber,
         amount,
-        tax,
-        totalAmount,
+        tax: Math.round(tax * 100) / 100, // Round to 2 decimal places
+        totalAmount: Math.round(totalAmount * 100) / 100,
         description,
-        status: InvoiceStatus.DRAFT,
-        lineItems: [
-          {
-            description: "Consultation Fee",
-            quantity: 1,
-            unitPrice: amount,
-            amount,
-          },
-        ],
+        status: 'unpaid',
       });
 
-      return await this.invoiceRepository.save(invoice);
-    } catch (error) {
+      return await invoice.save();
+    } catch (error: any) {
       this.logger.error(`Error creating invoice: ${error.message}`);
       throw error;
     }
   }
 
-  async getInvoice(invoiceId: string): Promise<InvoiceEntity> {
-    const invoice = await this.invoiceRepository.findOne({
-      where: { id: invoiceId },
-    });
+  async getInvoice(invoiceId: string): Promise<Invoice> {
+    const invoice = await this.invoiceModel.findById(invoiceId);
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
@@ -74,112 +68,138 @@ export class BillingService {
     return invoice;
   }
 
-  async getPatientInvoices(patientId: string): Promise<InvoiceEntity[]> {
-    return this.invoiceRepository.find({
-      where: { patientId },
-      order: { createdAt: "DESC" },
-    });
+  async getPatientInvoices(patientId: string): Promise<Invoice[]> {
+    return this.invoiceModel.find({ patientId }).sort({ createdAt: -1 }).exec();
   }
 
-  async issueInvoice(invoiceId: string): Promise<InvoiceEntity> {
-    const invoice = await this.invoiceRepository.findOne({
-      where: { id: invoiceId },
-    });
+  async issueInvoice(invoiceId: string): Promise<Invoice> {
+    const invoice = await this.invoiceModel.findById(invoiceId);
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
 
-    if (invoice.status !== InvoiceStatus.DRAFT) {
-      throw new BadRequestException("Only draft invoices can be issued");
+    if (invoice.status !== 'unpaid') {
+      throw new BadRequestException("Only unpaid invoices can be issued");
     }
 
-    invoice.status = InvoiceStatus.ISSUED;
+    // For our workflow, issuing an invoice means it's now partially paid (awaiting payment)
+    // In a real system, you might have different states like 'issued', 'sent', etc.
+    // But based on the Mongoose schema, we only have: unpaid, partially_paid, paid
+    invoice.status = 'partially_paid';
     invoice.issueDate = new Date();
     invoice.dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-    return await this.invoiceRepository.save(invoice);
+    return await invoice.save();
   }
 
   async recordPayment(
     invoiceId: string,
     amount: number,
-    method: PaymentMethod,
+    method: string,
     transactionId: string
-  ): Promise<PaymentEntity> {
-    const invoice = await this.invoiceRepository.findOne({
-      where: { id: invoiceId },
-    });
+  ): Promise<Payment> {
+    const invoice = await this.invoiceModel.findById(invoiceId);
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
 
-    const payment = this.paymentRepository.create({
-      invoiceId,
-      patientId: invoice.patientId,
+    const payment = new this.paymentModel({
+      billId: invoice._id,
       amount,
-      method,
+      paymentMethod: method,
       transactionId,
-      status: PaymentStatus.PROCESSING,
+      status: 'pending', // Initial status before processing
     });
 
-    const saved = await this.paymentRepository.save(payment);
+    const saved = await payment.save();
 
     // Mark as completed
-    saved.status = PaymentStatus.COMPLETED;
-    saved.processedAt = new Date();
-    await this.paymentRepository.save(saved);
+    const paidPayment = await this.paymentModel.findByIdAndUpdate(
+      saved._id,
+      { status: 'completed', paidAt: new Date() },
+      { new: true }
+    );
+
+    if (!paidPayment) {
+      throw new NotFoundException("Payment not found after update");
+    }
 
     // Update invoice
-    invoice.status = InvoiceStatus.PAID;
-    invoice.paidDate = new Date();
-    await this.invoiceRepository.save(invoice);
+    invoice.status = 'paid';
+    await invoice.save();
 
-    return saved;
+    return paidPayment;
   }
 
-  async getWallet(userId: string): Promise<WalletEntity> {
-    let wallet = await this.walletRepository.findOne({
-      where: { userId },
-    });
+  async getWallet(userId: string): Promise<Wallet> {
+    let wallet = await this.walletModel.findOne({ patientId: userId });
 
     if (!wallet) {
-      wallet = this.walletRepository.create({ userId, balance: 0 });
-      wallet = await this.walletRepository.save(wallet);
+      wallet = new this.walletModel({ patientId: userId, balance: 0 });
+      wallet = await wallet.save();
     }
 
     return wallet;
   }
 
-  async addToWallet(userId: string, amount: number): Promise<WalletEntity> {
-    const wallet = await this.getWallet(userId);
+  async addToWallet(userId: string, amount: number): Promise<Wallet> {
+    let wallet = await this.walletModel.findOne({ patientId: userId });
+
+    if (!wallet) {
+      wallet = new this.walletModel({ patientId: userId, balance: 0 });
+    }
 
     wallet.balance = Number((Number(wallet.balance) + amount).toFixed(2));
-    wallet.transactionCount += 1;
-    wallet.lastTransactionAt = new Date();
 
-    return await this.walletRepository.save(wallet);
+    // Create transaction record
+    const transaction = new this.walletTransactionModel({
+      walletId: wallet._id,
+      transactionType: 'credit',
+      amount,
+      description: 'Funds added to wallet',
+    });
+
+    await transaction.save();
+
+    wallet = await wallet.save();
+    return wallet;
   }
 
-  async deductFromWallet(userId: string, amount: number): Promise<WalletEntity> {
-    const wallet = await this.getWallet(userId);
+  async deductFromWallet(userId: string, amount: number): Promise<Wallet> {
+    let wallet = await this.walletModel.findOne({ patientId: userId });
+
+    if (!wallet) {
+      wallet = new this.walletModel({ patientId: userId, balance: 0 });
+    }
 
     if (Number(wallet.balance) < amount) {
       throw new BadRequestException("Insufficient wallet balance");
     }
 
     wallet.balance = Number((Number(wallet.balance) - amount).toFixed(2));
-    wallet.transactionCount += 1;
-    wallet.lastTransactionAt = new Date();
 
-    return await this.walletRepository.save(wallet);
+    // Create transaction record
+    const transaction = new this.walletTransactionModel({
+      walletId: wallet._id,
+      transactionType: 'debit',
+      amount,
+      description: 'Payment from wallet',
+    });
+
+    await transaction.save();
+
+    wallet = await wallet.save();
+    return wallet;
   }
 
-  async getPaymentHistory(patientId: string): Promise<PaymentEntity[]> {
-    return this.paymentRepository.find({
-      where: { patientId },
-      order: { createdAt: "DESC" },
-    });
+  async getPaymentHistory(patientId: string): Promise<Payment[]> {
+    // First get invoices for this patient
+    const invoices = await this.invoiceModel.find({ patientId }).select('_id').exec();
+    const invoiceIds = invoices.map(invoice => invoice._id);
+
+    // Then get payments for those invoices
+    return this.paymentModel.find({ billId: { $in: invoiceIds } }).sort({ createdAt: -1 }).exec();
   }
 }

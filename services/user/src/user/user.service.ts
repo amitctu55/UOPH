@@ -5,10 +5,10 @@ import {
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 import * as bcrypt from "bcrypt";
-import { UserEntity, UserRole, UserStatus } from "./entities/user.entity";
+import { User, UserDocument, UserRole, UserStatus } from "@libs/shared/src/database/user.model";
 import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from "./dto/user.dto";
 
 @Injectable()
@@ -16,15 +16,15 @@ export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<Omit<UserEntity, "passwordHash">> {
+  async createUser(dto: CreateUserDto): Promise<Omit<UserDocument, "passwordHash">> {
     try {
       // Check if user exists
-      const existingUser = await this.userRepository.findOne({
-        where: { email: dto.email.toLowerCase() },
+      const existingUser = await this.userModel.findOne({
+        email: dto.email.toLowerCase()
       });
 
       if (existingUser) {
@@ -32,17 +32,20 @@ export class UserService {
       }
 
       // Hash password
-      const passwordHash = await bcrypt.hash(dto.password, 10);
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(dto.password, salt);
 
       // Create user
-      const user = this.userRepository.create({
+      const user = new this.userModel({
         ...dto,
         email: dto.email.toLowerCase(),
         passwordHash,
       });
 
-      const savedUser = await this.userRepository.save(user);
-      const { passwordHash: __, ...userWithoutPassword } = savedUser;
+      const savedUser = await user.save();
+
+      // Remove password from return object
+      const { passwordHash: _, ...userWithoutPassword } = savedUser.toObject();
       return userWithoutPassword;
     } catch (error: any) {
       this.logger.error(`Error creating user: ${error.message}`);
@@ -50,25 +53,26 @@ export class UserService {
     }
   }
 
-  async getUserProfile(userId: string): Promise<Omit<UserEntity, "passwordHash">> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId, status: UserStatus.ACTIVE },
+  async getUserProfile(userId: string): Promise<Omit<UserDocument, "passwordHash">> {
+    const user = await this.userModel.findOne({
+      _id: userId,
+      status: UserStatus.ACTIVE
     });
 
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    const { passwordHash: __, ...userWithoutPassword } = user;
+    const { passwordHash: _, ...userWithoutPassword } = user.toObject();
     return userWithoutPassword;
   }
 
   async updateUserProfile(
     userId: string,
     dto: UpdateUserDto
-  ): Promise<Omit<UserEntity, "passwordHash">> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
+  ): Promise<Omit<UserDocument, "passwordHash">> {
+    const user = await this.userModel.findOne({
+      _id: userId
     });
 
     if (!user) {
@@ -76,8 +80,9 @@ export class UserService {
     }
 
     Object.assign(user, dto);
-    const updatedUser = await this.userRepository.save(user);
-    const { passwordHash: __, ...userWithoutPassword } = updatedUser;
+    const updatedUser = await user.save();
+
+    const { passwordHash: _, ...userWithoutPassword } = updatedUser.toObject();
     return userWithoutPassword;
   }
 
@@ -86,7 +91,7 @@ export class UserService {
       throw new BadRequestException("Passwords do not match");
     }
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
@@ -98,114 +103,116 @@ export class UserService {
     }
 
     // Hash new password
-    const newPasswordHash = await bcrypt.hash(dto.newPassword, 10);
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(dto.newPassword, salt);
     user.passwordHash = newPasswordHash;
 
-    await this.userRepository.save(user);
+    await user.save();
     return { message: "Password changed successfully" };
   }
 
-  async getUserByEmail(email: string): Promise<Omit<UserEntity, "passwordHash">> {
-    const user = await this.userRepository.findOne({
-      where: { email: email.toLowerCase() },
+  async getUserByEmail(email: string): Promise<Omit<UserDocument, "passwordHash">> {
+    const user = await this.userModel.findOne({
+      email: email.toLowerCase()
     });
 
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    const { passwordHash: __, ...userWithoutPassword } = user;
+    const { passwordHash: _, ...userWithoutPassword } = user.toObject();
     return userWithoutPassword;
   }
 
-  async getUserByEmailWithPassword(email: string): Promise<UserEntity | null> {
-    return await this.userRepository.findOne({
-      where: { email: email.toLowerCase() },
-      select: ["id", "email", "passwordHash", "role", "firstName", "lastName", "phone", "profileImage", "isMfaEnabled", "mfaSecret", "bio", "preferences", "metadata", "createdAt", "updatedAt", "lastLoginAt", "deletedAt"]
-    });
+  async getUserByEmailWithPassword(email: string): Promise<UserDocument | null> {
+    return await this.userModel.findOne({
+      email: email.toLowerCase()
+    }).select('+passwordHash');
   }
 
   async verifyPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
 
-  async getUsersByRole(role: UserRole): Promise<Omit<UserEntity, "passwordHash">[]> {
-    const users = await this.userRepository.find({
-      where: { role, status: UserStatus.ACTIVE },
+  async getUsersByRole(role: UserRole): Promise<Omit<UserDocument, "passwordHash">[]> {
+    const users = await this.userModel.find({
+      role,
+      status: UserStatus.ACTIVE
     });
 
     return users.map(user => {
-      const { passwordHash: __, ...userWithoutPassword } = user;
+      const { passwordHash: _, ...userWithoutPassword } = user.toObject();
       return userWithoutPassword;
     });
   }
 
   async updateLastLogin(userId: string): Promise<void> {
-    await this.userRepository.update(userId, {
-      lastLoginAt: new Date(),
-    });
+    await this.userModel.updateOne(
+      { _id: userId },
+      { lastLoginAt: new Date() }
+    );
   }
 
   async enableMfa(userId: string, mfaSecret: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     user.isMfaEnabled = true;
     user.mfaSecret = mfaSecret;
-    await this.userRepository.save(user);
+    await user.save();
 
     return { message: "MFA enabled successfully" };
   }
 
   async disableMfa(userId: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     user.isMfaEnabled = false;
     user.mfaSecret = undefined;
-    await this.userRepository.save(user);
+    await user.save();
 
     return { message: "MFA disabled successfully" };
   }
 
   async suspendUser(userId: string, reason: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     user.status = UserStatus.SUSPENDED;
     user.metadata = { ...user.metadata, suspendedReason: reason, suspendedAt: new Date() };
-    await this.userRepository.save(user);
+    await user.save();
 
     return { message: "User suspended successfully" };
   }
 
   async unsuspendUser(userId: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     user.status = UserStatus.ACTIVE;
-    await this.userRepository.save(user);
+    await user.save();
 
     return { message: "User unsuspended successfully" };
   }
 
   async deleteUser(userId: string): Promise<{ message: string }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userModel.findOne({ _id: userId });
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
     user.deletedAt = new Date();
     user.status = UserStatus.INACTIVE;
-    await this.userRepository.save(user);
+    await user.save();
 
     return { message: "User deleted successfully" };
   }

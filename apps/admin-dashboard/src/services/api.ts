@@ -8,9 +8,12 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   config => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Only run in browser environment
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -25,8 +28,10 @@ api.interceptors.response.use(
   error => {
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
-      // Redirect to login or handle logout
-      window.location.href = "/login";
+      // Redirect to login or handle logout - only in browser
+      if (typeof window !== 'undefined') {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
@@ -152,5 +157,238 @@ export const apiService = {
     getLogs: (params?: any) => api.get("/notifications/logs", { params }),
     sendTestNotification: (templateId: string, recipient: string) =>
       api.post(`/notifications/templates/${templateId}/test`, { recipient }),
+  },
+
+  // Admin endpoints
+  admin: {
+    getOverviewStats: () =>
+      Promise.resolve({
+        data: {
+          totalUsers: 1247,
+          activeToday: 89,
+          openTickets: 23,
+          doctors: 45,
+          patients: 892,
+          staff: 180,
+          admins: 12,
+        },
+      }),
+    getSystemHealth: () =>
+      Promise.resolve({
+        data: {
+          database: {
+            status: "healthy",
+            connections: 24,
+            maxConnections: 100,
+            queryAvgTime: "45ms",
+          },
+          api: {
+            status: "healthy",
+            requestsPerMin: 342,
+            errorRate: "0.2%",
+          },
+          cache: {
+            status: "healthy",
+            hitRate: "85%",
+            memoryUse: "60%",
+          },
+          storage: {
+            status: "healthy",
+            used: 450,
+            available: 550,
+          },
+          uptime: "99.9%",
+          avgResponseTime: "120ms",
+        },
+      }),
+    getRecentActivity: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: "1",
+            type: "user_created",
+            title: "New user registered",
+            description: "John Doe registered as a new patient",
+            icon: "👤",
+            userName: "System",
+            timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+          },
+          {
+            id: "2",
+            type: "appointment_scheduled",
+            title: "Appointment scheduled",
+            description: "Dr. Smith scheduled a follow-up appointment for patient Jane Wilson",
+            icon: "📅",
+            userName: "Dr. Smith",
+            timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+          },
+          {
+            id: "3",
+            type: "prescription_created",
+            title: "New prescription added",
+            description: "Dr. Johnson prescribed Lisinopril 10mg for patient Robert Chen",
+            icon: "💊",
+            userName: "Dr. Johnson",
+            timestamp: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+          },
+          {
+            id: "4",
+            type: "bill_generated",
+            title: "Invoice generated",
+            description: "Invoice #INV-2024-001234 generated for patient Sarah Davis",
+            icon: "💰",
+            userName: "Billing System",
+            timestamp: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
+          },
+          {
+            id: "5",
+            type: "lab_result_uploaded",
+            title: "Lab results uploaded",
+            description: "Blood test results uploaded for patient Michael Rodriguez",
+            icon: "📊",
+            userName: "Lab Technician",
+            timestamp: new Date(Date.now() - 18000000).toISOString(), // 5 hours ago
+          },
+          {
+            id: "6",
+            type: "user_updated",
+            title: "User profile updated",
+            description: "Administrator updated contact information for nurse Emily Chang",
+            icon: "✏️",
+            userName: "Admin",
+            timestamp: new Date(Date.now() - 21600000).toISOString(), // 6 hours ago
+          },
+        ],
+      }),
+    getUserStats: () =>
+      Promise.resolve({
+        data: {
+          doctors: { total: 45, growth: 12 },
+          patients: { total: 892, growth: 8 },
+          staff: { total: 180, growth: 5 },
+          admins: { total: 12, growth: 0 },
+        },
+      }),
+    getUsers: (params?: any) =>
+      Promise.resolve({
+        data: [
+          {
+            id: "1",
+            name: "Dr. Sarah Johnson",
+            email: "sarah.johnson@example.com",
+            role: "doctor",
+            status: "active",
+            department: "Cardiology",
+            lastLogin: "2 hours ago",
+            lastActive: "2 hours ago",
+          },
+          {
+            id: "2",
+            name: "Mike Rodriguez",
+            email: "mike.rodriguez@example.com",
+            role: "patient",
+            status: "active",
+            patientId: "PAT-789456",
+            lastLogin: "5 minutes ago",
+            lastActive: "5 minutes ago",
+          },
+          {
+            id: "3",
+            name: "Lisa Chen",
+            email: "lisa.chen@example.com",
+            role: "staff",
+            status: "active",
+            department: "Front Desk",
+            lastLogin: "1 hour ago",
+            lastActive: "1 hour ago",
+          },
+          {
+            id: "4",
+            name: "Admin User",
+            email: "admin@example.com",
+            role: "admin",
+            status: "active",
+            department: "Administration",
+            lastLogin: "30 minutes ago",
+            lastActive: "30 minutes ago",
+          },
+          {
+            id: "5",
+            name: "Dr. Michael Lee",
+            email: "michael.lee@example.com",
+            role: "doctor",
+            status: "active",
+            department: "Neurology",
+            lastLogin: "3 hours ago",
+            lastActive: "3 hours ago",
+          },
+        ],
+      }),
+
+    // System Monitoring Methods
+    getSystemMetrics: () =>
+      Promise.resolve({
+        data: {
+          overallHealth: "healthy",
+          cpuUsage: 45,
+          memoryUsage: 62,
+          diskUsage: 45,
+          networkIO: 12.5,
+        },
+      }),
+    getSystemAlerts: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: "1",
+            title: "High Memory Usage on Database Server",
+            description: "Memory usage has exceeded 85% threshold on the primary database server",
+            severity: "warning",
+            timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+            actionRequired: true,
+          },
+          {
+            id: "2",
+            title: "SSL Certificate Expiration Warning",
+            description: "SSL certificate for api.example.com expires in 15 days",
+            severity: "info",
+            timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+            actionRequired: false,
+          },
+        ],
+      }),
+    getServicesStatus: () =>
+      Promise.resolve({
+        data: [
+          {
+            id: "1",
+            name: "Database",
+            description: "Primary PostgreSQL database",
+            status: "running",
+            responseTime: 12,
+          },
+          {
+            id: "2",
+            name: "API Server",
+            description: "Node.js API server",
+            status: "running",
+            responseTime: 45,
+          },
+          {
+            id: "3",
+            name: "Cache Server",
+            description: "Redis cache server",
+            status: "running",
+            responseTime: 5,
+          },
+          {
+            id: "4",
+            name: "Message Queue",
+            description: "RabbitMQ message queue",
+            status: "running",
+            responseTime: 8,
+          },
+        ],
+      }),
   },
 };

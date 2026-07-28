@@ -1,0 +1,14 @@
+{
+  "id": "session-1784154279823",
+  "startedAt": "2026-07-15T22:24:39.823Z",
+  "cwd": "E:\\UOPH\\services\\auth",
+  "context": {},
+  "metrics": {
+    "edits": 12,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-07-24T19:36:40.597Z",
+  "duration": 767520775
+}

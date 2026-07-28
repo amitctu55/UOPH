@@ -46,7 +46,8 @@
       "Skill(ruflo-metaharness:harness-mint)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(tee /tmp/lines.txt)"
     ]
   },
   "enabledMcpjsonServers": [

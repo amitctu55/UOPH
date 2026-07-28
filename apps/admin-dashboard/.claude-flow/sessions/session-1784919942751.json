@@ -1,0 +1,14 @@
+{
+  "id": "session-1784919942751",
+  "startedAt": "2026-07-24T19:05:42.751Z",
+  "cwd": "E:\\UOPH\\apps\\admin-dashboard",
+  "context": {},
+  "metrics": {
+    "edits": 1,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-07-27T22:19:07.226Z",
+  "duration": 270804475
+}

@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-07-23T22:48:05.412Z",
-  "projectRoot": "E:\\UOPH\\apps\\admin-dashboard",
+  "timestamp": "2026-07-28T11:34:24.579Z",
+  "projectRoot": "/mnt/e/UOPH/apps/admin-dashboard",
   "structure": {
     "hasPackageJson": true,
     "hasTsConfig": true,
     "hasClaudeConfig": false,
     "hasClaudeFlow": true
   },
-  "scannedAt": 1784846885413
+  "scannedAt": 1785238464582
 }

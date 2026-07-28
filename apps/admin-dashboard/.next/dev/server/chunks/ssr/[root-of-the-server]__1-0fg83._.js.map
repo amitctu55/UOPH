@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///E:/UOPH/apps/admin-dashboard/components/ClientRouter.tsx"],"sourcesContent":["'use client';\n\nimport { BrowserRouter } from 'react-router-dom';\nimport type { PropsWithChildren } from 'react';\n\nexport default function ClientRouter({ children }: PropsWithChildren<{ children: React.ReactNode }>) {\n  return <BrowserRouter>{children}</BrowserRouter>;\n}"],"names":["ClientRouter","children"],"mappings":";;;;;AAEA;AAFA;;;AAKe,SAASA,aAAa,EAAEC,QAAQ,EAAoD;IACjG,qBAAO,qKAAC,mNAAa;kBAAEA;;;;;;AACzB"}},
+    {"offset": {"line": 32, "column": 0}, "map": {"version":3,"sources":["file:///E:/UOPH/apps/admin-dashboard/pages/_app.tsx"],"sourcesContent":["import type { AppProps } from 'next/app';\nimport '../src/App.css';\nimport ClientRouter from '../components/ClientRouter';\n\nexport default function App({ Component, pageProps }: AppProps) {\n  return (\n    <ClientRouter>\n      <Component {...pageProps} />\n    </ClientRouter>\n  );\n}\n"],"names":["App","Component","pageProps"],"mappings":";;;;;AAEA;;;;AAEe,SAASA,IAAI,EAAEC,SAAS,EAAEC,SAAS,EAAY;IAC5D,qBACE,qKAAC,6JAAY;kBACX,cAAA,qKAACD;YAAW,GAAGC,SAAS;;;;;;;;;;;AAG9B"}}]
+}

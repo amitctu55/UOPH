@@ -1,0 +1,14 @@
+{
+  "id": "session-1785213643972",
+  "startedAt": "2026-07-28T04:40:43.972Z",
+  "cwd": "/mnt/e/UOPH/apps/admin-dashboard",
+  "context": {},
+  "metrics": {
+    "edits": 7,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-07-28T06:42:46.159Z",
+  "duration": 7322188
+}

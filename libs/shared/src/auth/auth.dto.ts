@@ -2,31 +2,31 @@ import { IsEmail, IsString, MinLength, IsOptional, IsArray } from "class-validat
 
 export class LoginRequest {
   @IsString()
-  username: string;
+  username!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 }
 
 export class RegisterRequest {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
-  username: string;
+  username!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 }
 
 export class JwtPayload {
   @IsString()
-  sub: string;
+  sub!: string;
 
   @IsString()
-  username: string;
+  username!: string;
 
   @IsArray()
   @IsOptional()
