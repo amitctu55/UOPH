@@ -4,7 +4,9 @@ pnpm-lock.yaml
 yarn.lock
 package-lock.json
 .DS_Store
-.env*
+.env
+.env.*
+!.env.example
 *.log
 
 # Build outputs
