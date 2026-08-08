@@ -6,19 +6,29 @@ on:
     tags:
       - 'v*'
 
-env:
-  REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-  REGION: ${{ secrets.AWS_REGION }}
-  REPOSITORY: upsphere-platform
-
 jobs:
+  verify-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build production Docker image (local verify)
+        run: docker build -t upsphere-platform:ci .
+
   build-and-push:
+    needs: verify-docker-image
+    if: ${{ secrets.AWS_ACCOUNT_ID != '' && secrets.AWS_REGION != '' }}
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
       id-token: write
+
+    env:
+      REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      REGION: ${{ secrets.AWS_REGION }}
+      REPOSITORY: upsphere-platform
 
     steps:
       - uses: actions/checkout@v3
@@ -54,13 +64,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Scan image for vulnerabilities (optional)
-        if: false  # Disabling for now, can enable with ECR scanning
-        run: |
-          echo "Image scanning would be configured in ECR repository settings"
-
   integration-tests:
-    needs: build-and-push
+    needs: [verify-docker-image, build-and-push]
+    if: >-
+      always() &&
+      needs.verify-docker-image.result == 'success' &&
+      (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped')
     runs-on: ubuntu-latest
 
     steps:
@@ -77,6 +86,17 @@ jobs:
 
       - name: Run Integration Tests
         run: npm run test:integration
-        env:
-          DOCKER_REGISTRY: ${{ env.REGISTRY }}
-          IMAGE_TAG: ${{ github.sha }}
+
+  require-aws-for-publish:
+    needs: [verify-docker-image, build-and-push, integration-tests]
+    if: >-
+      always() &&
+      needs.verify-docker-image.result == 'success' &&
+      needs.integration-tests.result == 'success' &&
+      needs.build-and-push.result == 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block publish until AWS secrets are configured
+        run: |
+          echo "::error::Configure repository secrets AWS_ACCOUNT_ID and AWS_REGION to push images to ECR and deploy to production."
+          exit 1
