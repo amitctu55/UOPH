@@ -66,10 +66,11 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
+        continue-on-error: true
         with:
           files: ./coverage/lcov.info
           flags: unittests
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   security-scan:
     runs-on: ubuntu-latest
