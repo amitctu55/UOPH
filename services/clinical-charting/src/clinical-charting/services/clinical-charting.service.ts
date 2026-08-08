@@ -7,9 +7,9 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ClinicalChartingEntity, ClinicalDataType } from "./entities/clinical-charting.entity";
-import { CreateClinicalChartingDataDto } from "./dtos/create-clinical-charting.dto";
-import { UpdateClinicalChartingDataDto } from "./dtos/update-clinical-charting.dto";
+import { ClinicalChartingEntity, ClinicalDataType } from "../entities/clinical-charting.entity";
+import { CreateClinicalChartingDataDto } from "../dtos/create-clinical-charting.dto";
+import { UpdateClinicalChartingDataDto } from "../dtos/update-clinical-charting.dto";
 
 @Injectable()
 export class ClinicalChartingService {

@@ -8,8 +8,10 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import * as bcrypt from "bcrypt";
-import { User, UserDocument, UserRole, UserStatus } from "@libs/shared/src/database/user.model";
+import { User, UserDocument, UserRole, UserStatus } from "upchar-shared/dist/database/user.model";
 import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from "./dto/user.dto";
+
+type SafeUser = Omit<User, "passwordHash"> & Record<string, unknown>;
 
 @Injectable()
 export class UserService {
@@ -20,7 +22,12 @@ export class UserService {
     private readonly userModel: Model<UserDocument>
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<Omit<UserDocument, "passwordHash">> {
+  private toSafeUser(user: UserDocument): SafeUser {
+    const { passwordHash: _, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword as SafeUser;
+  }
+
+  async createUser(dto: CreateUserDto): Promise<SafeUser> {
     try {
       // Check if user exists
       const existingUser = await this.userModel.findOne({
@@ -43,17 +50,14 @@ export class UserService {
       });
 
       const savedUser = await user.save();
-
-      // Remove password from return object
-      const { passwordHash: _, ...userWithoutPassword } = savedUser.toObject();
-      return userWithoutPassword;
+      return this.toSafeUser(savedUser);
     } catch (error: any) {
       this.logger.error(`Error creating user: ${error.message}`);
       throw error;
     }
   }
 
-  async getUserProfile(userId: string): Promise<Omit<UserDocument, "passwordHash">> {
+  async getUserProfile(userId: string): Promise<SafeUser> {
     const user = await this.userModel.findOne({
       _id: userId,
       status: UserStatus.ACTIVE,
@@ -63,14 +67,13 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
 
-    const { passwordHash: _, ...userWithoutPassword } = user.toObject();
-    return userWithoutPassword;
+    return this.toSafeUser(user);
   }
 
   async updateUserProfile(
     userId: string,
     dto: UpdateUserDto
-  ): Promise<Omit<UserDocument, "passwordHash">> {
+  ): Promise<SafeUser> {
     const user = await this.userModel.findOne({
       _id: userId,
     });
@@ -81,9 +84,7 @@ export class UserService {
 
     Object.assign(user, dto);
     const updatedUser = await user.save();
-
-    const { passwordHash: _, ...userWithoutPassword } = updatedUser.toObject();
-    return userWithoutPassword;
+    return this.toSafeUser(updatedUser);
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto): Promise<{ message: string }> {
@@ -111,7 +112,7 @@ export class UserService {
     return { message: "Password changed successfully" };
   }
 
-  async getUserByEmail(email: string): Promise<Omit<UserDocument, "passwordHash">> {
+  async getUserByEmail(email: string): Promise<SafeUser> {
     const user = await this.userModel.findOne({
       email: email.toLowerCase(),
     });
@@ -120,8 +121,7 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
 
-    const { passwordHash: _, ...userWithoutPassword } = user.toObject();
-    return userWithoutPassword;
+    return this.toSafeUser(user);
   }
 
   async getUserByEmailWithPassword(email: string): Promise<UserDocument | null> {
@@ -136,16 +136,13 @@ export class UserService {
     return bcrypt.compare(password, hash);
   }
 
-  async getUsersByRole(role: UserRole): Promise<Omit<UserDocument, "passwordHash">[]> {
+  async getUsersByRole(role: UserRole): Promise<SafeUser[]> {
     const users = await this.userModel.find({
       role,
       status: UserStatus.ACTIVE,
     });
 
-    return users.map(user => {
-      const { passwordHash: _, ...userWithoutPassword } = user.toObject();
-      return userWithoutPassword;
-    });
+    return users.map(user => this.toSafeUser(user));
   }
 
   async updateLastLogin(userId: string): Promise<void> {

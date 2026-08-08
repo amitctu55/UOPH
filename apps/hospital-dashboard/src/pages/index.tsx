@@ -152,7 +152,6 @@ function ChatPage() {
         setConversations(mockConversations);
         if (mockConversations.length > 0) {
           setSelectedConversationId(mockConversations[0].id);
-          loadMessages(mockConversations[0].id);
         }
       } catch (error) {
         console.error("Failed to load conversations:", error);

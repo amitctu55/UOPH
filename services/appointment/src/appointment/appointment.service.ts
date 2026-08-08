@@ -5,7 +5,6 @@ import { AppointmentEntity } from "./entities/appointment.entity";
 import { CreateAppointmentDto } from "./dto/create-appointment.dto";
 import { UpdateAppointmentDto } from "./dto/update-appointment.dto";
 import { AppointmentStatusEnum } from "./enums/appointment-status.enum";
-import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class AppointmentService {
@@ -132,22 +131,25 @@ export class AppointmentService {
       throw new BadRequestException("Can only reschedule scheduled appointments");
     }
 
+    const newDate = dto.appointmentDate ?? appointment.appointmentDate;
+    const newTime = dto.appointmentTime ?? appointment.appointmentTime;
+
     // Check new slot availability
     const conflict = await this.appointmentRepository.findOne({
       where: {
         doctorId: appointment.doctorId,
-        appointmentDate: dto.appointmentDate,
-        appointmentTime: dto.appointmentTime,
+        appointmentDate: newDate,
+        appointmentTime: newTime,
         status: AppointmentStatusEnum.SCHEDULED,
       },
     });
 
-    if (conflict) {
+    if (conflict && conflict.id !== appointment.id) {
       throw new BadRequestException("New appointment slot is already booked");
     }
 
-    appointment.appointmentDate = dto.appointmentDate;
-    appointment.appointmentTime = dto.appointmentTime;
+    appointment.appointmentDate = newDate;
+    appointment.appointmentTime = newTime;
     appointment.updatedAt = new Date();
 
     return this.appointmentRepository.save(appointment);
@@ -188,10 +190,9 @@ export class AppointmentService {
   }
 
   /**
-   * Cron job to mark no-show appointments
-   * Runs daily at 11 PM to check for missed appointments
+   * Mark no-show appointments for the current day.
+   * Intended to be triggered by an external scheduler in production.
    */
-  @Cron(CronExpression.EVERY_DAY_AT_11PM)
   async markNoShowAppointments(): Promise<void> {
     this.logger.log("Running no-show appointment check...");
 

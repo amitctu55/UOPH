@@ -6,22 +6,19 @@ import {
   Delete,
   Param,
   Body,
-  UseGuards,
   Request,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
-import { ClinicalChartingService } from "./services/clinical-charting.service";
-import { CreateClinicalChartingDataDto } from "./dtos/create-clinical-charting.dto";
-import { UpdateClinicalChartingDataDto } from "./dtos/update-clinical-charting.dto";
-import { ClinicalDataType } from "./entities/clinical-charting.entity";
-import { JwtGuard } from "../../auth/jwt.guard";
+import { ClinicalChartingService } from "../services/clinical-charting.service";
+import { CreateClinicalChartingDataDto } from "../dtos/create-clinical-charting.dto";
+import { UpdateClinicalChartingDataDto } from "../dtos/update-clinical-charting.dto";
+import { ClinicalDataType } from "../entities/clinical-charting.entity";
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("Clinical Charting")
 @ApiBearerAuth()
-@UseGuards(JwtGuard)
 @Controller("clinical-charting")
 export class ClinicalChartingController {
   constructor(private clinicalChartingService: ClinicalChartingService) {}

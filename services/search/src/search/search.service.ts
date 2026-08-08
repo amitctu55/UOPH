@@ -33,10 +33,8 @@ export class SearchService {
     const searchTerm = `%${query}%`;
     return this.doctorRepo.find({
       where: [
-        { firstName: ILike(searchTerm) },
-        { lastName: ILike(searchTerm) },
-        { specialization: ILike(searchTerm) },
-        { bio: ILike(searchTerm) },
+        { qualifications: ILike(searchTerm) },
+        { experience: ILike(searchTerm) },
       ],
       take: 20,
     });

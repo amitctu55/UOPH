@@ -7,16 +7,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("UserService");
 
-  app.setGlobal(ValidationPipe, {
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  });
-
-  app.setGlobal(ValidationPipe, {
-    whitelist: true,
-    transform: true,
-  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    })
+  );
 
   const config = new DocumentBuilder()
     .setTitle("User Service API")

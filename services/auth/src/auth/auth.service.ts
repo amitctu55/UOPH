@@ -11,7 +11,7 @@ interface AuthTokens {
   refreshToken: string;
 }
 
-type AuthResult = AuthTokens & {
+export type AuthResult = AuthTokens & {
   user: PublicUser;
 };
 

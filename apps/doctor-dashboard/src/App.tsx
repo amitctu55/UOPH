@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from "react-router-dom";
-import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "./store/useAuthStore";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -259,8 +258,8 @@ function AppointmentsPage() {
             Today ({todaysAppointments.length})
           </button>
           <button
-            className={`${activeBarrier === "tomorrow" ? "active" : ""}`}
-            onClick={() => setActiveBarmer("tomorrow")}
+            className={`${activeTab === "tomorrow" ? "active" : ""}`}
+            onClick={() => setActiveTab("tomorrow")}
           >
             Tomorrow ({tomorrowAppointments.length})
           </button>
@@ -1472,14 +1471,23 @@ function SettingsPage() {
     );
   }
 
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.targect;
+  const handleProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
     setProfileForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePreferenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked, type } = e.target;
-    const value = type === "checkbox" ? checked : e.target.value;
+  const handlePreferenceChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, type } = e.target;
+    if (type === "checkbox") {
+      const target = e.target as HTMLInputElement;
+      setPreferencesForm(prev => ({ ...prev, [name]: target.checked }));
+      return;
+    }
+    const { value } = e.target;
     setPreferencesForm(prev => ({ ...prev, [name]: value }));
   };
 
@@ -1726,7 +1734,7 @@ function SettingsPage() {
                       name="address"
                       value={profileForm.address}
                       onChange={handleProfileChange}
-                      rows="3"
+                      rows={3}
                       className="form-input"
                     />
                   </div>
@@ -1917,7 +1925,6 @@ function ChatPage() {
         setConversations(response.data);
         if (response.data.length > 0) {
           setSelectedConversationId(response.data[0].id);
-          loadMessages(response.data[0].id);
         }
       } catch (error) {
         console.error("Failed to load conversations:", error);

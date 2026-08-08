@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import { HospitalEntity } from "./entities/hospital.entity";
 import { CreateHospitalDto } from "./dto/create-hospital.dto";
 
@@ -45,8 +45,13 @@ export class HospitalService {
   /**
    * Get hospitals with optional filtering
    */
-  async getHospitals(city?: string, isVerified?: boolean): Promise<HospitalEntity[]> {
-    const filters: any = {};
+  async getHospitals(
+    skip = 0,
+    take = 100,
+    city?: string,
+    isVerified?: boolean
+  ): Promise<HospitalEntity[]> {
+    const filters: Record<string, unknown> = {};
     if (city) {
       filters.city = city;
     }
@@ -56,6 +61,17 @@ export class HospitalService {
     return this.hospitalRepository.find({
       where: filters,
       order: { name: "ASC" },
+      skip,
+      take,
+    });
+  }
+
+  async searchHospitals(query: string): Promise<HospitalEntity[]> {
+    const searchTerm = `%${query}%`;
+    return this.hospitalRepository.find({
+      where: [{ name: ILike(searchTerm) }, { city: ILike(searchTerm) }],
+      order: { name: "ASC" },
+      take: 50,
     });
   }
 

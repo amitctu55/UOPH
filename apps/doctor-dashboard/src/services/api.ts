@@ -56,6 +56,7 @@ export const apiService = {
   patients: {
     getAll: (params?: any) => api.get("/patients", { params }),
     getById: (id: string) => api.get(`/patients/${id}`),
+    getToday: () => api.get("/patients/today"),
     search: (query: string) => api.get("/patients/search", { params: { q: query } }),
   },
 
@@ -63,6 +64,11 @@ export const apiService = {
   appointments: {
     getAll: (params?: any) => api.get("/appointments", { params }),
     getById: (id: string) => api.get(`/appointments/${id}`),
+    getToday: () => api.get("/appointments/today"),
+    getTomorrow: () => api.get("/appointments/tomorrow"),
+    getThisWeek: () => api.get("/appointments/this-week"),
+    getUpcoming: () => api.get("/appointments/upcoming"),
+    getPast: () => api.get("/appointments/past"),
     create: (data: any) => api.post("/appointments", data),
     update: (id: string, data: any) => api.put(`/appointments/${id}`, data),
     cancel: (id: string) => api.delete(`/appointments/${id}`),
@@ -74,6 +80,7 @@ export const apiService = {
   medicalRecords: {
     getAll: (params?: any) => api.get("/medical-records", { params }),
     getById: (id: string) => api.get(`/medical-records/${id}`),
+    getPending: () => api.get("/medical-records/pending"),
     create: (data: any) => api.post("/medical-records", data),
     update: (id: string, data: any) => api.put(`/medical-records/${id}`, data),
     delete: (id: string) => api.delete(`/medical-records/${id}`),
@@ -93,6 +100,9 @@ export const apiService = {
   consultations: {
     getAll: (params?: any) => api.get("/consultations", { params }),
     getById: (id: string) => api.get(`/consultations/${id}`),
+    getToday: () => api.get("/consultations/today"),
+    getUpcoming: () => api.get("/consultations/upcoming"),
+    getPast: () => api.get("/consultations/past"),
     start: (id: string) => api.post(`/consultations/${id}/start`),
     end: (id: string) => api.post(`/consultations/${id}/end`),
     getWaitingRoom: () => api.get("/consultations/waiting-room"),
@@ -101,6 +111,7 @@ export const apiService = {
   // Notification endpoints
   notifications: {
     getAll: (params?: any) => api.get("/notifications", { params }),
+    getUnreadCount: () => api.get("/notifications/unread-count"),
     markAsRead: (id: string) => api.put(`/notifications/${id}/read`),
     markAllAsRead: () => api.put("/notifications/read-all"),
     delete: (id: string) => api.delete(`/notifications/${id}`),
@@ -109,8 +120,20 @@ export const apiService = {
   // Chat endpoints
   chat: {
     getConversations: () => api.get("/chat/conversations"),
+    getUnreadCount: () => api.get("/chat/unread-count"),
     getMessages: (conferenceId: string) => api.get(`/chat/conversations/${conferenceId}/messages`),
     sendMessage: (conferenceId: string, content: string) =>
       api.post(`/chat/conversations/${conferenceId}/messages`, { content }),
+  },
+
+  pharmacy: {
+    getPrescriptions: (params?: any) => api.get("/prescriptions", { params }),
+  },
+
+  users: {
+    getProfile: () => api.get("/users/profile"),
+    getPreferences: () => api.get("/users/preferences"),
+    updateProfile: (data: unknown) => api.put("/users/profile", data),
+    updatePreferences: (data: unknown) => api.put("/users/preferences", data),
   },
 };

@@ -47,6 +47,16 @@ export const apiService = {
   // Hospital endpoints
   hospital: {
     getOverview: () => api.get("/hospital/overview"),
+    getStats: () => api.get("/hospital/overview"),
+    getTodaysPatients: () => api.get("/hospital/patients/today"),
+    getBedAvailability: () => api.get("/hospital/beds/availability"),
+    getPendingAdmissions: () => api.get("/hospital/admissions/pending"),
+    getRecentDischarges: () => api.get("/hospital/discharges/recent"),
+    getAllPatients: (params?: unknown) => api.get("/hospital/patients", { params }),
+    getDetailedBedStatus: () => api.get("/hospital/beds/status"),
+    getERStats: () => api.get("/hospital/er/stats"),
+    getERPatients: () => api.get("/hospital/er/patients"),
+    getAmbulanceStatus: () => api.get("/hospital/ambulance/status"),
     getFacilities: (params?: any) => api.get("/hospital/facilities", { params }),
     updateFacility: (id: string, data: any) => api.put(`/hospital/facilities/${id}`, data),
   },

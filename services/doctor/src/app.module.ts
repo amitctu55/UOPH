@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { HealthModule } from "@nestjs/terminus";
+import { TerminusModule } from "@nestjs/terminus";
 import { DoctorModule } from "./doctor/doctor.module";
 
 @Module({
@@ -20,7 +20,7 @@ import { DoctorModule } from "./doctor/doctor.module";
       entities: ["src/**/*.entity.ts"],
       synchronize: false,
     }),
-    HealthModule,
+    TerminusModule,
     DoctorModule,
   ],
 })

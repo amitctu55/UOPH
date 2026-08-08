@@ -1,9 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from "react-router-dom";
-
-// @ts-ignore: allow CSS side-effect import in this file
-import "./App.css";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "./store/useAuthStore";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from "react-router-dom";
-import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "./store/useAuthStore";
 import { useQuery } from "@tanstack/react-query";
@@ -245,7 +244,7 @@ function PatientManagementPage() {
       if (sortBy === "name") {
         return a.name.localeCompare(b.name);
       } else if (sortBy === "date") {
-        return new Date(b.admissionDate) - new Date(a.admissionDate);
+        return new Date(b.admissionDate).getTime() - new Date(a.admissionDate).getTime();
       } else if (sortBy === "room") {
         return a.room.localeCompare(b.room);
       }
@@ -818,8 +817,7 @@ function ReportsPage() {
     try {
       // In a real app, this would call an API
       // For now, we'll simulate with mock data
-      const mockData =
-        {
+      const reports = {
           daily: {
             today: {
               admissions: 24,
@@ -877,7 +875,8 @@ function ReportsPage() {
               roi: 14.2,
             },
           },
-        }[reportType][dateRange] || {};
+        };
+      const mockData = reports[reportType]?.[dateRange] ?? {};
 
       setReportData(mockData);
     } catch (error) {
@@ -967,7 +966,7 @@ function ReportsPage() {
                             key.includes("expenses")
                           ? `$${value.toLocaleString()}`
                           : value.toLocaleString()
-                      : value}
+                      : String(value)}
                   </div>
                 </div>
               ))}
@@ -1053,7 +1052,7 @@ function SettingsPage() {
                 <label htmlFor="address">Address:</label>
                 <textarea
                   id="address"
-                  rows="3"
+                  rows={3}
                   defaultValue="123 Medical Center Drive\nHealthcare City, HC 12345"
                   className="form-input"
                 />

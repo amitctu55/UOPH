@@ -45,7 +45,9 @@ export class MedicalRecordService {
 
       return saved;
     } catch (error) {
-      this.logger.error(`Error uploading record: ${error.message}`);
+      this.logger.error(
+        `Error uploading record: ${error instanceof Error ? error.message : String(error)}`
+      );
       throw error;
     }
   }

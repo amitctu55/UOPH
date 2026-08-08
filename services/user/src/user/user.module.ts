@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "@libs/shared/src/database/user.model";
+import { UserSchema } from "upchar-shared/dist/database/user.model";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
 

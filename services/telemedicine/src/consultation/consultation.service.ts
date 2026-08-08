@@ -23,7 +23,8 @@ export class ConsultationService {
       const consultation = this.consultationRepository.create(dto);
       return await this.consultationRepository.save(consultation);
     } catch (error) {
-      this.logger.error(`Error creating consultation: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error creating consultation: ${message}`);
       throw error;
     }
   }
@@ -97,8 +98,12 @@ export class ConsultationService {
     consultation.status = ConsultationStatus.COMPLETED;
     consultation.endedAt = new Date();
     consultation.notes = dto.notes;
-    consultation.recordingUrl = dto.recordingUrl;
-    consultation.vitals = dto.vitals;
+    if (dto.recordingUrl) {
+      consultation.recordingUrl = dto.recordingUrl;
+    }
+    if (dto.vitals) {
+      consultation.vitals = dto.vitals;
+    }
 
     if (consultation.startedAt) {
       const durationMs = consultation.endedAt.getTime() - consultation.startedAt.getTime();

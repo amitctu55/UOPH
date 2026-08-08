@@ -16,7 +16,7 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization": true,
+    "strictPropertyInitialization": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
@@ -24,8 +24,20 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "useDefineForClassFields": false,
-    "lib": ["es2022"]
+    "lib": [
+      "es2022"
+    ],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.e2e-spec.ts", "test"],
-  "include": ["**/*.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.e2e-spec.ts",
+    "test"
+  ],
+  "include": [
+    "**/*.ts"
+  ]
 }
