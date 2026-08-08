@@ -1,8 +1,15 @@
 import { ConfigService } from "@nestjs/config";
 import { Logger } from "@nestjs/common";
-import mongoose from "mongoose";
+import mongoose, { ConnectOptions } from "mongoose";
 
 const logger = new Logger("MongoBootstrap");
+
+/** Atlas-recommended Stable API options from MongoDB onboarding snippet. */
+export const atlasClientOptions: ConnectOptions = {
+  serverApi: { version: "1", strict: true, deprecationErrors: true },
+  serverSelectionTimeoutMS: 15_000,
+  family: 4,
+};
 
 let memoryServer: { getUri: (dbName?: string) => string; stop: () => Promise<boolean> } | null =
   null;
@@ -11,14 +18,20 @@ function redactUri(uri: string): string {
   return uri.replace(/\/\/([^@/]+)@/, "//***@");
 }
 
-async function canConnect(uri: string, timeoutMs = 12_000): Promise<boolean> {
+export function isAtlasUri(uri: string): boolean {
+  return /mongodb\+srv:\/\//i.test(uri) || /\.mongodb\.net/i.test(uri);
+}
+
+async function canConnect(uri: string, timeoutMs = 15_000): Promise<boolean> {
   try {
-    const conn = await mongoose.createConnection(uri, {
+    const options: ConnectOptions = {
+      ...(isAtlasUri(uri) ? atlasClientOptions : {}),
       serverSelectionTimeoutMS: timeoutMs,
       connectTimeoutMS: timeoutMs,
       family: 4,
-    }).asPromise();
-    await conn.db?.command({ ping: 1 });
+    };
+    const conn = await mongoose.createConnection(uri, options).asPromise();
+    await conn.db?.admin().command({ ping: 1 });
     await conn.close();
     return true;
   } catch (err) {

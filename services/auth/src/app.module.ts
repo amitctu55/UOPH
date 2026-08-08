@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
 import { HealthModule } from "./health/health.module";
-import { resolveMongoUri } from "./database/mongo.bootstrap";
+import { atlasClientOptions, isAtlasUri, resolveMongoUri } from "./database/mongo.bootstrap";
 
 @Module({
   imports: [
@@ -17,7 +17,8 @@ import { resolveMongoUri } from "./database/mongo.bootstrap";
         const uri = await resolveMongoUri(config);
         return {
           uri,
-          serverSelectionTimeoutMS: 10_000,
+          ...(isAtlasUri(uri) ? atlasClientOptions : {}),
+          serverSelectionTimeoutMS: 15_000,
         };
       },
     }),
