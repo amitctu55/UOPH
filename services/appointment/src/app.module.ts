@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppointmentController } from "./appointment/appointment.controller";
 import { AppointmentService } from "./appointment/appointment.service";
 import { AppointmentEntity } from "./appointment/entities/appointment.entity";
 import { HealthModule } from "./health/health.module";
+import { JwtGuard } from "./common/guards/jwt.guard";
 
 @Module({
   imports: [
@@ -25,10 +25,9 @@ import { HealthModule } from "./health/health.module";
       logging: process.env.NODE_ENV === "development",
     }),
     TypeOrmModule.forFeature([AppointmentEntity]),
-    ScheduleModule.forRoot(),
     HealthModule,
   ],
   controllers: [AppointmentController],
-  providers: [AppointmentService],
+  providers: [AppointmentService, JwtGuard],
 })
 export class AppModule {}

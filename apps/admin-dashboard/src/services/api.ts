@@ -9,7 +9,7 @@ const api = axios.create({
 api.interceptors.request.use(
   config => {
     // Only run in browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -29,7 +29,7 @@ api.interceptors.response.use(
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       // Redirect to login or handle logout - only in browser
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
     }

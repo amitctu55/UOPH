@@ -57,16 +57,13 @@ export class HospitalController {
   @ApiQuery({ name: "take", required: false, description: "Number of records to take" })
   async getHospitals(
     @Query("city") city?: string,
-    @Query("isVerified") isVerified?: boolean,
+    @Query("isVerified") isVerifiedRaw?: string,
     @Query("skip") skip: number = 0,
     @Query("take") take: number = 100
   ): Promise<HospitalEntity[]> {
-    return this.hospitalService.getHospitals(
-      skip,
-      Number(take),
-      city,
-      isVerified === "true" ? true : isVerified === "false" ? false : undefined
-    );
+    const isVerified =
+      isVerifiedRaw === "true" ? true : isVerifiedRaw === "false" ? false : undefined;
+    return this.hospitalService.getHospitals(skip, Number(take), city, isVerified);
   }
 
   /**

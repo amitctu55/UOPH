@@ -1,5 +1,7 @@
 import { Controller, Get, Query, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { HospitalEntity } from "../../../hospital/src/hospital/entities/hospital.entity";
+import { DoctorEntity } from "../../../doctor/src/doctor/entities/doctor.entity";
 import { SearchService } from "./search.service";
 
 @ApiTags("Search")
@@ -36,7 +38,10 @@ export class SearchController {
   @ApiOperation({ summary: "Search across hospitals and doctors" })
   @ApiQuery({ name: "q", required: true, description: "Search query" })
   @ApiResponse({ status: 200, description: "Search results" })
-  async searchAll(@Query("q") query: string): Promise<any[]> {
+  async searchAll(@Query("q") query: string): Promise<{
+    hospitals: HospitalEntity[];
+    doctors: DoctorEntity[];
+  }> {
     return this.searchService.searchAll(query);
   }
 }

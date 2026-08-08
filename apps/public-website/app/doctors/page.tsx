@@ -39,7 +39,7 @@ export default function DoctorsPage() {
 
       <section className="section">
         <div className="grid-cards">
-          {doctors.map((doc) => (
+          {doctors.map(doc => (
             <article key={doc.name} className="soft-panel">
               <h3>{doc.name}</h3>
               <p style={{ color: "var(--sea)", fontWeight: 600, marginBottom: "0.5rem" }}>

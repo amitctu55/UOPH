@@ -49,11 +49,11 @@ export function SiteFooter() {
           </p>
         </div>
 
-        {columns.map((col) => (
+        {columns.map(col => (
           <div key={col.title} className="site-footer__col">
             <h2>{col.title}</h2>
             <ul>
-              {col.links.map((link) => (
+              {col.links.map(link => (
                 <li key={link.href}>
                   <Link href={link.href}>{link.label}</Link>
                 </li>

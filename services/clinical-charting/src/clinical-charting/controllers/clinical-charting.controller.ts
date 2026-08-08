@@ -6,31 +6,22 @@ import {
   Delete,
   Param,
   Body,
-  UseGuards,
   Request,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
-import { ClinicalChartingService } from "./services/clinical-charting.service";
-import {
-  CreateClinicalChartingDataDto,
-} from "./dtos/create-clinical-charting.dto";
-import {
-  UpdateClinicalChartingDataDto,
-} from "./dtos/update-clinical-charting.dto";
-import { ClinicalDataType } from "./entities/clinical-charting.entity";
-import { JwtGuard } from "../../auth/jwt.guard";
+import { ClinicalChartingService } from "../services/clinical-charting.service";
+import { CreateClinicalChartingDataDto } from "../dtos/create-clinical-charting.dto";
+import { UpdateClinicalChartingDataDto } from "../dtos/update-clinical-charting.dto";
+import { ClinicalDataType } from "../entities/clinical-charting.entity";
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("Clinical Charting")
 @ApiBearerAuth()
-@UseGuards(JwtGuard)
 @Controller("clinical-charting")
 export class ClinicalChartingController {
-  constructor(
-    private clinicalChartingService: ClinicalChartingService,
-  ) {}
+  constructor(private clinicalChartingService: ClinicalChartingService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -42,16 +33,14 @@ export class ClinicalChartingController {
   @ApiResponse({ status: 400, description: "Invalid input" })
   async createClinicalData(
     @Body() createClinicalDataDto: CreateClinicalChartingDataDto,
-    @Request() req,
+    @Request() req
   ) {
     // In a real system, you might want to verify the user has permission
     // to create data for this patient (e.g., they are the patient's provider)
     // For now, we'll associate the request user as the provider
     createClinicalDataDto.providerId = req.user.userId;
 
-    return this.clinicalChartingService.createClincalChartingData(
-      createClinicalDataDto,
-    );
+    return this.clinicalChartingService.createClincalChartingData(createClinicalDataDto);
   }
 
   @Get(":id")
@@ -61,14 +50,8 @@ export class ClinicalChartingController {
     description: "Clinical data retrieved successfully",
   })
   @ApiResponse({ status: 404, description: "Clinical data not found" })
-  async getClinicalDataById(
-    @Param("id", ParseUUIDPipe) id: string,
-    @Request() req,
-  ) {
-    return this.clinicalChartingService.getClinicalDataById(
-      id,
-      req.user.userId,
-    );
+  async getClinicalDataById(@Param("id", ParseUUIDPipe) id: string, @Request() req) {
+    return this.clinicalChartingService.getClinicalDataById(id, req.user.userId);
   }
 
   @Get("patient/:patientId")
@@ -80,12 +63,9 @@ export class ClinicalChartingController {
   @ApiResponse({ status: 403, description: "Access denied" })
   async getClinicalDataByPatientId(
     @Param("patientId", ParseUUIDPipe) patientId: string,
-    @Request() req,
+    @Request() req
   ) {
-    return this.clinicalChartingService.getClinicalDataByPatientId(
-      patientId,
-      req.user.userId,
-    );
+    return this.clinicalChartingService.getClinicalDataByPatientId(patientId, req.user.userId);
   }
 
   @Get("patient/:patientId/type/:type")
@@ -98,13 +78,9 @@ export class ClinicalChartingController {
   async getClinicalDataByType(
     @Param("patientId", ParseUUIDPipe) patientId: string,
     @Param("type") type: ClinicalDataType,
-    @Request() req,
+    @Request() req
   ) {
-    return this.clinicalChartingService.getClinicalDataByType(
-      patientId,
-      type,
-      req.user.userId,
-    );
+    return this.clinicalChartingService.getClinicalDataByType(patientId, type, req.user.userId);
   }
 
   @Put(":id")
@@ -118,12 +94,12 @@ export class ClinicalChartingController {
   async updateClinicalData(
     @Param("id", ParseUUIDPipe) id: string,
     @Body() updateClinicalDataDto: UpdateClinicalChartingDataDto,
-    @Request() req,
+    @Request() req
   ) {
     return this.clinicalChartingService.updateClinicalData(
       id,
       updateClinicalDataDto,
-      req.user.userId,
+      req.user.userId
     );
   }
 
@@ -136,13 +112,7 @@ export class ClinicalChartingController {
   })
   @ApiResponse({ status: 404, description: "Clinical data not found" })
   @ApiResponse({ status: 403, description: "Access denied" })
-  async deactivateClinicalData(
-    @Param("id", ParseUUIDPipe) id: string,
-    @Request() req,
-  ) {
-    return this.clinicalChartingService.deactivateClinicalData(
-      id,
-      req.user.userId,
-    );
+  async deactivateClinicalData(@Param("id", ParseUUIDPipe) id: string, @Request() req) {
+    return this.clinicalChartingService.deactivateClinicalData(id, req.user.userId);
   }
 }

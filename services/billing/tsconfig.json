@@ -2,9 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "Node16",
-    "lib": [
-      "es2020"
-    ],
+    "lib": ["es2020"],
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
@@ -20,15 +18,10 @@
       "@services/*": ["../*"],
       "@libs/*": ["../../libs/*"],
       "@mobile/*": ["../../mobile/*"]
-    }
+    },
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test",
-    "spec",
-    "acceptance",
-    "e2e",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["node_modules", "dist", "test", "spec", "acceptance", "e2e", "**/*.spec.ts"]
 }

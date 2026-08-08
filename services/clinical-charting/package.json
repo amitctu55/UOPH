@@ -62,18 +62,9 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|s)"
+      "**/*.(t|j)s"
     ],
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "testMatch": [
-      "**/?(*/)+(*.)ts"
-    ],
-    "snapshotFormat": {
-      "escapeString": false,
-      "propagateEscape": false
-    }
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   }
 }

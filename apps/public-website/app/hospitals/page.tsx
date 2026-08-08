@@ -34,12 +34,22 @@ export default function HospitalsPage() {
 
       <section className="section">
         <div className="grid-cards cols-3">
-          {hospitals.map((h) => (
+          {hospitals.map(h => (
             <article key={h.name} className="soft-panel">
               <h3>{h.name}</h3>
-              <p style={{ color: "var(--sea)", fontWeight: 600, marginBottom: "0.5rem" }}>{h.city}</p>
+              <p style={{ color: "var(--sea)", fontWeight: 600, marginBottom: "0.5rem" }}>
+                {h.city}
+              </p>
               <p>{h.focus}</p>
-              <Link href="/book" style={{ display: "inline-block", marginTop: "1rem", color: "var(--sea)", fontWeight: 600 }}>
+              <Link
+                href="/book"
+                style={{
+                  display: "inline-block",
+                  marginTop: "1rem",
+                  color: "var(--sea)",
+                  fontWeight: 600,
+                }}
+              >
                 Book at this facility →
               </Link>
             </article>

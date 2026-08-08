@@ -15,7 +15,9 @@ export default function ForgotPasswordPage() {
     <main className="auth-shell">
       <p className="eyebrow">Account</p>
       <h1>Reset your password</h1>
-      <p style={{ color: "var(--ink-soft)" }}>Enter the email associated with your UPCHAR account.</p>
+      <p style={{ color: "var(--ink-soft)" }}>
+        Enter the email associated with your UPCHAR account.
+      </p>
       <form className="form-stack soft-panel" style={{ marginTop: "1.5rem" }} onSubmit={onSubmit}>
         <label>
           Email

@@ -1,25 +1,25 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import * as bcrypt from 'bcrypt';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import * as bcrypt from "bcrypt";
 
 export enum UserRole {
-  PATIENT = 'patient',
-  DOCTOR = 'doctor',
-  HOSPITAL_ADMIN = 'hospital_admin',
-  SYSTEM_ADMIN = 'system_admin',
+  PATIENT = "patient",
+  DOCTOR = "doctor",
+  HOSPITAL_ADMIN = "hospital_admin",
+  SYSTEM_ADMIN = "system_admin",
 }
 
 export enum UserStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  SUSPENDED = 'suspended',
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+  SUSPENDED = "suspended",
 }
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   timestamps: true,
-  collection: 'users',
+  collection: "users",
 })
 export class User {
   @Prop({ type: String, required: true, unique: true, lowercase: true, trim: true })
@@ -52,14 +52,14 @@ export class User {
   @Prop({
     type: String,
     enum: UserRole,
-    default: UserRole.PATIENT
+    default: UserRole.PATIENT,
   })
   role!: UserRole;
 
   @Prop({
     type: String,
     enum: UserStatus,
-    default: UserStatus.ACTIVE
+    default: UserStatus.ACTIVE,
   })
   status!: UserStatus;
 
@@ -80,31 +80,31 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Hash password before saving
-UserSchema.pre('save', async function() {
+UserSchema.pre("save", async function () {
   const user = this as UserDocument;
   // Only hash the password if it has been set (via the virtual setter)
-  if (!user.get('password')) {
+  if (!user.get("password")) {
     return;
   }
 
   const salt = await bcrypt.genSalt(10);
   // Hash the plain password from the virtual getter
-  user.passwordHash = await bcrypt.hash(user.get('password') as string, salt);
+  user.passwordHash = await bcrypt.hash(user.get("password") as string, salt);
 });
 
 // Method to compare password
-UserSchema.methods.comparePassword = function(candidatePassword: string): Promise<boolean> {
+UserSchema.methods.comparePassword = function (candidatePassword: string): Promise<boolean> {
   const user = this as UserDocument;
   return bcrypt.compare(candidatePassword, user.passwordHash);
 };
 
 // Virtual for password (write-only)
-UserSchema.virtual('password')
-  .set(function(this: UserDocument, value: string) {
+UserSchema.virtual("password")
+  .set(function (this: UserDocument, value: string) {
     // We need to use any here to avoid TypeScript errors with dynamic properties
     (this as any)._password = value;
   })
-  .get(function() {
+  .get(function () {
     // We need to use any here to avoid TypeScript errors with dynamic properties
     return (this as any)._password;
   });
@@ -115,20 +115,20 @@ UserSchema.index({ role: 1 });
 UserSchema.index({ status: 1 });
 
 // Configure toJSON and toObject to remove passwordHash and __v
-UserSchema.set('toJSON', {
+UserSchema.set("toJSON", {
   virtuals: true,
-  transform: function(_doc, ret) {
+  transform: function (_doc, ret) {
     // Create a new object without the fields we don't want
     const { passwordHash, __v, ...result } = ret;
     return result;
-  }
+  },
 });
 
-UserSchema.set('toObject', {
+UserSchema.set("toObject", {
   virtuals: true,
-  transform: function(_doc, ret) {
+  transform: function (_doc, ret) {
     // Create a new object without the fields we don't want
     const { passwordHash, __v, ...result } = ret;
     return result;
-  }
+  },
 });

@@ -1,4 +1,4 @@
-import { IsDate, IsTimeString, IsOptional } from "class-validator";
+import { IsDate, IsString, IsOptional, Matches } from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -10,7 +10,8 @@ export class UpdateAppointmentDto {
   appointmentDate?: Date;
 
   @ApiProperty({ description: "New appointment time", required: false })
-  @IsTimeString()
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
   @IsOptional()
   appointmentTime?: string;
 }

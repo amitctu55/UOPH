@@ -73,14 +73,14 @@ export async function resolveMongoUri(config: ConfigService): Promise<string> {
   if (!allowFallback) {
     throw new Error(
       "Configured MONGODB_URI is unreachable and ALLOW_MEMORY_FALLBACK=false. " +
-        "Check Atlas Network Access (0.0.0.0/0 Active) and that the cluster is Running.",
+        "Check Atlas Network Access (0.0.0.0/0 Active) and that the cluster is Running."
     );
   }
 
   const uri = await startMemoryMongo();
   logger.error(
     "Configured MongoDB unreachable (often Atlas IP allowlist). " +
-      `Falling back to embedded MongoDB for this session: ${uri}`,
+      `Falling back to embedded MongoDB for this session: ${uri}`
   );
   return uri;
 }

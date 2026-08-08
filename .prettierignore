@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+coverage
+.next
+.claude-flow
+*.min.js
+package-lock.json
+ruvector.db
+tsconfig.tsbuildinfo

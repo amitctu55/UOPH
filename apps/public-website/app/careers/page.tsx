@@ -22,8 +22,16 @@ export default function CareersPage() {
       />
       <section className="section">
         <ul className="list-clean">
-          {roles.map((role) => (
-            <li key={role.title} style={{ display: "flex", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+          {roles.map(role => (
+            <li
+              key={role.title}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "1rem",
+                flexWrap: "wrap",
+              }}
+            >
               <div>
                 <strong>{role.title}</strong>
                 <div style={{ color: "var(--ink-soft)" }}>{role.loc}</div>

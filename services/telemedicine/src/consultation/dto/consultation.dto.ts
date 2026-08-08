@@ -1,4 +1,4 @@
-import { IsUUID, IsString, IsEnum, IsOptional, IsNumber, IsDate } from "class-validator";
+import { IsUUID, IsString, IsEnum, IsOptional, IsNumber, IsDate, IsBoolean } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { ConsultationType } from "../entities/consultation.entity";
 import { Type } from "class-transformer";

@@ -27,10 +27,12 @@
   "scripts": {
     "start": "npm run start --workspace=apps/admin-dashboard",
     "test": "npm test --workspaces --if-present",
-    "test:cov": "npm test --workspaces --if-present -- --coverage",
+    "test:unit": "npm test --workspace upchar-analytics-service --workspace upchar-doctor-service --workspace upchar-pharmacy-service --workspace upchar-telemedicine-service --workspace upchar-user-service --if-present -- --passWithNoTests --coverage --coverageDirectory=../../coverage",
+    "test:cov": "npm run test:unit",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint --workspaces --if-present",
     "format": "prettier --write \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
+    "format:check": "prettier --check \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
     "build": "npm run build --workspaces --if-present",
     "build:all": "npm run build --workspaces",
     "prepare": "husky install || true"

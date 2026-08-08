@@ -1,12 +1,4 @@
-import {
-  IsUUID,
-  IsDate,
-  IsTimeString,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from "class-validator";
+import { IsUUID, IsDate, IsString, IsEnum, IsOptional, MaxLength, Matches } from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { AppointmentTypeEnum } from "../enums/appointment-type.enum";
@@ -31,7 +23,8 @@ export class CreateAppointmentDto {
   appointmentDate: Date;
 
   @ApiProperty({ description: "Appointment time (HH:mm)" })
-  @IsTimeString()
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
   appointmentTime: string;
 
   @ApiProperty({ description: "Duration in minutes", default: 30 })

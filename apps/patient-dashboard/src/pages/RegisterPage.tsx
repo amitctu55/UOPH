@@ -107,7 +107,7 @@ function RegisterPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              minLength="6"
+              minLength={6}
               className="form-input"
             />
           </div>

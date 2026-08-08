@@ -13,7 +13,12 @@ import { BillingService } from "./billing.service";
 import { CreateInvoiceDto } from "./dto/create-invoice.dto";
 import { UpdateInvoiceDto } from "./dto/update-invoice.dto";
 import { ProcessPaymentDto } from "./dto/process-payment.dto";
-import { Invoice, Payment, Wallet, WalletTransaction } from "../../../../libs/shared/src/database/billing.model";
+import {
+  Invoice,
+  Payment,
+  Wallet,
+  WalletTransaction,
+} from "../../../../libs/shared/src/database/billing.model";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 
 @ApiTags("billing")
@@ -86,7 +91,10 @@ export class BillingController {
   @ApiOperation({ summary: "Add funds to wallet" })
   @ApiResponse({ status: 200, description: "Funds added successfully" })
   @ApiBody({ schema: { properties: { amount: { type: "number" } } } })
-  async addToWallet(@Param("userId") userId: string, @Body("amount") amount: number): Promise<Wallet> {
+  async addToWallet(
+    @Param("userId") userId: string,
+    @Body("amount") amount: number
+  ): Promise<Wallet> {
     return this.billingService.addToWallet(userId, amount);
   }
 

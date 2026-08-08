@@ -16,7 +16,7 @@ export enum UserStatus {
 
 export type UserDocument = HydratedDocument<User>;
 
-export type PublicUser = {
+export interface PublicUser {
   id: string;
   email: string;
   firstName: string;
@@ -28,7 +28,7 @@ export type PublicUser = {
   createdAt?: Date;
   updatedAt?: Date;
   lastLoginAt?: Date;
-};
+}
 
 @Schema({ timestamps: true, collection: "users" })
 export class User {

@@ -32,12 +32,7 @@ export class SearchService {
   async searchDoctors(query: string): Promise<DoctorEntity[]> {
     const searchTerm = `%${query}%`;
     return this.doctorRepo.find({
-      where: [
-        { firstName: ILike(searchTerm) },
-        { lastName: ILike(searchTerm) },
-        { specialization: ILike(searchTerm) },
-        { bio: ILike(searchTerm) },
-      ],
+      where: [{ qualifications: ILike(searchTerm) }, { experience: ILike(searchTerm) }],
       take: 20,
     });
   }

@@ -2,6 +2,15 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "../services/api";
 
+type MedicalRecord = {
+  id: string;
+  title: string;
+  type: string;
+  createdAt: string;
+  description?: string;
+  provider?: string;
+};
+
 function MedicalRecordsPage() {
   const {
     data: medicalRecords = [],
@@ -52,7 +61,7 @@ function MedicalRecordsPage() {
 
         {medicalRecords.length > 0 ? (
           <div className="records-list">
-            {medicalRecords.map(record => (
+            {medicalRecords.map((record: MedicalRecord) => (
               <div key={record.id} className="record-card">
                 <div className="record-info">
                   <h3>{record.title}</h3>
@@ -104,15 +113,15 @@ function MedicalRecordsPage() {
   );
 }
 
-const viewRecordDetails = recordId => {
+const viewRecordDetails = (recordId: string) => {
   alert(`View details for medical record ${recordId} would go here`);
 };
 
-const shareRecord = recordId => {
+const shareRecord = (recordId: string) => {
   alert(`Share functionality for medical record ${recordId} would go here`);
 };
 
-const downloadRecord = recordId => {
+const downloadRecord = (recordId: string) => {
   alert(`Download functionality for medical record ${recordId} would go here`);
 };
 

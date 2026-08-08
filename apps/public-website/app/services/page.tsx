@@ -51,11 +51,13 @@ export default function ServicesPage() {
 
       <section className="section">
         <div className="grid-cards cols-3">
-          {services.map((service) => (
+          {services.map(service => (
             <Link key={service.href} href={service.href} className="soft-panel">
               <h3>{service.title}</h3>
               <p>{service.body}</p>
-              <p style={{ marginTop: "0.9rem", color: "var(--sea)", fontWeight: 600 }}>Learn more →</p>
+              <p style={{ marginTop: "0.9rem", color: "var(--sea)", fontWeight: 600 }}>
+                Learn more →
+              </p>
             </Link>
           ))}
         </div>

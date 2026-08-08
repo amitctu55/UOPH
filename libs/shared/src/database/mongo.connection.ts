@@ -1,9 +1,12 @@
-import { MongoClient, Db, Collection } from 'mongodb';
+import { MongoClient, Db, Collection } from "mongodb";
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
 
-export async function connectToDatabase(uri: string, dbName: string): Promise<{ client: MongoClient; db: Db }> {
+export async function connectToDatabase(
+  uri: string,
+  dbName: string
+): Promise<{ client: MongoClient; db: Db }> {
   // If we have a cached connection, use it
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
@@ -24,7 +27,7 @@ export async function connectToDatabase(uri: string, dbName: string): Promise<{ 
 
 export async function getCollection(collectionName: string): Promise<Collection> {
   if (!cachedDb) {
-    throw new Error('Database not connected. Call connectToDatabase first.');
+    throw new Error("Database not connected. Call connectToDatabase first.");
   }
   return cachedDb.collection(collectionName);
 }

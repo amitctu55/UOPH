@@ -12,7 +12,7 @@ async function bootstrap() {
 
   const origins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:3001")
     .split(",")
-    .map((o) => o.trim())
+    .map(o => o.trim())
     .filter(Boolean);
 
   app.enableCors({
@@ -25,7 +25,7 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-    }),
+    })
   );
 
   app.setGlobalPrefix("auth");

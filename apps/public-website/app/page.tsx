@@ -53,7 +53,8 @@ export default function HomePage() {
           </p>
           <ol className="list-clean" style={{ marginTop: "1.5rem" }}>
             <li>
-              <strong>Match & book</strong> — search specialists, hospitals, and packages in minutes.
+              <strong>Match & book</strong> — search specialists, hospitals, and packages in
+              minutes.
             </li>
             <li>
               <strong>Consult securely</strong> — in-person or telemedicine with shared records.

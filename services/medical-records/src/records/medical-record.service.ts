@@ -45,7 +45,9 @@ export class MedicalRecordService {
 
       return saved;
     } catch (error) {
-      this.logger.error(`Error uploading record: ${error.message}`);
+      this.logger.error(
+        `Error uploading record: ${error instanceof Error ? error.message : String(error)}`
+      );
       throw error;
     }
   }
@@ -63,8 +65,9 @@ export class MedicalRecordService {
     return records.filter(record => {
       if (record.patientId === requestingUserId) return true;
       if (record.accessLevel === AccessLevel.SHARED) return true;
-      if (record.doctorId === requestingUserId && record.accessLevel === AccessLevel.DOCTOR_ONLY)
-        {return true;}
+      if (record.doctorId === requestingUserId && record.accessLevel === AccessLevel.DOCTOR_ONLY) {
+        return true;
+      }
       return false;
     });
   }
