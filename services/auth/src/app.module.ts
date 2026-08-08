@@ -1,13 +1,26 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
 import { HealthModule } from "./health/health.module";
+import { resolveMongoUri } from "./database/mongo.bootstrap";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ".env" }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/upchar_auth'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [".env", ".env.local"],
+    }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const uri = await resolveMongoUri(config);
+        return {
+          uri,
+          serverSelectionTimeoutMS: 10_000,
+        };
+      },
+    }),
     AuthModule,
     HealthModule,
   ],
