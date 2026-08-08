@@ -417,15 +417,25 @@ const handlers = {
     // re-binds `prompt` or `hookInput.command` to a non-string, `.toLowerCase()`
     // can no longer throw a TypeError that the global try/catch would swallow
     // (silently exiting 0 and letting the dangerous command through).
+    // PreToolUse hooks MUST emit JSON on stdout (plain text blocks tools).
     const cmd = String(hookInput.command || toolInput.command || prompt || '').toLowerCase();
     const dangerous = ['rm -rf /', 'format c:', 'del /s /q c:\\', ':(){:|:&};:'];
     for (const d of dangerous) {
       if (cmd.includes(d)) {
-        console.error(`[BLOCKED] Dangerous command detected: ${d}`);
-        process.exit(1);
+        process.stdout.write(JSON.stringify({
+          continue: false,
+          permissionDecision: 'deny',
+          permissionDecisionReason: `Dangerous command detected: ${d}`,
+        }));
+        return;
       }
     }
-    console.log('[OK] Command validated');
+    process.stdout.write(JSON.stringify({ continue: true, permissionDecision: 'allow' }));
+  },
+
+  'pre-edit': () => {
+    // PreToolUse for Write/Edit/MultiEdit — must emit allow JSON, not plain text.
+    process.stdout.write(JSON.stringify({ continue: true, permissionDecision: 'allow' }));
   },
 
   'post-edit': () => {
@@ -544,14 +554,17 @@ const handlers = {
     try {
       await Promise.resolve(handlers[command]());
     } catch (e) {
-      // Hooks should never crash Claude Code - fail silently
-      console.log(`[WARN] Hook ${command} encountered an error: ${e.message}`);
+      // Hooks should never crash Claude Code - fail open with valid JSON for PreToolUse
+      process.stderr.write(`[WARN] Hook ${command} encountered an error: ${e.message}\n`);
+      if (command === 'pre-bash' || command === 'pre-edit') {
+        process.stdout.write(JSON.stringify({ continue: true, permissionDecision: 'allow' }));
+      }
     }
   } else if (command) {
-    // Unknown command - pass through without error
-    console.log(`[OK] Hook: ${command}`);
+    // Unknown command (e.g. post-bash) — PreToolUse/PostToolUse consumers need JSON.
+    process.stdout.write(JSON.stringify({ continue: true, permissionDecision: 'allow' }));
   } else {
-    console.log('Usage: hook-handler.cjs <route|pre-bash|post-edit|session-restore|session-end|pre-task|post-task|stats>');
+    process.stderr.write('Usage: hook-handler.cjs <route|pre-bash|pre-edit|post-edit|session-restore|session-end|pre-task|post-task|stats>\n');
   }
 }
 
