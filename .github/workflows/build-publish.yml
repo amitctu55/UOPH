@@ -17,7 +17,7 @@ jobs:
 
   build-and-push:
     needs: verify-docker-image
-    if: ${{ secrets.AWS_ACCOUNT_ID != '' && secrets.AWS_REGION != '' }}
+    if: ${{ vars.ECR_PUBLISH_ENABLED == 'true' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -91,12 +91,13 @@ jobs:
     needs: [verify-docker-image, build-and-push, integration-tests]
     if: >-
       always() &&
+      vars.ECR_PUBLISH_ENABLED != 'true' &&
       needs.verify-docker-image.result == 'success' &&
       needs.integration-tests.result == 'success' &&
       needs.build-and-push.result == 'skipped'
     runs-on: ubuntu-latest
     steps:
-      - name: Block publish until AWS secrets are configured
+      - name: Block publish until AWS is configured
         run: |
-          echo "::error::Configure repository secrets AWS_ACCOUNT_ID and AWS_REGION to push images to ECR and deploy to production."
+          echo "::error::Set repository variable ECR_PUBLISH_ENABLED=true and configure secrets AWS_ACCOUNT_ID and AWS_REGION to push images to ECR and deploy to production."
           exit 1
