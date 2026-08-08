@@ -20,15 +20,9 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "apps/*"
-      ],
-      "@libs/*": [
-        "libs/*"
-      ],
-      "@user/*": [
-        "../user/src/*"
-      ]
+      "@app/*": ["apps/*"],
+      "@libs/*": ["libs/*"],
+      "@user/*": ["../user/src/*"]
     },
     "strictPropertyInitialization": false
   }

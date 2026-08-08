@@ -1478,9 +1478,7 @@ function SettingsPage() {
     setProfileForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePreferenceChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handlePreferenceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, type } = e.target;
     if (type === "checkbox") {
       const target = e.target as HTMLInputElement;

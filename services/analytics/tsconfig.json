@@ -1,14 +1,7 @@
 {
   "extends": "../tsconfig.nest.json",
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test",
-    "**/*.spec.ts"
-  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"],
   "compilerOptions": {
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,

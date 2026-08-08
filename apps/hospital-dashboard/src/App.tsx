@@ -818,64 +818,64 @@ function ReportsPage() {
       // In a real app, this would call an API
       // For now, we'll simulate with mock data
       const reports = {
-          daily: {
-            today: {
-              admissions: 24,
-              discharges: 19,
-              surgeries: 12,
-              erVisits: 45,
-              bedOccupancy: 78,
-            },
-            week: {
-              admissions: 156,
-              discharges: 142,
-              surgeries: 78,
-              erVisits: 289,
-              bedOccupancy: 76,
-            },
-            month: {
-              admissions: 624,
-              discharges: 598,
-              surgeries: 312,
-              erVisits: 1156,
-              bedOccupancy: 75,
-            },
+        daily: {
+          today: {
+            admissions: 24,
+            discharges: 19,
+            surgeries: 12,
+            erVisits: 45,
+            bedOccupancy: 78,
           },
-          monthly: {
-            currentMonth: {
-              admissions: 624,
-              discharges: 598,
-              avgLengthOfStay: 4.2,
-              readmissionRate: 8.5,
-              mortalityRate: 2.1,
-              erVisits: 1156,
-              surgeries: 312,
-            },
-            lastMonth: {
-              admissions: 589,
-              discharges: 567,
-              avgLengthOfStay: 4.0,
-              readmissionRate: 8.2,
-              mortalityRate: 2.3,
-              erVisits: 1098,
-              surgeries: 298,
-            },
+          week: {
+            admissions: 156,
+            discharges: 142,
+            surgeries: 78,
+            erVisits: 289,
+            bedOccupancy: 76,
           },
-          financial: {
-            currentMonth: {
-              revenue: 2450000,
-              expenses: 1980000,
-              netIncome: 470000,
-              roi: 12.3,
-            },
-            ytd: {
-              revenue: 18200000,
-              expenses: 15600000,
-              netIncome: 2600000,
-              roi: 14.2,
-            },
+          month: {
+            admissions: 624,
+            discharges: 598,
+            surgeries: 312,
+            erVisits: 1156,
+            bedOccupancy: 75,
           },
-        };
+        },
+        monthly: {
+          currentMonth: {
+            admissions: 624,
+            discharges: 598,
+            avgLengthOfStay: 4.2,
+            readmissionRate: 8.5,
+            mortalityRate: 2.1,
+            erVisits: 1156,
+            surgeries: 312,
+          },
+          lastMonth: {
+            admissions: 589,
+            discharges: 567,
+            avgLengthOfStay: 4.0,
+            readmissionRate: 8.2,
+            mortalityRate: 2.3,
+            erVisits: 1098,
+            surgeries: 298,
+          },
+        },
+        financial: {
+          currentMonth: {
+            revenue: 2450000,
+            expenses: 1980000,
+            netIncome: 470000,
+            roi: 12.3,
+          },
+          ytd: {
+            revenue: 18200000,
+            expenses: 15600000,
+            netIncome: 2600000,
+            roi: 14.2,
+          },
+        },
+      };
       const mockData = reports[reportType]?.[dateRange] ?? {};
 
       setReportData(mockData);

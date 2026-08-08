@@ -70,10 +70,7 @@ export class UserService {
     return this.toSafeUser(user);
   }
 
-  async updateUserProfile(
-    userId: string,
-    dto: UpdateUserDto
-  ): Promise<SafeUser> {
+  async updateUserProfile(userId: string, dto: UpdateUserDto): Promise<SafeUser> {
     const user = await this.userModel.findOne({
       _id: userId,
     });

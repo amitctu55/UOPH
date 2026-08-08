@@ -97,10 +97,12 @@ jobs:
       - name: OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
+          project: 'UOPH'
           path: '.'
           format: 'SARIF'
+          out: 'reports'
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: dependency-check-report.sarif
+          sarif_file: reports/dependency-check-report.sarif
