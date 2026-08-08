@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --no-eslintrc --config .eslintrc.json \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@nestjs/common": "11.1.28",

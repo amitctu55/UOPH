@@ -10,10 +10,10 @@ import { RegisterDto } from "./dto/register.dto";
 import { UserService } from "../users/user.service";
 import { PublicUser, UserRole } from "../users/user.schema";
 
-type AuthTokens = {
+interface AuthTokens {
   accessToken: string;
   refreshToken: string;
-};
+}
 
 type AuthResult = AuthTokens & {
   user: PublicUser;

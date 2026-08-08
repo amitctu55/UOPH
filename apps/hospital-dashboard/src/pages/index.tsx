@@ -358,36 +358,48 @@ function ChatPage() {
 
                 <div className="chat-window">
                   <div className="chat-messages">
-                    {/* Group messages by date */}
-                    {messages.reduce((groups, message) => {
-                      const date = new Date(message.timestamp).toDateString();
-                      if (!groups[date]) {
-                        groups[date] = [];
-                      }
-                      groups[date].push(message);
-                      return groups;
-                    }, {} as Record<string, typeof messages>)}
+                    {(() => {
+                      const groups = messages.reduce((acc: Record<string, typeof messages>, message) => {
+                        const date = new Date(message.timestamp).toDateString();
+                        if (!acc[date]) {
+                          acc[date] = [];
+                        }
+                        acc[date].push(message);
+                        return acc;
+                      }, {});
 
-                    {(Object.keys(groups) as string[]).map((date, dateIndex) => (
-                      <>
-                        {/* Date header */}
-                        <div key={`date-${date}`} className="message-date-header">
-                          <span>{new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                        </div>
-
-                        {/* Messages for this date */}
-                        {groups[date].map((message, msgIndex) => (
-                          <div key={`${date}-${msgIndex}`} className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}>
-                            <div className="message-content">
-                              <p>{message.content}</p>
-                              <small className="message-time">{new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                            </div>
+                      return Object.keys(groups).map((date) => (
+                        <div key={`date-group-${date}`}>
+                          <div className="message-date-header">
+                            <span>
+                              {new Date(date).toLocaleDateString(undefined, {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </span>
                           </div>
-                        ))}
-                      </>
-                    ))}
+                          {groups[date].map((message, msgIndex) => (
+                            <div
+                              key={`${date}-${msgIndex}`}
+                              className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}
+                            >
+                              <div className="message-content">
+                                <p>{message.content}</p>
+                                <small className="message-time">
+                                  {new Date(message.timestamp).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}
+                                </small>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ));
+                    })()}
 
-                    {/* Typing indicator */}
                     {typingUsers.map((user, index) => (
                       <div key={index} className="typing-indicator">
                         <div className="typing-dot"></div>
@@ -408,13 +420,11 @@ function ChatPage() {
                     <div className="chat-input-wrapper">
                       <div className="chat-input-actions">
                         <button type="button" className="btn-icon" onClick={() => {
-                          // Emoji picker
                           alert('Emoji picker would open here');
                         }}>
                           😊
                         </button>
                         <button type="button" className="btn-icon" onClick={() => {
-                          // File attachment
                           alert('File picker would open here');
                         }}>
                           📎
@@ -434,8 +444,8 @@ function ChatPage() {
                     </div>
                   </form>
                 </div>
-              )}
-            }
+              </div>
+            )}
           </div>
         </div>
       </div>

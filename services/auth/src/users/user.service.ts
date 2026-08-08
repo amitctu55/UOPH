@@ -10,14 +10,14 @@ import { Model } from "mongoose";
 import * as bcrypt from "bcryptjs";
 import { PublicUser, User, UserDocument, UserRole, UserStatus } from "./user.schema";
 
-export type CreateUserInput = {
+export interface CreateUserInput {
   email: string;
   firstName: string;
   lastName: string;
   password: string;
   phone?: string;
   role?: UserRole;
-};
+}
 
 @Injectable()
 export class UserService {

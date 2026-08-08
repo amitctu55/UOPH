@@ -47,7 +47,7 @@ function DashboardPage() {
     return (
       <div className="dashboard-page">
         <h1>Hospital Dashboard</h1>
-        <div className="loading">Loading dashboard data...</div>
+        <div className="loading">Loading dashboard data..</div>
       </div>
     );
   }
@@ -180,7 +180,7 @@ function DashboardPage() {
                   <p>{admission.reason}</p>
                   <time>{new Date(admission.requestedAt).toLocaleTimeString()}</time>
                 </div>
-              }
+              </div>
             ))}
             {recentDischarges.slice(0, 3).map(discharge => (
               <div key={discharge.id} className="activity-item">
@@ -190,7 +190,7 @@ function DashboardPage() {
                   <p>Discharged after {discharge.lengthOfStay} days</p>
                   <time>{new Date(discharge.dischargeDate).toLocaleTimeString()}</time>
                 </div>
-              }
+              </div>
             ))}
           </div>
         </div>
@@ -239,7 +239,7 @@ function PatientManagementPage() {
       <div className="page-container">
         <h1>Patient Management</h1>
         <div className="page-content">
-          <div className="loading">Loading patients...</div>
+          <div className="loading">Loading patients..</div>
         </div>
       </div>
     );
@@ -297,7 +297,7 @@ function PatientManagementPage() {
                 <option value="name">Name (A-Z)</option>
                 <option value="date">Admission Date (Newest)</option>
                 <option value="room">Room Number</option>
-              </select
+              </select>
             </div>
             <button className="btn-primary" onClick={() => {
               // Admit new patient
@@ -413,7 +413,7 @@ function BedManagementPage() {
       <div className="page-container">
         <h1>Bed Management</h1>
         <div className="page-content">
-          <div className="loading">Loading bed status...</div>
+          <div className="loading">Loading bed status..</div>
         </div>
       </div>
     );
@@ -478,16 +478,15 @@ function BedManagementPage() {
           </button>
         </div>
 
-        {units.map(unit => (
-          selectedUnit !== 'all' && selectedUnit !== unit ? null : (
+        {(selectedUnit === 'all' ? units : units.filter((unit) => unit === selectedUnit)).map((unit) => (
             <div key={unit} className="bed-unit-section">
               <h3>{unit}</h3>
               <div className="bed-grid">
                 {Array.from({ length: bedStatus[unit]?.total || 0 }, (_, i) => {
                   const bedNumber = i + 1;
                   const isAvailable = bedStatus[unit]?.availableBeds?.includes(bedNumber) ||
-                    (bedStatus[unit]?.available || 0) > (bedStatus[unit]?.occupiedBeds?.length || 0) &&
-                    bedStatus[unit]?.occupiedBeds?.indexOf(bedNumber) === -1;
+                    ((bedStatus[unit]?.available || 0) > (bedStatus[unit]?.occupiedBeds?.length || 0) &&
+                    bedStatus[unit]?.occupiedBeds?.indexOf(bedNumber) === -1);
 
                   return (
                     <div key={bedNumber} className={`bed-bed ${isAvailable ? 'available' : 'occupied'}`}>
@@ -506,10 +505,8 @@ function BedManagementPage() {
                         className="btn-bed-action"
                         onClick={() => {
                           if (isAvailable) {
-                            // Assign patient to bed
                             alert(`Assign patient to ${unit} Bed ${bedNumber}`);
                           } else {
-                            // View/manage patient in bed
                             alert(`Manage patient in ${unit} Bed ${bedNumber}`);
                           }
                         }}
@@ -565,7 +562,7 @@ function ERDashboardPage() {
       <div className="page-container">
         <h1>Emergency Room Dashboard</h1>
         <div className="page-content">
-          <div className="loading">Loading ER data...</div>
+          <div className="loading">Loading ER data..</div>
         </div>
       </div>
     );
@@ -813,7 +810,7 @@ function ReportsPage() {
                 <>
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
-                  <option value="month">This Month</>
+                  <option value="month">This Month</option>
                 </>
               )}
               {reportType === 'monthly' && (
@@ -1044,7 +1041,7 @@ function SettingsPage() {
                   <p><strong>Staff Count:</strong> 28 physicians, 65 nurses</p>
                   <p><strong>Bed Capacity:</strong> 45 beds</p>
                   <p><strong>Annual Procedures:</strong> 12,000+</p>
-</div>))}
+
                   <button className="btn-action" onClick={() => {
                     alert('Manage Cardiology Department staff');
                   }}>

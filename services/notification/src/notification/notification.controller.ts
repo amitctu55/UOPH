@@ -13,7 +13,7 @@ import {
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { NotificationEntity } from './entities/notification.entity';
+import { NotificationEntity, NotificationStatus } from './entities/notification.entity';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('notifications')
@@ -38,12 +38,9 @@ export class NotificationController {
   @ApiResponse({ status: 200, description: 'List of notifications' })
   async getNotifications(
     @Query('recipientId') recipientId: string,
-    @Query('status') status?: string,
+    @Query('status') status?: NotificationStatus,
   ): Promise<NotificationEntity[]> {
-    return this.notificationService.getNotificationsForRecipient(
-      recipientId,
-      status as any,
-    );
+    return this.notificationService.getNotificationsForRecipient(recipientId, status);
   }
 
   @Get(':id')
@@ -56,6 +53,27 @@ export class NotificationController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update notification' })
-  @ApiResponse({ status: 200, description: 'Notification updated LegislativeTimeframe'
+  @ApiResponse({ status: 200, description: 'Notification updated successfully' })
+  @ApiBody({ type: UpdateNotificationDto })
+  async updateNotification(
+    @Param('id') id: string,
+    @Body() updateNotificationDto: UpdateNotificationDto,
+  ): Promise<NotificationEntity> {
+    return this.notificationService.updateNotification(id, updateNotificationDto);
+  }
+
+  @Put(':id/read')
+  @ApiOperation({ summary: 'Mark notification as read' })
+  @ApiResponse({ status: 200, description: 'Notification marked as read' })
+  async markAsRead(@Param('id') id: string): Promise<NotificationEntity> {
+    return this.notificationService.markAsRead(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete notification' })
+  @ApiResponse({ status: 204, description: 'Notification deleted' })
+  async deleteNotification(@Param('id') id: string): Promise<void> {
+    return this.notificationService.deleteNotification(id);
   }
 }
