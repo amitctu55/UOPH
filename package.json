@@ -28,6 +28,8 @@
     "start": "npm run start --workspace=apps/admin-dashboard",
     "test": "npm test --workspaces --if-present",
     "test:unit": "npm test --workspace upchar-analytics-service --workspace upchar-doctor-service --workspace upchar-pharmacy-service --workspace upchar-telemedicine-service --workspace upchar-user-service --if-present -- --passWithNoTests --coverage --coverageDirectory=../../coverage",
+    "test:integration": "node scripts/ci-integration-check.mjs",
+    "test:smoke": "node scripts/ci-smoke-test.mjs",
     "test:cov": "npm run test:unit",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint --workspaces --if-present",
