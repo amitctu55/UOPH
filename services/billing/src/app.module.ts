@@ -10,7 +10,7 @@ import { TerminusModule } from "@nestjs/terminus";
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || "development"}`,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/upchar_billing'),
+    MongooseModule.forRoot(process.env.MONGODB_URI || "mongodb://localhost:27017/upchar_billing"),
     BillingModule,
     TerminusModule,
   ],

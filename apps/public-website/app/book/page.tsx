@@ -44,7 +44,11 @@ export default function BookPage() {
           </label>
           <label>
             Notes
-            <textarea name="notes" rows={4} placeholder="Symptoms, preferences, or previous providers" />
+            <textarea
+              name="notes"
+              rows={4}
+              placeholder="Symptoms, preferences, or previous providers"
+            />
           </label>
           <button type="submit" className="btn btn--primary">
             Request appointment

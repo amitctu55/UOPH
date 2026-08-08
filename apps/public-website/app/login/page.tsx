@@ -21,14 +21,14 @@ export default function LoginPage() {
       <form className="form-stack soft-panel" style={{ marginTop: "1.5rem" }} onSubmit={onSubmit}>
         <label>
           Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         </label>
         <label>
           Password
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
           />
         </label>

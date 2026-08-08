@@ -1,15 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppModule } from "../src/app.module";
+import { MongooseModule } from "@nestjs/mongoose";
 
-describe('Database Connection', () => {
+describe("Database Connection", () => {
   let app: TestingModule;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
-      imports: [
-        AppModule,
-      ],
+      imports: [AppModule],
     }).compile();
   });
 
@@ -17,7 +15,7 @@ describe('Database Connection', () => {
     await app.close();
   });
 
-  it('should compile the application', async () => {
+  it("should compile the application", async () => {
     expect(app).toBeDefined();
   });
 });

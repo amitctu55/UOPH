@@ -1,14 +1,14 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from "react-router-dom";
 
 // @ts-ignore: allow CSS side-effect import in this file
-import './App.css';
+import "./App.css";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuthStore } from './store/useAuthStore';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiService } from './services/api';
-import RegisterPage from './pages/RegisterPage';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAuthStore } from "./store/useAuthStore";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { apiService } from "./services/api";
+import RegisterPage from "./pages/RegisterPage";
 
 // Types
 interface Appointment {
@@ -67,7 +67,7 @@ interface UserProfile {
 }
 
 interface NotificationAction {
-  type: 'primary' | 'secondary';
+  type: "primary" | "secondary";
   label: string;
 }
 
@@ -75,9 +75,19 @@ interface NotificationItem {
   id: string | number;
   title: string;
   message: string;
-  type: 'all' | 'urgent' | 'appointment' | 'prescription' | 'lab_result' | 'promo' | 'system' | 'unread' | 'read' | string;
+  type:
+    | "all"
+    | "urgent"
+    | "appointment"
+    | "prescription"
+    | "lab_result"
+    | "promo"
+    | "system"
+    | "unread"
+    | "read"
+    | string;
   isRead: boolean;
-  priority?: 'high' | 'medium' | 'low' | string;
+  priority?: "high" | "medium" | "low" | string;
   icon?: string;
   createdAt: string;
   actionRequired?: boolean;
@@ -85,49 +95,54 @@ interface NotificationItem {
 }
 
 type NotificationFilter =
-  | 'all'
-  | 'urgent'
-  | 'appointment'
-  | 'prescription'
-  | 'lab_result'
-  | 'promo'
-  | 'system'
-  | 'unread'
-  | 'read';
+  | "all"
+  | "urgent"
+  | "appointment"
+  | "prescription"
+  | "lab_result"
+  | "promo"
+  | "system"
+  | "unread"
+  | "read";
 
 // Dashboard Page with real data fetching
 function DashboardPage() {
   const { data: userProfile, isLoading: loadingProfile } = useQuery({
-    queryKey: ['userProfile'],
+    queryKey: ["userProfile"],
     queryFn: () => apiService.users.getProfile().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
   const { data: upcomingAppointments, isLoading: loadingAppointments } = useQuery({
-    queryKey: ['upcomingAppointments'],
+    queryKey: ["upcomingAppointments"],
     queryFn: () => apiService.appointments.getUpcoming().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
   const { data: walletBalance, isLoading: loadingWallet } = useQuery({
-    queryKey: ['walletBalance'],
+    queryKey: ["walletBalance"],
     queryFn: () => apiService.wallet.getBalance().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
   const { data: prescriptions, isLoading: loadingPrescriptions } = useQuery({
-    queryKey: ['prescriptions'],
+    queryKey: ["prescriptions"],
     queryFn: () => apiService.pharmacy.getPrescriptions().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
   const { data: unreadNotifications, isLoading: loadingNotifications } = useQuery({
-    queryKey: ['unreadNotifications'],
+    queryKey: ["unreadNotifications"],
     queryFn: () => apiService.notifications.getUnreadCount().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
-  const isLoading = loadingProfile || loadingAppointments || loadingWallet || loadingPrescriptions || loadingNotifications;
+  const isLoading =
+    loadingProfile ||
+    loadingAppointments ||
+    loadingWallet ||
+    loadingPrescriptions ||
+    loadingNotifications;
 
   if (isLoading) {
     return (
@@ -190,34 +205,50 @@ function DashboardPage() {
       <div className="recent-activity">
         <h2>Recent Activity</h2>
         <div className="activity-list">
-          {upcomingAppointments && upcomingAppointments.slice(0, 3).map((appointment: { id: string | number; title: string; doctorName: string; specialty: string; scheduledAt: string }) => (
-            <div key={appointment.id} className="activity-item">
-              <div className="activity-icon">📅</div>
-              <div className="activity-content">
-                <h3>{appointment.title}</h3>
-                <p>{appointment.doctorName} • {appointment.specialty}</p>
-                <time>{new Date(appointment.scheduledAt).toLocaleString()}</time>
-              </div>
-            </div>
-          ))}
+          {upcomingAppointments &&
+            upcomingAppointments
+              .slice(0, 3)
+              .map(
+                (appointment: {
+                  id: string | number;
+                  title: string;
+                  doctorName: string;
+                  specialty: string;
+                  scheduledAt: string;
+                }) => (
+                  <div key={appointment.id} className="activity-item">
+                    <div className="activity-icon">📅</div>
+                    <div className="activity-content">
+                      <h3>{appointment.title}</h3>
+                      <p>
+                        {appointment.doctorName} • {appointment.specialty}
+                      </p>
+                      <time>{new Date(appointment.scheduledAt).toLocaleString()}</time>
+                    </div>
+                  </div>
+                )
+              )}
 
-          {prescriptions && prescriptions.slice(0, 2).map((prescription: any) => (
-            <div key={prescription.id} className="activity-item">
-              <div className="activity-icon">💊</div>
-              <div className="activity-content">
-                <h3>Prescription Ready</h3>
-                <p>{prescription.medicationName}</p>
-                <time>{new Date(prescription.updatedAt).toLocaleDateString()}</time>
+          {prescriptions &&
+            prescriptions.slice(0, 2).map((prescription: any) => (
+              <div key={prescription.id} className="activity-item">
+                <div className="activity-icon">💊</div>
+                <div className="activity-content">
+                  <h3>Prescription Ready</h3>
+                  <p>{prescription.medicationName}</p>
+                  <time>{new Date(prescription.updatedAt).toLocaleDateString()}</time>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
           {unreadNotifications && unreadNotifications > 0 && (
             <div key={unreadNotifications} className="activity-item">
               <div className="activity-icon">🔔</div>
               <div className="activity-content">
                 <h3>You Have New Notifications</h3>
-                <p>{unreadNotifications} unread message{(unreadNotifications !== 1 ? 's' : '')}</p>
+                <p>
+                  {unreadNotifications} unread message{unreadNotifications !== 1 ? "s" : ""}
+                </p>
                 <time>Just now</time>
               </div>
             </div>
@@ -230,19 +261,27 @@ function DashboardPage() {
 
 // Enhanced Appointments Page
 function AppointmentsPage() {
-  const [activeTab, setActiveTab] = React.useState('upcoming');
+  const [activeTab, setActiveTab] = React.useState("upcoming");
   const queryClient = useQueryClient();
 
-  const { data: upcomingAppointments = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery<Appointment[]>({
-    queryKey: ['upcomingAppointments'],
+  const {
+    data: upcomingAppointments = [],
+    isLoading: loadingUpcoming,
+    error: errorUpcoming,
+  } = useQuery<Appointment[]>({
+    queryKey: ["upcomingAppointments"],
     queryFn: () => apiService.appointments.getUpcoming().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
-  const { data: pastAppointments = [], isLoading: loadingPast, error: errorPast } = useQuery<Appointment[]>({
-    queryKey: ['pastAppointments'],
+  const {
+    data: pastAppointments = [],
+    isLoading: loadingPast,
+    error: errorPast,
+  } = useQuery<Appointment[]>({
+    queryKey: ["pastAppointments"],
     queryFn: () => apiService.appointments.getPast().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
   const handleReschedule = (appointmentId: string | number) => {
@@ -250,13 +289,13 @@ function AppointmentsPage() {
   };
 
   const handleCancel = async (appointmentId: string | number) => {
-    if (window.confirm('Are you sure you want to cancel this appointment?')) {
+    if (window.confirm("Are you sure you want to cancel this appointment?")) {
       try {
         await apiService.appointments.cancel(String(appointmentId));
-        queryClient.invalidateQueries({ queryKey: ['upcomingAppointments'] });
-        queryClient.invalidateQueries({ queryKey: ['pastAppointments'] });
+        queryClient.invalidateQueries({ queryKey: ["upcomingAppointments"] });
+        queryClient.invalidateQueries({ queryKey: ["pastAppointments"] });
       } catch (error) {
-        alert('Failed to cancel appointment. Please try again.');
+        alert("Failed to cancel appointment. Please try again.");
       }
     }
   };
@@ -292,25 +331,38 @@ function AppointmentsPage() {
       <h1>Appointments</h1>
       <div className="page-content">
         <div className="filters">
-          <button className={activeTab === 'upcoming' ? 'filter-btn active' : 'filter-btn'} onClick={() => setActiveTab('upcoming')}>
+          <button
+            className={activeTab === "upcoming" ? "filter-btn active" : "filter-btn"}
+            onClick={() => setActiveTab("upcoming")}
+          >
             Upcoming
           </button>
-          <button className={activeTab === 'past' ? 'filter-btn active' : 'filter-btn'} onClick={() => setActiveTab('past')}>
+          <button
+            className={activeTab === "past" ? "filter-btn active" : "filter-btn"}
+            onClick={() => setActiveTab("past")}
+          >
             Past
           </button>
         </div>
 
-        {activeTab === 'upcoming' && (
+        {activeTab === "upcoming" && (
           <div className="appointments-list">
             {upcomingAppointments.length > 0 ? (
               upcomingAppointments.map(appointment => (
                 <div key={appointment.id} className="appointment-card">
                   <div className="appointment-info">
                     <h3>{appointment.title}</h3>
-                    <p>{appointment.doctorName} • {appointment.specialty}</p>
                     <p>
-                      <strong>{new Date(appointment.scheduledAt).toLocaleDateString()}</strong> at{' '}
-                      <strong>{new Date(appointment.scheduledAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>
+                      {appointment.doctorName} • {appointment.specialty}
+                    </p>
+                    <p>
+                      <strong>{new Date(appointment.scheduledAt).toLocaleDateString()}</strong> at{" "}
+                      <strong>
+                        {new Date(appointment.scheduledAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </strong>
                     </p>
                     {appointment.location && <p>{appointment.location}</p>}
                   </div>
@@ -321,10 +373,16 @@ function AppointmentsPage() {
                     <button className="btn-action" onClick={() => handleReschedule(appointment.id)}>
                       Reschedule
                     </button>
-                    <button className="btn-action btn-cancel" onClick={() => handleCancel(appointment.id)}>
+                    <button
+                      className="btn-action btn-cancel"
+                      onClick={() => handleCancel(appointment.id)}
+                    >
                       Cancel
                     </button>
-                    <button className="btn-action btn-view" onClick={() => viewAppointmentDetails(appointment.id)}>
+                    <button
+                      className="btn-action btn-view"
+                      onClick={() => viewAppointmentDetails(appointment.id)}
+                    >
                       View Details
                     </button>
                   </div>
@@ -336,23 +394,33 @@ function AppointmentsPage() {
           </div>
         )}
 
-        {activeTab === 'past' && (
+        {activeTab === "past" && (
           <div className="appointments-list">
             {pastAppointments.length > 0 ? (
               pastAppointments.map(appointment => (
                 <div key={appointment.id} className="appointment-card">
                   <div className="appointment-info">
                     <h3>{appointment.title}</h3>
-                    <p>{appointment.doctorName} • {appointment.specialty}</p>
                     <p>
-                      <strong>{new Date(appointment.scheduledAt).toLocaleDateString()}</strong> at{' '}
-                      <strong>{new Date(appointment.scheduledAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>
+                      {appointment.doctorName} • {appointment.specialty}
+                    </p>
+                    <p>
+                      <strong>{new Date(appointment.scheduledAt).toLocaleDateString()}</strong> at{" "}
+                      <strong>
+                        {new Date(appointment.scheduledAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </strong>
                     </p>
                     {appointment.location && <p>{appointment.location}</p>}
                   </div>
                   <div className="appointment-actions">
                     <span className="status status-completed">Completed</span>
-                    <button className="btn-action btn-view" onClick={() => viewAppointmentDetails(appointment.id)}>
+                    <button
+                      className="btn-action btn-view"
+                      onClick={() => viewAppointmentDetails(appointment.id)}
+                    >
                       View Details
                     </button>
                   </div>
@@ -370,25 +438,30 @@ function AppointmentsPage() {
 
 // Enhanced Medical Records Page
 function MedicalRecordsPage() {
-  const { data: medicalRecords = [], isLoading: loading, error } = useQuery<MedicalRecord[]>({
-    queryKey: ['medicalRecords'],
+  const {
+    data: medicalRecords = [],
+    isLoading: loading,
+    error,
+  } = useQuery<MedicalRecord[]>({
+    queryKey: ["medicalRecords"],
     queryFn: () => apiService.medicalRecords.getAll().then(res => res.data),
   });
 
-  const [filter, setFilter] = React.useState('all');
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [filter, setFilter] = React.useState("all");
+  const [searchTerm, setSearchTerm] = React.useState("");
 
   const filteredRecords = medicalRecords.filter(record => {
-    const matchesSearch = record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         record.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         record.type.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.type.toLowerCase().includes(searchTerm.toLowerCase());
 
-    if (filter === 'all') return matchesSearch;
-    if (filter === 'lab-results') return record.type === 'Lab Results' && matchesSearch;
-    if (filter === 'imaging') return record.type === 'Imaging' && matchesSearch;
-    if (filter === 'vaccinations') return record.type === 'Vaccination' && matchesSearch;
-    if (filter === 'prescriptions') return record.type === 'Prescription' && matchesSearch;
-    if (filter === 'visit-summaries') return record.type === 'Visit Summary' && matchesSearch;
+    if (filter === "all") return matchesSearch;
+    if (filter === "lab-results") return record.type === "Lab Results" && matchesSearch;
+    if (filter === "imaging") return record.type === "Imaging" && matchesSearch;
+    if (filter === "vaccinations") return record.type === "Vaccination" && matchesSearch;
+    if (filter === "prescriptions") return record.type === "Prescription" && matchesSearch;
+    if (filter === "visit-summaries") return record.type === "Visit Summary" && matchesSearch;
     return matchesSearch;
   });
 
@@ -424,34 +497,55 @@ function MedicalRecordsPage() {
               type="text"
               placeholder="Search records..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="search-input"
             />
           </div>
           <div className="record-filters">
-            <button className={`filter-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
+            <button
+              className={`filter-btn ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
+            >
               All Records
             </button>
-            <button className={`filter-btn ${filter === 'lab-results' ? 'active' : ''}`} onClick={() => setFilter('lab-results')}>
+            <button
+              className={`filter-btn ${filter === "lab-results" ? "active" : ""}`}
+              onClick={() => setFilter("lab-results")}
+            >
               Lab Results
             </button>
-            <button className={`filter-btn ${filter === 'imaging' ? 'active' : ''}`} onClick={() => setFilter('imaging')}>
+            <button
+              className={`filter-btn ${filter === "imaging" ? "active" : ""}`}
+              onClick={() => setFilter("imaging")}
+            >
               Imaging
             </button>
-            <button className={`filter-btn ${filter === 'vaccinations' ? 'active' : ''}`} onClick={() => setFilter('vaccinations')}>
+            <button
+              className={`filter-btn ${filter === "vaccinations" ? "active" : ""}`}
+              onClick={() => setFilter("vaccinations")}
+            >
               Vaccinations
             </button>
-            <button className={`filter-btn ${filter === 'prescriptions' ? 'active' : ''}`} onClick={() => setFilter('prescriptions')}>
+            <button
+              className={`filter-btn ${filter === "prescriptions" ? "active" : ""}`}
+              onClick={() => setFilter("prescriptions")}
+            >
               Prescriptions
             </button>
-            <button className={`filter-btn ${filter === 'visit-summaries' ? 'active' : ''}`} onClick={() => setFilter('visit-summaries')}>
+            <button
+              className={`filter-btn ${filter === "visit-summaries" ? "active" : ""}`}
+              onClick={() => setFilter("visit-summaries")}
+            >
               Visit Summaries
             </button>
           </div>
-          <button className="btn-primary" onClick={() => {
-            // Upload record logic
-            alert('Upload medical record functionality would go here');
-          }}>
+          <button
+            className="btn-primary"
+            onClick={() => {
+              // Upload record logic
+              alert("Upload medical record functionality would go here");
+            }}
+          >
             Upload Record
           </button>
         </div>
@@ -462,29 +556,54 @@ function MedicalRecordsPage() {
               <div key={record.id} className="record-card">
                 <div className="record-info">
                   <h3>{record.title}</h3>
-                  <p><strong>Type:</strong> {record.type}</p>
-                  <p><strong>Date:</strong> {new Date(record.createdAt).toLocaleDateString()}</p>
-                  {record.description && <p><strong>Description:</strong> {record.description}</p>}
-                  {record.provider && <p><strong>Provider:</strong> {record.provider}</p>}
-                  {record.result && <p><strong>Result:</strong> {record.result}</p>}
+                  <p>
+                    <strong>Type:</strong> {record.type}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {new Date(record.createdAt).toLocaleDateString()}
+                  </p>
+                  {record.description && (
+                    <p>
+                      <strong>Description:</strong> {record.description}
+                    </p>
+                  )}
+                  {record.provider && (
+                    <p>
+                      <strong>Provider:</strong> {record.provider}
+                    </p>
+                  )}
+                  {record.result && (
+                    <p>
+                      <strong>Result:</strong> {record.result}
+                    </p>
+                  )}
                 </div>
                 <div className="record-actions">
-                  <button className="btn-action" onClick={() => {
-                    // View record details
-                    alert(`Viewing details for record ${record.id}`);
-                  }}>
+                  <button
+                    className="btn-action"
+                    onClick={() => {
+                      // View record details
+                      alert(`Viewing details for record ${record.id}`);
+                    }}
+                  >
                     View Details
                   </button>
-                  <button className="btn-action" onClick={() => {
-                    // Share record
-                    alert(`Sharing record ${record.id}`);
-                  }}>
+                  <button
+                    className="btn-action"
+                    onClick={() => {
+                      // Share record
+                      alert(`Sharing record ${record.id}`);
+                    }}
+                  >
                     Share
                   </button>
-                  <button className="btn-action btn-download" onClick={() => {
-                    // Download record
-                    alert(`Downloading record ${record.id}`);
-                  }}>
+                  <button
+                    className="btn-action btn-download"
+                    onClick={() => {
+                      // Download record
+                      alert(`Downloading record ${record.id}`);
+                    }}
+                  >
                     Download
                   </button>
                 </div>
@@ -494,11 +613,17 @@ function MedicalRecordsPage() {
         ) : (
           <div className="empty-state">
             <h3>No Medical Records Found</h3>
-            <p>You don't have any medical records yet. Records will appear here as they are added by your healthcare providers.</p>
-            <button className="btn-primary" onClick={() => {
-              // Upload record
-              alert('Upload medical record functionality would go here');
-            }}>
+            <p>
+              You don't have any medical records yet. Records will appear here as they are added by
+              your healthcare providers.
+            </p>
+            <button
+              className="btn-primary"
+              onClick={() => {
+                // Upload record
+                alert("Upload medical record functionality would go here");
+              }}
+            >
               Add Record
             </button>
           </div>
@@ -510,28 +635,31 @@ function MedicalRecordsPage() {
 
 // Enhanced Prescriptions Page
 function PrescriptionsPage() {
-  const { data: prescriptions = [], isLoading: loading, error } = useQuery<Prescription[]>({
-    queryKey: ['prescriptions'],
+  const {
+    data: prescriptions = [],
+    isLoading: loading,
+    error,
+  } = useQuery<Prescription[]>({
+    queryKey: ["prescriptions"],
     queryFn: () => apiService.pharmacy.getPrescriptions().then(res => res.data),
   });
 
-  const [filter, setFilter] = React.useState('all');
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [filter, setFilter] = React.useState("all");
+  const [searchTerm, setSearchTerm] = React.useState("");
 
-  const filteredPrescriptions = prescriptions.filter((prescription: {
-    medicationName: string;
-    prescribingDoctor: string;
-    status: string;
-  }) => {
-    const matchesSearch = prescription.medicationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         prescription.prescribingDoctor.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredPrescriptions = prescriptions.filter(
+    (prescription: { medicationName: string; prescribingDoctor: string; status: string }) => {
+      const matchesSearch =
+        prescription.medicationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prescription.prescribingDoctor.toLowerCase().includes(searchTerm.toLowerCase());
 
-    if (filter === 'all') return matchesSearch;
-    if (filter === 'active') return prescription.status === 'active' && matchesSearch;
-    if (filter === 'completed') return prescription.status === 'completed' && matchesSearch;
-    if (filter === 'expired') return prescription.status === 'expired' && matchesSearch;
-    return matchesSearch;
-  });
+      if (filter === "all") return matchesSearch;
+      if (filter === "active") return prescription.status === "active" && matchesSearch;
+      if (filter === "completed") return prescription.status === "completed" && matchesSearch;
+      if (filter === "expired") return prescription.status === "expired" && matchesSearch;
+      return matchesSearch;
+    }
+  );
 
   if (loading) {
     return (
@@ -565,25 +693,33 @@ function PrescriptionsPage() {
               type="text"
               placeholder="Search prescriptions..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="search-input"
             />
           </div>
           <div className="filter-tabs">
-            <button className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
-                    onClick={() => setFilter('all')}>
+            <button
+              className={`filter-tab ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
+            >
               All
             </button>
-            <button className={`filter-tab ${filter === 'active' ? 'active' : ''}`}
-                    onClick={() => setFilter('active')}>
+            <button
+              className={`filter-tab ${filter === "active" ? "active" : ""}`}
+              onClick={() => setFilter("active")}
+            >
               Active
             </button>
-            <button className={`filter-tab ${filter === 'completed' ? 'active' : ''}`}
-                    onClick={() => setFilter('completed')}>
+            <button
+              className={`filter-tab ${filter === "completed" ? "active" : ""}`}
+              onClick={() => setFilter("completed")}
+            >
               Completed
             </button>
-            <button className={`filter-tab ${filter === 'expired' ? 'active' : ''}`}
-                    onClick={() => setFilter('expired')}>
+            <button
+              className={`filter-tab ${filter === "expired" ? "active" : ""}`}
+              onClick={() => setFilter("expired")}
+            >
               Expired
             </button>
           </div>
@@ -592,7 +728,10 @@ function PrescriptionsPage() {
         {filteredPrescriptions.length > 0 ? (
           <div className="prescriptions-list">
             {filteredPrescriptions.map(prescription => (
-              <div key={prescription.id} className={`prescription-card ${prescription.status.toLowerCase()}`}>
+              <div
+                key={prescription.id}
+                className={`prescription-card ${prescription.status.toLowerCase()}`}
+              >
                 <div className="prescription-header">
                   <h3>{prescription.medicationName}</h3>
                   <div className="prescription-status">
@@ -601,45 +740,73 @@ function PrescriptionsPage() {
                     </span>
                     {prescription.refillsRemaining > 0 && (
                       <span className="refills-remaining">
-                        {prescription.refillsRemaining} refill{prescription.refillsRemaining !== 1 ? 's' : ''} left
+                        {prescription.refillsRemaining} refill
+                        {prescription.refillsRemaining !== 1 ? "s" : ""} left
                       </span>
                     )}
                   </div>
                 </div>
                 <div className="prescription-details">
-                  <p><strong>Prescribed by:</strong> Dr. {prescription.prescribingDoctor}</p>
-                  <p><strong>Date issued:</strong> {new Date(prescription.dateIssued).toLocaleDateString()}</p>
-                  <p><strong>Expires:</strong> {new Date(prescription.expiryDate).toLocaleDateString()}</p>
-                  <p><strong>Dosage:</strong> {prescription.dosage}</p>
-                  <p><strong>Quantity:</strong> {prescription.quantity} {prescription.unit}</p>
+                  <p>
+                    <strong>Prescribed by:</strong> Dr. {prescription.prescribingDoctor}
+                  </p>
+                  <p>
+                    <strong>Date issued:</strong>{" "}
+                    {new Date(prescription.dateIssued).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Expires:</strong>{" "}
+                    {new Date(prescription.expiryDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Dosage:</strong> {prescription.dosage}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {prescription.quantity} {prescription.unit}
+                  </p>
                   {prescription.instructions && (
-                    <p><strong>Instructions:</strong> {prescription.instructions}</p>
+                    <p>
+                      <strong>Instructions:</strong> {prescription.instructions}
+                    </p>
                   )}
                 </div>
                 <div className="prescription-actions">
-                  {prescription.status === 'active' && prescription.refillsRemaining > 0 && (
-                    <button className="btn-outline" onClick={() => {
-                      // Renew prescription logic
-                      alert(`Renewing prescription for ${prescription.medicationName}`);
-                    }}>
+                  {prescription.status === "active" && prescription.refillsRemaining > 0 && (
+                    <button
+                      className="btn-outline"
+                      onClick={() => {
+                        // Renew prescription logic
+                        alert(`Renewing prescription for ${prescription.medicationName}`);
+                      }}
+                    >
                       Renew Prescription
                     </button>
                   )}
-                  {prescription.status === 'active' && (
-                    <button className="btn-secondary" onClick={() => {
-                      // View details logic
-                      alert(`Viewing details for prescription ${prescription.id}`);
-                    }}>
+                  {prescription.status === "active" && (
+                    <button
+                      className="btn-secondary"
+                      onClick={() => {
+                        // View details logic
+                        alert(`Viewing details for prescription ${prescription.id}`);
+                      }}
+                    >
                       View Details
                     </button>
                   )}
-                  {prescription.status !== 'expired' && (
-                    <button className="btn-outline btn-danger" onClick={() => {
-                      if (window.confirm('Are you sure you want to mark this prescription as expired?')) {
-                        // Mark as expired logic
-                        alert(`Marking prescription ${prescription.id} as expired`);
-                      }
-                    }}>
+                  {prescription.status !== "expired" && (
+                    <button
+                      className="btn-outline btn-danger"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you sure you want to mark this prescription as expired?"
+                          )
+                        ) {
+                          // Mark as expired logic
+                          alert(`Marking prescription ${prescription.id} as expired`);
+                        }
+                      }}
+                    >
                       Mark as Expired
                     </button>
                   )}
@@ -657,12 +824,16 @@ function PrescriptionsPage() {
 
 // Enhanced Membership Page
 function MembershipPage() {
-  const { data: membershipInfo = {}, isLoading: loading, error } = useQuery({
-    queryKey: ['membership'],
+  const {
+    data: membershipInfo = {},
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["membership"],
     queryFn: () => apiService.users.getProfile().then(res => res.data),
   });
 
-  const [plan, setPlan] = React.useState(membershipInfo.currentPlan || 'basic');
+  const [plan, setPlan] = React.useState(membershipInfo.currentPlan || "basic");
 
   if (loading) {
     return (
@@ -688,44 +859,44 @@ function MembershipPage() {
 
   const plans = [
     {
-      id: 'basic',
-      name: 'Basic Care',
+      id: "basic",
+      name: "Basic Care",
       price: 0,
       features: [
-        'Basic telemedicine consultations',
-        'Standard prescription discounts',
-        'Access to general practitioners',
-        'Email support'
+        "Basic telemedicine consultations",
+        "Standard prescription discounts",
+        "Access to general practitioners",
+        "Email support",
       ],
-      popular: false
+      popular: false,
     },
     {
-      id: 'premium',
-      name: 'Premium Care',
+      id: "premium",
+      name: "Premium Care",
       price: 29.99,
       features: [
-        'Unlimited telemedicine consultations',
-        'Enhanced prescription discounts',
-        'Access to specialists',
-        'Priority support',
-        'Annual wellness checkup included',
-        'Family plan options'
+        "Unlimited telemedicine consultations",
+        "Enhanced prescription discounts",
+        "Access to specialists",
+        "Priority support",
+        "Annual wellness checkup included",
+        "Family plan options",
       ],
-      popular: true
+      popular: true,
     },
     {
-      id: 'family',
-      name: 'Family Care',
+      id: "family",
+      name: "Family Care",
       price: 49.99,
       features: [
-        'Everything in Premium',
-        'Up to 5 family members',
-        'Pediatric care included',
-        'Family health tracking',
-        'Emergency care coordination'
+        "Everything in Premium",
+        "Up to 5 family members",
+        "Pediatric care included",
+        "Family health tracking",
+        "Emergency care coordination",
       ],
-      popular: false
-    }
+      popular: false,
+    },
   ];
 
   return (
@@ -735,23 +906,31 @@ function MembershipPage() {
         <div className="membership-current">
           <h2>Your Current Plan</h2>
           <div className="plan-card">
-            <h3>{membershipInfo.currentPlan?.charAt(0).toUpperCase() + membershipInfo.currentPlan?.slice(1) || 'Basic'} Plan</h3>
+            <h3>
+              {membershipInfo.currentPlan?.charAt(0).toUpperCase() +
+                membershipInfo.currentPlan?.slice(1) || "Basic"}{" "}
+              Plan
+            </h3>
             <p className="plan-price">${(membershipInfo.currentPrice || 0).toFixed(2)}/month</p>
-            <p className="plan-period">Billing cycle: {membershipInfo.billingCycle || 'Monthly'}</p>
+            <p className="plan-period">Billing cycle: {membershipInfo.billingCycle || "Monthly"}</p>
             <div className="plan-features">
               {membershipInfo.features?.map((feature: string, index: number) => (
-                <span key={index} className="feature-tag">{feature}</span>
+                <span key={index} className="feature-tag">
+                  {feature}
+                </span>
               )) || []}
             </div>
             {membershipInfo.nextBillingDate && (
-              <p className="next-billing">Next billing: {new Date(membershipInfo.nextBillingDate).toLocaleDateString()}</p>
+              <p className="next-billing">
+                Next billing: {new Date(membershipInfo.nextBillingDate).toLocaleDateString()}
+              </p>
             )}
           </div>
 
           {membershipInfo.canUpgrade && (
             <div className="upgrade-prompt">
               <p>Want more features? Consider upgrading your plan.</p>
-              <button className="btn-primary" onClick={() => setPlan('premium')}>
+              <button className="btn-primary" onClick={() => setPlan("premium")}>
                 View Upgrade Options
               </button>
             </div>
@@ -762,13 +941,17 @@ function MembershipPage() {
           <h2>Available Plans</h2>
           <div className="plans-grid">
             {plans.map(plan => (
-              <div key={plan.id} className={`plan-card ${plan.id === membershipInfo.currentPlan ? 'current' : ''} ${plan.popular ? 'popular' : ''}`}>
+              <div
+                key={plan.id}
+                className={`plan-card ${plan.id === membershipInfo.currentPlan ? "current" : ""} ${plan.popular ? "popular" : ""}`}
+              >
                 <div className="plan-header">
                   <h3>{plan.name}</h3>
                   {plan.popular && <span className="popular-tag">Popular</span>}
                 </div>
                 <div className="plan-price">
-                  ${plan.price.toFixed(2)}<span>/month</span>
+                  ${plan.price.toFixed(2)}
+                  <span>/month</span>
                 </div>
                 <div className="plan-features-list">
                   {plan.features.map((feature, index) => (
@@ -781,16 +964,16 @@ function MembershipPage() {
                 <button
                   onClick={() => {
                     if (plan.id === membershipInfo.currentPlan) {
-                      alert('You are already on this plan');
+                      alert("You are already on this plan");
                     } else {
                       // Upgrade logic would go here
                       alert(`Upgrading to ${plan.name} plan`);
                     }
                   }}
-                  className={`btn-plan ${plan.id === membershipInfo.currentPlan ? 'disabled' : 'primary'}`}
+                  className={`btn-plan ${plan.id === membershipInfo.currentPlan ? "disabled" : "primary"}`}
                   disabled={plan.id === membershipInfo.currentPlan}
                 >
-                  {plan.id === membershipInfo.currentPlan ? 'Current Plan' : 'Select Plan'}
+                  {plan.id === membershipInfo.currentPlan ? "Current Plan" : "Select Plan"}
                 </button>
               </div>
             ))}
@@ -825,23 +1008,29 @@ function MembershipPage() {
 
 // Enhanced Notifications Page
 function NotificationsPage() {
-  const { data: notifications = [], isLoading: loading, error } = useQuery<NotificationItem[]>({
-    queryKey: ['notifications'],
+  const {
+    data: notifications = [],
+    isLoading: loading,
+    error,
+  } = useQuery<NotificationItem[]>({
+    queryKey: ["notifications"],
     queryFn: () => apiService.notifications.getAll().then(res => res.data),
   });
 
   const { data: unreadCount = 0, isLoading: loadingCount } = useQuery<number>({
-    queryKey: ['unreadCount'],
+    queryKey: ["unreadCount"],
     queryFn: () => apiService.notifications.getUnreadCount().then(res => res.data),
   });
 
-  const [filter, setFilter] = React.useState<NotificationFilter>('all');
+  const [filter, setFilter] = React.useState<NotificationFilter>("all");
   const [showOnlyUnread, setShowOnlyUnread] = React.useState(false);
 
   const filteredNotifications = notifications.filter((notification: NotificationItem) => {
-    const matchesFilter = filter === 'all' || notification.type === filter ||
-                         (filter === 'unread' && !notification.isRead) ||
-                         (filter === 'read' && notification.isRead);
+    const matchesFilter =
+      filter === "all" ||
+      notification.type === filter ||
+      (filter === "unread" && !notification.isRead) ||
+      (filter === "read" && notification.isRead);
     return showOnlyUnread ? !notification.isRead && matchesFilter : matchesFilter;
   });
 
@@ -873,48 +1062,51 @@ function NotificationsPage() {
       <div className="page-content">
         <div className="notifications-header">
           <div className="notification-stats">
-            <span className="unread-count">
-              {unreadCount} unread
-            </span>
+            <span className="unread-count">{unreadCount} unread</span>
             <span className="divider">|</span>
-            <span className="total-count">
-              {notifications.length} total
-            </span>
+            <span className="total-count">{notifications.length} total</span>
           </div>
           <div className="notification-filters">
             <button
-              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}>
+              className={`filter-btn ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
+            >
               All
             </button>
             <button
-              className={`filter-btn ${filter === 'urgent' ? 'active' : ''}`}
-              onClick={() => setFilter('urgent')}>
+              className={`filter-btn ${filter === "urgent" ? "active" : ""}`}
+              onClick={() => setFilter("urgent")}
+            >
               Urgent
             </button>
             <button
-              className={`filter-btn ${filter === 'appointment' ? 'active' : ''}`}
-              onClick={() => setFilter('appointment')}>
+              className={`filter-btn ${filter === "appointment" ? "active" : ""}`}
+              onClick={() => setFilter("appointment")}
+            >
               Appointments
             </button>
             <button
-              className={`filter-btn ${filter === 'prescription' ? 'active' : ''}`}
-              onClick={() => setFilter('prescription')}>
+              className={`filter-btn ${filter === "prescription" ? "active" : ""}`}
+              onClick={() => setFilter("prescription")}
+            >
               Prescriptions
             </button>
             <button
-              className={`filter-btn ${filter === 'lab_result' ? 'active' : ''}`}
-              onClick={() => setFilter('lab_result')}>
+              className={`filter-btn ${filter === "lab_result" ? "active" : ""}`}
+              onClick={() => setFilter("lab_result")}
+            >
               Lab Results
             </button>
             <button
-              className={`filter-btn ${filter === 'promo' ? 'active' : ''}`}
-              onClick={() => setFilter('promo')}>
+              className={`filter-btn ${filter === "promo" ? "active" : ""}`}
+              onClick={() => setFilter("promo")}
+            >
               Promotions & Offers
             </button>
             <button
-              className={`filter-btn ${filter === 'system' ? 'active' : ''}`}
-              onClick={() => setFilter('system')}>
+              className={`filter-btn ${filter === "system" ? "active" : ""}`}
+              onClick={() => setFilter("system")}
+            >
               System Updates
             </button>
           </div>
@@ -923,17 +1115,16 @@ function NotificationsPage() {
               className="btn-outline"
               onClick={() => {
                 // Mark all as read logic
-                if (window.confirm('Mark all notifications as read?')) {
+                if (window.confirm("Mark all notifications as read?")) {
                   // apiService.notifications.markAllAsRead();
-                  alert('All notifications marked as read');
+                  alert("All notifications marked as read");
                 }
-              }}>
+              }}
+            >
               Mark All as Read
             </button>
-            <button
-              className="btn-outline"
-              onClick={() => setShowOnlyUnread(!showOnlyUnread)}>
-              {showOnlyUnread ? 'Show All' : 'Show Unread Only'}
+            <button className="btn-outline" onClick={() => setShowOnlyUnread(!showOnlyUnread)}>
+              {showOnlyUnread ? "Show All" : "Show Unread Only"}
             </button>
           </div>
         </div>
@@ -941,11 +1132,12 @@ function NotificationsPage() {
         {filteredNotifications.length > 0 ? (
           <div className="notifications-list">
             {filteredNotifications.map(notification => (
-              <div key={notification.id} className={`notification-item ${notification.isRead ? 'read' : 'unread'} ${notification.priority}`}>
+              <div
+                key={notification.id}
+                className={`notification-item ${notification.isRead ? "read" : "unread"} ${notification.priority}`}
+              >
                 <div className="notification-header">
-                  <div className="notification-icon">
-                    {notification.icon || '📢'}
-                  </div>
+                  <div className="notification-icon">{notification.icon || "📢"}</div>
                   <div className="notification-content">
                     <h3>{notification.title}</h3>
                     <p>{notification.message}</p>
@@ -959,10 +1151,11 @@ function NotificationsPage() {
                     {notification.actionButtons?.map((action, index) => (
                       <button
                         key={index}
-                        className={`btn-action ${action.type === 'primary' ? 'primary' : 'secondary'}`}
+                        className={`btn-action ${action.type === "primary" ? "primary" : "secondary"}`}
                         onClick={() => {
                           // ActionUtil.handleAction(action, notification.id);
-                        }}>
+                        }}
+                      >
                         {action.label}
                       </button>
                     )) || []}
@@ -972,14 +1165,14 @@ function NotificationsPage() {
                   <input
                     type="checkbox"
                     checked={notification.isRead}
-                    onChange={(e) => {
+                    onChange={e => {
                       // Toggle read status logic
                       const newStatus = e.target.checked;
                       // apiService.notifications.markAsRead(notification.id, !newStatus);
                       notification.isRead = newStatus;
                     }}
                   />
-                  <label>{notification.isRead ? 'Mark as unread' : 'Mark as read'}</label>
+                  <label>{notification.isRead ? "Mark as unread" : "Mark as read"}</label>
                 </div>
               </div>
             ))}
@@ -994,26 +1187,34 @@ function NotificationsPage() {
 
 // Enhanced Settings Page
 function SettingsPage() {
-  const { data: profile = {}, isLoading: loadingProfile, error: errorProfile } = useQuery({
-    queryKey: ['userProfile'],
+  const {
+    data: profile = {},
+    isLoading: loadingProfile,
+    error: errorProfile,
+  } = useQuery({
+    queryKey: ["userProfile"],
     queryFn: () => apiService.users.getProfile().then(res => res.data),
   });
 
-  const { data: preferences = {}, isLoading: loadingPreferences, error: errorPreferences } = useQuery({
-    queryKey: ['userPreferences'],
+  const {
+    data: preferences = {},
+    isLoading: loadingPreferences,
+    error: errorPreferences,
+  } = useQuery({
+    queryKey: ["userPreferences"],
     queryFn: () => apiService.users.getProfile().then(res => res.data),
   });
 
   const [editingProfile, setEditingProfile] = React.useState(false);
   const [editingPreferences, setEditingPreferences] = React.useState(false);
   const [profileForm, setProfileForm] = React.useState({
-    firstName: profile.firstName || '',
-    lastName: profile.lastName || '',
-    email: profile.email || '',
-    phone: profile.phone || '',
-    dateOfBirth: profile.dateOfBirth || '',
-    gender: profile.gender || '',
-    address: profile.address || ''
+    firstName: profile.firstName || "",
+    lastName: profile.lastName || "",
+    email: profile.email || "",
+    phone: profile.phone || "",
+    dateOfBirth: profile.dateOfBirth || "",
+    gender: profile.gender || "",
+    address: profile.address || "",
   });
 
   const [preferencesForm, setPreferencesForm] = React.useState({
@@ -1023,9 +1224,9 @@ function SettingsPage() {
     healthTips: preferences.healthTips ?? true,
     promotionalOffers: preferences.promotionalOffers ?? false,
     dataSharing: preferences.dataSharing ?? false,
-    profileVisibility: preferences.profileVisibility ?? 'private',
-    language: preferences.language || 'en',
-    timezone: preferences.timezone || 'UTC'
+    profileVisibility: preferences.profileVisibility ?? "private",
+    language: preferences.language || "en",
+    timezone: preferences.timezone || "UTC",
   });
 
   const isLoading = loadingProfile || loadingPreferences;
@@ -1052,14 +1253,16 @@ function SettingsPage() {
     );
   }
 
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setProfileForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePreferenceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, type } = e.target;
-    const value = type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+    const value = type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
     setPreferencesForm(prev => ({ ...prev, [name]: value }));
   };
 
@@ -1069,9 +1272,9 @@ function SettingsPage() {
     try {
       // Update profile logic would go here
       await apiService.users.updateProfile(profileForm);
-      alert('Profile updated successfully!');
+      alert("Profile updated successfully!");
     } catch (error) {
-      alert('Failed to update profile. Please try again.');
+      alert("Failed to update profile. Please try again.");
     }
   };
 
@@ -1081,9 +1284,9 @@ function SettingsPage() {
     try {
       // Update preferences using the available user update endpoint
       await apiService.users.updateProfile({ preferences: preferencesForm });
-      alert('Preferences updated successfully!');
+      alert("Preferences updated successfully!");
     } catch (error) {
-      alert('Failed to update preferences. Please try again.');
+      alert("Failed to update preferences. Please try again.");
     }
   };
 
@@ -1092,25 +1295,31 @@ function SettingsPage() {
       <h1>Settings</h1>
       <div className="page-content">
         <div className="settings-tabs">
-          <button className={`tab-btn ${!editingProfile && !editingPreferences ? 'active' : ''}`}
-                  onClick={() => {
-                    setEditingProfile(false);
-                    setEditingPreferences(false);
-                  }}>
+          <button
+            className={`tab-btn ${!editingProfile && !editingPreferences ? "active" : ""}`}
+            onClick={() => {
+              setEditingProfile(false);
+              setEditingPreferences(false);
+            }}
+          >
             Overview
           </button>
-          <button className={`tab-btn ${editingProfile ? 'active' : ''}`}
-                  onClick={() => {
-                    setEditingProfile(true);
-                    setEditingPreferences(false);
-                  }}>
+          <button
+            className={`tab-btn ${editingProfile ? "active" : ""}`}
+            onClick={() => {
+              setEditingProfile(true);
+              setEditingPreferences(false);
+            }}
+          >
             Profile Information
           </button>
-          <button className={`tab-btn ${editingPreferences ? 'active' : ''}`}
-                  onClick={() => {
-                    setEditingProfile(false);
-                    setEditingPreferences(true);
-                  }}>
+          <button
+            className={`tab-btn ${editingPreferences ? "active" : ""}`}
+            onClick={() => {
+              setEditingProfile(false);
+              setEditingPreferences(true);
+            }}
+          >
             Preferences & Privacy
           </button>
         </div>
@@ -1122,7 +1331,9 @@ function SettingsPage() {
               <div className="info-grid">
                 <div className="info-item">
                   <h3>Full Name</h3>
-                  <p>{profile.firstName} {profile.lastName}</p>
+                  <p>
+                    {profile.firstName} {profile.lastName}
+                  </p>
                 </div>
                 <div className="info-item">
                   <h3>Email</h3>
@@ -1130,19 +1341,23 @@ function SettingsPage() {
                 </div>
                 <div className="info-item">
                   <h3>Phone Number</h3>
-                  <p>{profile.phone || 'Not provided'}</p>
+                  <p>{profile.phone || "Not provided"}</p>
                 </div>
                 <div className="info-item">
                   <h3>Date of Birth</h3>
-                  <p>{profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString() : 'Not provided'}</p>
+                  <p>
+                    {profile.dateOfBirth
+                      ? new Date(profile.dateOfBirth).toLocaleDateString()
+                      : "Not provided"}
+                  </p>
                 </div>
                 <div className="info-item">
                   <h3>Gender</h3>
-                  <p>{profile.gender || 'Not specified'}</p>
+                  <p>{profile.gender || "Not specified"}</p>
                 </div>
                 <div className="info-item">
                   <h3>Address</h3>
-                  <p>{profile.address || 'Not provided'}</p>
+                  <p>{profile.address || "Not provided"}</p>
                 </div>
               </div>
             </div>
@@ -1152,36 +1367,56 @@ function SettingsPage() {
               <div className="security-info">
                 <div className="security-item">
                   <h3>Last Password Change</h3>
-                  <p>{profile.passwordChangedAt ? new Date(profile.passwordChangedAt).toLocaleDateString() : 'Never'}</p>
+                  <p>
+                    {profile.passwordChangedAt
+                      ? new Date(profile.passwordChangedAt).toLocaleDateString()
+                      : "Never"}
+                  </p>
                 </div>
                 <div className="security-item">
                   <h3>Two-Factor Authentication</h3>
-                  <p>{profile.twoFactorEnabled ? 'Enabled' : 'Disabled'}</p>
+                  <p>{profile.twoFactorEnabled ? "Enabled" : "Disabled"}</p>
                 </div>
                 <div className="security-item">
                   <h3>Active Sessions</h3>
-                  <p>{profile.activeSessions || 0} session{profile.activeSessions !== 1 ? 's' : ''} active</p>
+                  <p>
+                    {profile.activeSessions || 0} session{profile.activeSessions !== 1 ? "s" : ""}{" "}
+                    active
+                  </p>
                 </div>
               </div>
               <div className="security-actions">
-                <button className="btn-outline" onClick={() => {
-                  // Change password logic
-                  alert('Change password functionality');
-                }}>
+                <button
+                  className="btn-outline"
+                  onClick={() => {
+                    // Change password logic
+                    alert("Change password functionality");
+                  }}
+                >
                   Change Password
                 </button>
-                <button className="btn-outline" onClick={() => {
-                  // Manage sessions logic
-                  alert('Manage active sessions');
-                }}>
+                <button
+                  className="btn-outline"
+                  onClick={() => {
+                    // Manage sessions logic
+                    alert("Manage active sessions");
+                  }}
+                >
                   Manage Sessions
                 </button>
-                <button className="btn-danger" onClick={() => {
-                  if (window.confirm('Are you sure you want to deactivate your account? This action cannot be undone.')) {
-                    // Deactivate account logic
-                    alert('Account deactivated');
-                  }
-                }}>
+                <button
+                  className="btn-danger"
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Are you sure you want to deactivate your account? This action cannot be undone."
+                      )
+                    ) {
+                      // Deactivate account logic
+                      alert("Account deactivated");
+                    }
+                  }}
+                >
                   Deactivate Account
                 </button>
               </div>
@@ -1282,7 +1517,11 @@ function SettingsPage() {
                     <button type="submit" className="btn-primary">
                       Save Changes
                     </button>
-                    <button type="button" onClick={() => setEditingProfile(false)} className="btn-outline">
+                    <button
+                      type="button"
+                      onClick={() => setEditingProfile(false)}
+                      className="btn-outline"
+                    >
                       Cancel
                     </button>
                   </div>
@@ -1423,7 +1662,11 @@ function SettingsPage() {
                     <button type="submit" className="btn-primary">
                       Save Changes
                     </button>
-                    <button type="button" onClick={() => setEditingPreferences(false)} className="btn-outline">
+                    <button
+                      type="button"
+                      onClick={() => setEditingPreferences(false)}
+                      className="btn-outline"
+                    >
                       Cancel
                     </button>
                   </div>
@@ -1439,26 +1682,34 @@ function SettingsPage() {
 
 // Enhanced Consultations Page
 function ConsultationsPage() {
-  const { data: upcomingConsultations = [], isLoading: loadingUpcoming, error: errorUpcoming } = useQuery<Consultation[]>({
-    queryKey: ['upcomingConsultations'],
+  const {
+    data: upcomingConsultations = [],
+    isLoading: loadingUpcoming,
+    error: errorUpcoming,
+  } = useQuery<Consultation[]>({
+    queryKey: ["upcomingConsultations"],
     queryFn: () => apiService.consultations.getUpcoming().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
-  const { data: pastConsultations = [], isLoading: loadingPast, error: errorPast } = useQuery<Consultation[]>({
-    queryKey: ['pastConsultations'],
+  const {
+    data: pastConsultations = [],
+    isLoading: loadingPast,
+    error: errorPast,
+  } = useQuery<Consultation[]>({
+    queryKey: ["pastConsultations"],
     queryFn: () => apiService.appointments.getPast().then(res => res.data),
-    retry: false
+    retry: false,
   });
 
-  const [activeTab, setActiveTab] = React.useState('upcoming');
+  const [activeTab, setActiveTab] = React.useState("upcoming");
 
   const joinConsultation = (consultationId: string | number) => {
     alert(`Join consultation ${consultationId} would go here`);
   };
 
   const endConsultation = (consultationId: string | number) => {
-    if (window.confirm('Are you sure you want to end this consultation?')) {
+    if (window.confirm("Are you sure you want to end this consultation?")) {
       // End consultation logic
       alert(`Ending consultation ${consultationId}`);
     }
@@ -1495,53 +1746,84 @@ function ConsultationsPage() {
       <h1>Consultations</h1>
       <div className="page-content">
         <div className="consultations-header">
-          <button className="btn-primary" onClick={() => {
-            // Schedule consultation logic
-            alert('Schedule new consultation');
-          }}>
+          <button
+            className="btn-primary"
+            onClick={() => {
+              // Schedule consultation logic
+              alert("Schedule new consultation");
+            }}
+          >
             Schedule Consultation
           </button>
         </div>
 
         <div className="tabs">
-          <button className={activeTab === 'upcoming' ? 'tab-btn active' : 'tab-btn'} onClick={() => setActiveTab('upcoming')}>
+          <button
+            className={activeTab === "upcoming" ? "tab-btn active" : "tab-btn"}
+            onClick={() => setActiveTab("upcoming")}
+          >
             Upcoming ({upcomingConsultations.length})
           </button>
-          <button className={activeTab === 'past' ? 'tab-btn active' : 'tab-btn'} onClick={() => setActiveTab('past')}>
+          <button
+            className={activeTab === "past" ? "tab-btn active" : "tab-btn"}
+            onClick={() => setActiveTab("past")}
+          >
             Past ({pastConsultations.length})
           </button>
         </div>
 
-        {activeTab === 'upcoming' && (
+        {activeTab === "upcoming" && (
           <div className="consultations-list">
             {upcomingConsultations.length > 0 ? (
               upcomingConsultations.map(consultation => (
                 <div key={consultation.id} className="consultation-card">
                   <div className="consultation-info">
                     <h3>{consultation.title}</h3>
-                    <p><strong>Doctor:</strong> Dr. {consultation.doctorName}</p>
-                    <p><strong>Type:</strong> {consultation.type}</p>
                     <p>
-                      <strong>{new Date(consultation.scheduledAt).toLocaleDateString()}</strong> at{' '}
-                      <strong>{new Date(consultation.scheduledAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>
+                      <strong>Doctor:</strong> Dr. {consultation.doctorName}
                     </p>
-                    {consultation.description && <p><strong>Description:</strong> {consultation.description}</p>}
+                    <p>
+                      <strong>Type:</strong> {consultation.type}
+                    </p>
+                    <p>
+                      <strong>{new Date(consultation.scheduledAt).toLocaleDateString()}</strong> at{" "}
+                      <strong>
+                        {new Date(consultation.scheduledAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </strong>
+                    </p>
+                    {consultation.description && (
+                      <p>
+                        <strong>Description:</strong> {consultation.description}
+                      </p>
+                    )}
                   </div>
                   <div className="consultation-actions">
                     <span className={`status status-${consultation.status.toLowerCase()}`}>
                       {consultation.status}
                     </span>
-                    {consultation.status === 'scheduled' && (
-                      <button className="btn-action" onClick={() => joinConsultation(consultation.id)}>
+                    {consultation.status === "scheduled" && (
+                      <button
+                        className="btn-action"
+                        onClick={() => joinConsultation(consultation.id)}
+                      >
                         Join Consultation
                       </button>
                     )}
-                    {consultation.status === 'in_progress' && (
-                      <button className="btn-action" onClick={() => endConsultation(consultation.id)}>
+                    {consultation.status === "in_progress" && (
+                      <button
+                        className="btn-action"
+                        onClick={() => endConsultation(consultation.id)}
+                      >
                         End Consultation
                       </button>
                     )}
-                    <button className="btn-action" onClick={() => viewConsultationDetails(consultation.id)}>
+                    <button
+                      className="btn-action"
+                      onClick={() => viewConsultationDetails(consultation.id)}
+                    >
                       View Details
                     </button>
                   </div>
@@ -1553,24 +1835,40 @@ function ConsultationsPage() {
           </div>
         )}
 
-        {activeTab === 'past' && (
+        {activeTab === "past" && (
           <div className="consultations-list">
             {pastConsultations.length > 0 ? (
               pastConsultations.map(consultation => (
                 <div key={consultation.id} className="consultation-card">
                   <div className="consultation-info">
                     <h3>{consultation.title}</h3>
-                    <p><strong>Doctor:</strong> Dr. {consultation.doctorName}</p>
-                    <p><strong>Type:</strong> {consultation.type}</p>
                     <p>
-                      <strong>{new Date(consultation.scheduledAt).toLocaleDateString()}</strong> at{' '}
-                      <strong>{new Date(consultation.scheduledAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</strong>
+                      <strong>Doctor:</strong> Dr. {consultation.doctorName}
                     </p>
-                    {consultation.description && <p><strong>Description:</strong> {consultation.description}</p>}
+                    <p>
+                      <strong>Type:</strong> {consultation.type}
+                    </p>
+                    <p>
+                      <strong>{new Date(consultation.scheduledAt).toLocaleDateString()}</strong> at{" "}
+                      <strong>
+                        {new Date(consultation.scheduledAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </strong>
+                    </p>
+                    {consultation.description && (
+                      <p>
+                        <strong>Description:</strong> {consultation.description}
+                      </p>
+                    )}
                   </div>
                   <div className="consultation-actions">
                     <span className="status status-completed">Completed</span>
-                    <button className="btn-action" onClick={() => viewConsultationDetails(consultation.id)}>
+                    <button
+                      className="btn-action"
+                      onClick={() => viewConsultationDetails(consultation.id)}
+                    >
                       View Details
                     </button>
                   </div>
@@ -1590,8 +1888,10 @@ function ConsultationsPage() {
 function ChatPage() {
   const [conversations, setConversations] = React.useState<any[]>([]);
   const [messages, setMessages] = React.useState<any[]>([]);
-  const [inputValue, setInputValue] = React.useState('');
-  const [selectedConversationId, setSelectedConversationId] = React.useState<string | number | null>(null);
+  const [inputValue, setInputValue] = React.useState("");
+  const [selectedConversationId, setSelectedConversationId] = React.useState<
+    string | number | null
+  >(null);
   const [loading, setLoading] = React.useState(true);
   const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
@@ -1602,7 +1902,7 @@ function ChatPage() {
       const response = await apiService.chat.getMessages(String(conversationId));
       setMessages(response.data);
     } catch (error) {
-      console.error('Failed to load messages:', error);
+      console.error("Failed to load messages:", error);
     }
   };
 
@@ -1617,7 +1917,7 @@ function ChatPage() {
           loadMessages(response.data[0].id);
         }
       } catch (error) {
-        console.error('Failed to load conversations:', error);
+        console.error("Failed to load conversations:", error);
       } finally {
         setLoading(false);
       }
@@ -1632,22 +1932,25 @@ function ChatPage() {
     if (!inputValue.trim() || !selectedConversationId) return;
 
     try {
-      const response = await apiService.chat.sendMessage(String(selectedConversationId), inputValue);
+      const response = await apiService.chat.sendMessage(
+        String(selectedConversationId),
+        inputValue
+      );
       setMessages(prev => [...prev, response.data]);
-      setInputValue('');
+      setInputValue("");
       // Scroll to bottom after sending
       if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
-      alert('Failed to send message');
+      console.error("Failed to send message:", error);
+      alert("Failed to send message");
     }
   };
 
   // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage(e);
     }
@@ -1659,7 +1962,7 @@ function ChatPage() {
       const typingInterval = setInterval(() => {
         // Simulate random typing indicators
         if (Math.random() > 0.7) {
-          setTypingUsers(['Someone is typing...']);
+          setTypingUsers(["Someone is typing..."]);
         } else {
           setTypingUsers([]);
         }
@@ -1671,18 +1974,21 @@ function ChatPage() {
   // Scroll to bottom when messages change
   React.useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  const groupedMessages = messages.reduce((groups, message) => {
-    const date = new Date(message.timestamp).toDateString();
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(message);
-    return groups;
-  }, {} as Record<string, any[]>);
+  const groupedMessages = messages.reduce(
+    (groups, message) => {
+      const date = new Date(message.timestamp).toDateString();
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(message);
+      return groups;
+    },
+    {} as Record<string, any[]>
+  );
 
   if (loading) {
     return (
@@ -1703,10 +2009,13 @@ function ChatPage() {
           <div className="chat-sidebar">
             <div className="chat-header">
               <h3>Conversations</h3>
-              <button className="btn-outline" onClick={() => {
-                // New conversation logic
-                alert('Start new conversation');
-              }}>
+              <button
+                className="btn-outline"
+                onClick={() => {
+                  // New conversation logic
+                  alert("Start new conversation");
+                }}
+              >
                 New Message
               </button>
             </div>
@@ -1714,7 +2023,7 @@ function ChatPage() {
               {conversations.map(conversation => (
                 <div
                   key={conversation.id}
-                  className={`chat-item ${conversation.id === selectedConversationId ? 'active' : ''}`}
+                  className={`chat-item ${conversation.id === selectedConversationId ? "active" : ""}`}
                   onClick={() => {
                     setSelectedConversationId(conversation.id);
                     loadMessages(conversation.id);
@@ -1725,10 +2034,17 @@ function ChatPage() {
                   </div>
                   <div className="chat-info">
                     <h4>{conversation.participants[0].name}</h4>
-                    <p className="chat-preview">{conversation.lastMessage?.text || 'No messages yet'}</p>
+                    <p className="chat-preview">
+                      {conversation.lastMessage?.text || "No messages yet"}
+                    </p>
                   </div>
                   <div className="chat-meta">
-                    <span className="chat-time">{new Date(conversation.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span className="chat-time">
+                      {new Date(conversation.updatedAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
                     {conversation.unreadCount > 0 && (
                       <span className="chat-badge">{conversation.unreadCount}</span>
                     )}
@@ -1749,47 +2065,77 @@ function ChatPage() {
                 <div className="chat-header">
                   <div className="chat-user-info">
                     <div className="chat-user-avatar">
-                      {conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name.charAt(0).toUpperCase() || '?'}
+                      {conversations
+                        .find(c => c.id === selectedConversationId)
+                        ?.participants[0]?.name.charAt(0)
+                        .toUpperCase() || "?"}
                     </div>
                     <div className="chat-user-details">
-                      <h4>{conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name || 'Unknown User'}</h4>
+                      <h4>
+                        {conversations.find(c => c.id === selectedConversationId)?.participants[0]
+                          ?.name || "Unknown User"}
+                      </h4>
                       <p className="chat-user-status">Online</p>
                     </div>
                   </div>
                   <div className="chat-actions">
-                    <button className="btn-icon" onClick={() => {
-                      // Video call
-                      alert('Start video call');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Video call
+                        alert("Start video call");
+                      }}
+                    >
                       📹
                     </button>
-                    <button className="btn-icon" onClick={() => {
-                      // Audio call
-                      alert('Start audio call');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Audio call
+                        alert("Start audio call");
+                      }}
+                    >
                       📞
                     </button>
-                    <button className="btn-icon" onClick={() => {
-                      // Contact info
-                      alert('Show contact info');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Contact info
+                        alert("Show contact info");
+                      }}
+                    >
                       ℹ️
                     </button>
                   </div>
                 </div>
 
                 <div className="chat-messages">
-                  {Object.keys(groupedMessages).map((date) => (
+                  {Object.keys(groupedMessages).map(date => (
                     <React.Fragment key={`date-${date}`}>
                       <div className="message-date-header">
-                        <span>{new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        <span>
+                          {new Date(date).toLocaleDateString(undefined, {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </span>
                       </div>
 
                       {groupedMessages[date].map((message: any, msgIndex: number) => (
-                        <div key={`${date}-${msgIndex}`} className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}>
+                        <div
+                          key={`${date}-${msgIndex}`}
+                          className={`message ${message.senderId === "user" ? "message-sent" : "message-received"}`}
+                        >
                           <div className="message-content">
                             <p>{message.text}</p>
-                            <small className="message-time">{new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                            <small className="message-time">
+                              {new Date(message.timestamp).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </small>
                           </div>
                         </div>
                       ))}
@@ -1817,23 +2163,31 @@ function ChatPage() {
                 <form onSubmit={sendMessage} className="chat-input-form">
                   <div className="chat-input-wrapper">
                     <div className="chat-input-actions">
-                      <button type="button" className="btn-icon" onClick={() => {
-                        // Emoji picker
-                        alert('Emoji picker would open here');
-                      }}>
+                      <button
+                        type="button"
+                        className="btn-icon"
+                        onClick={() => {
+                          // Emoji picker
+                          alert("Emoji picker would open here");
+                        }}
+                      >
                         😊
                       </button>
-                      <button type="button" className="btn-icon" onClick={() => {
-                        // File attachment
-                        alert('File picker would open here');
-                      }}>
+                      <button
+                        type="button"
+                        className="btn-icon"
+                        onClick={() => {
+                          // File attachment
+                          alert("File picker would open here");
+                        }}
+                      >
                         📎
                       </button>
                     </div>
                     <input
                       type="text"
                       value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
+                      onChange={e => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type a message..."
                       className="chat-input"
@@ -1854,8 +2208,8 @@ function ChatPage() {
 
 // Login Page
 function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => Promise<void> }) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -1866,7 +2220,7 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
     try {
       await onLogin(email, password);
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -1884,7 +2238,7 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
               id="email"
               name="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
               className="form-input"
             />
@@ -1896,18 +2250,20 @@ function LoginPage({ onLogin }: { onLogin: (email: string, password: string) => 
               id="password"
               name="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               className="form-input"
             />
           </div>
           {error && <p className="error-message">{error}</p>}
           <button type="submit" disabled={loading} className="auth-button">
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
         <div className="auth-footer">
-          <p>Don't have an account? <a href="/register">Register</a></p>
+          <p>
+            Don't have an account? <a href="/register">Register</a>
+          </p>
         </div>
       </div>
     </div>
@@ -1954,16 +2310,36 @@ function App() {
                 <span className="logo-text">UPCHAR Patient</span>
               </div>
               <nav className="header-nav">
-                <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
-                <NavLink to="/appointments" className="nav-link">Appointments</NavLink>
-                <NavLink to="/medical-records" className="nav-link">Medical Records</NavLink>
-                <NavLink to="/prescriptions" className="nav-link">Prescriptions</NavLink>
-                <NavLink to="/membership" className="nav-link">Membership</NavLink>
-                <NavLink to="/consultations" className="nav-link">Consultations</NavLink>
-                <NavLink to="/notifications" className="nav-link">Notifications</NavLink>
-                <NavLink to="/settings" className="nav-link">Settings</NavLink>
-                <NavLink to="/chat" className="nav-link">Messages</NavLink>
-                <button onClick={logout} className="btn-logout">Logout</button>
+                <NavLink to="/dashboard" className="nav-link">
+                  Dashboard
+                </NavLink>
+                <NavLink to="/appointments" className="nav-link">
+                  Appointments
+                </NavLink>
+                <NavLink to="/medical-records" className="nav-link">
+                  Medical Records
+                </NavLink>
+                <NavLink to="/prescriptions" className="nav-link">
+                  Prescriptions
+                </NavLink>
+                <NavLink to="/membership" className="nav-link">
+                  Membership
+                </NavLink>
+                <NavLink to="/consultations" className="nav-link">
+                  Consultations
+                </NavLink>
+                <NavLink to="/notifications" className="nav-link">
+                  Notifications
+                </NavLink>
+                <NavLink to="/settings" className="nav-link">
+                  Settings
+                </NavLink>
+                <NavLink to="/chat" className="nav-link">
+                  Messages
+                </NavLink>
+                <button onClick={logout} className="btn-logout">
+                  Logout
+                </button>
               </nav>
             </div>
           </header>

@@ -24,7 +24,7 @@ export class UserService {
     try {
       // Check if user exists
       const existingUser = await this.userModel.findOne({
-        email: dto.email.toLowerCase()
+        email: dto.email.toLowerCase(),
       });
 
       if (existingUser) {
@@ -56,7 +56,7 @@ export class UserService {
   async getUserProfile(userId: string): Promise<Omit<UserDocument, "passwordHash">> {
     const user = await this.userModel.findOne({
       _id: userId,
-      status: UserStatus.ACTIVE
+      status: UserStatus.ACTIVE,
     });
 
     if (!user) {
@@ -72,7 +72,7 @@ export class UserService {
     dto: UpdateUserDto
   ): Promise<Omit<UserDocument, "passwordHash">> {
     const user = await this.userModel.findOne({
-      _id: userId
+      _id: userId,
     });
 
     if (!user) {
@@ -113,7 +113,7 @@ export class UserService {
 
   async getUserByEmail(email: string): Promise<Omit<UserDocument, "passwordHash">> {
     const user = await this.userModel.findOne({
-      email: email.toLowerCase()
+      email: email.toLowerCase(),
     });
 
     if (!user) {
@@ -125,9 +125,11 @@ export class UserService {
   }
 
   async getUserByEmailWithPassword(email: string): Promise<UserDocument | null> {
-    return await this.userModel.findOne({
-      email: email.toLowerCase()
-    }).select('+passwordHash');
+    return await this.userModel
+      .findOne({
+        email: email.toLowerCase(),
+      })
+      .select("+passwordHash");
   }
 
   async verifyPassword(password: string, hash: string): Promise<boolean> {
@@ -137,7 +139,7 @@ export class UserService {
   async getUsersByRole(role: UserRole): Promise<Omit<UserDocument, "passwordHash">[]> {
     const users = await this.userModel.find({
       role,
-      status: UserStatus.ACTIVE
+      status: UserStatus.ACTIVE,
     });
 
     return users.map(user => {
@@ -147,10 +149,7 @@ export class UserService {
   }
 
   async updateLastLogin(userId: string): Promise<void> {
-    await this.userModel.updateOne(
-      { _id: userId },
-      { lastLoginAt: new Date() }
-    );
+    await this.userModel.updateOne({ _id: userId }, { lastLoginAt: new Date() });
   }
 
   async enableMfa(userId: string, mfaSecret: string): Promise<{ message: string }> {

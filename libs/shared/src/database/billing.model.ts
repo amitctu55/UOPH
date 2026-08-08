@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import * as mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import * as mongoose from "mongoose";
 
 export type InvoiceDocument = HydratedDocument<Invoice>;
 export type PaymentDocument = HydratedDocument<Payment>;
@@ -9,13 +9,13 @@ export type WalletTransactionDocument = HydratedDocument<WalletTransaction>;
 
 @Schema({
   timestamps: true,
-  collection: 'bills'
+  collection: "bills",
 })
 export class Invoice {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true })
   patientId!: mongoose.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" })
   appointmentId?: mongoose.Types.ObjectId;
 
   @Prop({ type: String, required: true, unique: true })
@@ -35,8 +35,8 @@ export class Invoice {
 
   @Prop({
     type: String,
-    enum: ['unpaid', 'partially_paid', 'paid'],
-    default: 'unpaid'
+    enum: ["unpaid", "partially_paid", "paid"],
+    default: "unpaid",
   })
   status!: string;
 
@@ -56,28 +56,28 @@ export class Invoice {
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);
 
 // Remove __v and any other fields we don't want in the output
-InvoiceSchema.set('toJSON', {
+InvoiceSchema.set("toJSON", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
-InvoiceSchema.set('toObject', {
+InvoiceSchema.set("toObject", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
 @Schema({
   timestamps: true,
-  collection: 'payments'
+  collection: "payments",
 })
 export class Payment {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Invoice', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Invoice", required: true })
   billId!: mongoose.Types.ObjectId;
 
   @Prop({ type: Number, required: true })
@@ -85,8 +85,8 @@ export class Payment {
 
   @Prop({
     type: String,
-    enum: ['credit_card', 'debit_card', 'upi', 'net_banking', 'wallet'],
-    required: true
+    enum: ["credit_card", "debit_card", "upi", "net_banking", "wallet"],
+    required: true,
   })
   paymentMethod!: string;
 
@@ -95,15 +95,15 @@ export class Payment {
 
   @Prop({
     type: String,
-    enum: ['stripe', 'razorpay', 'paypal'],
-    required: true
+    enum: ["stripe", "razorpay", "paypal"],
+    required: true,
   })
   paymentGateway!: string;
 
   @Prop({
     type: String,
-    enum: ['pending', 'completed', 'failed', 'refunded'],
-    default: 'pending'
+    enum: ["pending", "completed", "failed", "refunded"],
+    default: "pending",
   })
   status!: string;
 
@@ -119,28 +119,28 @@ export class Payment {
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);
 
-PaymentSchema.set('toJSON', {
+PaymentSchema.set("toJSON", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
-PaymentSchema.set('toObject', {
+PaymentSchema.set("toObject", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
 @Schema({
   timestamps: true,
-  collection: 'patient_wallets'
+  collection: "patient_wallets",
 })
 export class Wallet {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true })
   patientId!: mongoose.Types.ObjectId;
 
   @Prop({ type: Number, required: true, default: 0 })
@@ -155,34 +155,34 @@ export class Wallet {
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet);
 
-WalletSchema.set('toJSON', {
+WalletSchema.set("toJSON", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
-WalletSchema.set('toObject', {
+WalletSchema.set("toObject", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
 @Schema({
   timestamps: true,
-  collection: 'wallet_transactions'
+  collection: "wallet_transactions",
 })
 export class WalletTransaction {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Wallet', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Wallet", required: true })
   walletId!: mongoose.Types.ObjectId;
 
   @Prop({
     type: String,
-    enum: ['credit', 'debit'],
-    required: true
+    enum: ["credit", "debit"],
+    required: true,
   })
   transactionType!: string;
 
@@ -192,7 +192,7 @@ export class WalletTransaction {
   @Prop({ type: String, maxlength: 255 })
   description?: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Payment" })
   relatedPaymentId?: mongoose.Types.ObjectId;
 
   @Prop({ type: Date, default: Date.now })
@@ -204,18 +204,18 @@ export class WalletTransaction {
 
 export const WalletTransactionSchema = SchemaFactory.createForClass(WalletTransaction);
 
-WalletTransactionSchema.set('toJSON', {
+WalletTransactionSchema.set("toJSON", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });
 
-WalletTransactionSchema.set('toObject', {
+WalletTransactionSchema.set("toObject", {
   virtuals: true,
   transform: (_, ret) => {
     const { __v, ...rest } = ret;
     return rest;
-  }
+  },
 });

@@ -28,11 +28,15 @@ export function SiteHeader() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary">
-          {nav.map((item) => (
+          {nav.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className={pathname === item.href || pathname.startsWith(item.href + "/") ? "is-active" : undefined}
+              className={
+                pathname === item.href || pathname.startsWith(item.href + "/")
+                  ? "is-active"
+                  : undefined
+              }
             >
               {item.label}
             </Link>
@@ -51,7 +55,7 @@ export function SiteHeader() {
             className="nav-toggle"
             aria-expanded={open}
             aria-controls="mobile-nav"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen(v => !v)}
           >
             <span className="sr-only">Menu</span>
             <span aria-hidden="true">{open ? "✕" : "☰"}</span>
@@ -61,7 +65,7 @@ export function SiteHeader() {
 
       {open ? (
         <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile">
-          {nav.map((item) => (
+          {nav.map(item => (
             <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
               {item.label}
             </Link>

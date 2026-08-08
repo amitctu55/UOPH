@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, Logger, BadRequestException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { PatientEntity } from "../entities/patient.entity";
@@ -16,7 +11,7 @@ export class PatientService {
 
   constructor(
     @InjectRepository(PatientEntity)
-    private patientRepository: Repository<PatientEntity>,
+    private patientRepository: Repository<PatientEntity>
   ) {}
 
   /**
@@ -36,7 +31,7 @@ export class PatientService {
       const patient = this.patientRepository.create(dto);
       return this.patientRepository.save(patient);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : "Unknown error";
       this.logger.error(`Error creating patient: ${message}`);
       throw error;
     }

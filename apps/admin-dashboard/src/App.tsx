@@ -49,15 +49,18 @@ function DashboardPage() {
     retry: false,
   });
 
-  const { data: systemHealth = {
-    database: {},
-    api: {},
-    cache: {},
-    storage: {},
-    storageUsed: "45%",
-    uptime: "99.9%",
-    avgResponseTime: "120ms",
-  } as SystemHealth, isLoading: loadingHealth } = useQuery<SystemHealth>({
+  const {
+    data: systemHealth = {
+      database: {},
+      api: {},
+      cache: {},
+      storage: {},
+      storageUsed: "45%",
+      uptime: "99.9%",
+      avgResponseTime: "120ms",
+    } as SystemHealth,
+    isLoading: loadingHealth,
+  } = useQuery<SystemHealth>({
     queryKey: ["systemHealth"],
     queryFn: () => apiService.admin.getSystemHealth().then(res => res.data),
     retry: false,
@@ -588,13 +591,16 @@ function UserManagementPage() {
 
 // System Monitoring Page
 function SystemMonitoringPage() {
-  const { data: metrics = {} as {
-    overallHealth?: string;
-    cpuUsage?: number | string;
-    memoryUsage?: number | string;
-    diskUsage?: number | string;
-    networkIO?: number | string;
-  }, isLoading: loadingMetrics } = useQuery<{ [key: string]: any }>({
+  const {
+    data: metrics = {} as {
+      overallHealth?: string;
+      cpuUsage?: number | string;
+      memoryUsage?: number | string;
+      diskUsage?: number | string;
+      networkIO?: number | string;
+    },
+    isLoading: loadingMetrics,
+  } = useQuery<{ [key: string]: any }>({
     queryKey: ["systemMetrics"],
     queryFn: () => apiService.admin.getSystemMetrics().then(res => res.data),
     retry: false,

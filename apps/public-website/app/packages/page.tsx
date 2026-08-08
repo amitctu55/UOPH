@@ -33,10 +33,16 @@ export default function PackagesPage() {
       />
       <section className="section">
         <div className="grid-cards cols-3">
-          {packages.map((pkg) => (
+          {packages.map(pkg => (
             <article key={pkg.name} className="soft-panel">
               <h3>{pkg.name}</h3>
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "1.6rem", margin: "0.4rem 0 0.8rem" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "1.6rem",
+                  margin: "0.4rem 0 0.8rem",
+                }}
+              >
                 {pkg.price}
               </p>
               <p>{pkg.body}</p>

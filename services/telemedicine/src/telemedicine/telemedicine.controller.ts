@@ -1,7 +1,7 @@
-import { Controller } from '@nestjs/common';
-import { TelemedicineService } from './telemedicine.service';
+import { Controller } from "@nestjs/common";
+import { TelemedicineService } from "./telemedicine.service";
 
-@Controller('telemedicine')
+@Controller("telemedicine")
 export class TelemedicineController {
   constructor(private readonly telemedicineService: TelemedicineService) {}
 }

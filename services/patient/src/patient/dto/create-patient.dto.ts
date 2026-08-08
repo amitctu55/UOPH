@@ -1,11 +1,4 @@
-import {
-  IsDate,
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsNotEmpty,
-  MaxLength,
-} from "class-validator";
+import { IsDate, IsEnum, IsOptional, IsString, IsNotEmpty, MaxLength } from "class-validator";
 import { BloodType } from "../entities/patient.entity";
 import { Gender } from "../entities/patient.entity";
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function StaffManagementPage() {
   return (
@@ -113,7 +113,7 @@ function SettingsPage() {
 function ChatPage() {
   const [conversations, setConversations] = React.useState([]);
   const [messages, setMessages] = React.useState([]);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState("");
   const [selectedConversationId, setSelectedConversationId] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [typingUsers, setTypingUsers] = React.useState<string[]>([]);
@@ -128,26 +128,26 @@ function ChatPage() {
         // For now, we'll simulate with mock data
         const mockConversations = [
           {
-            id: '1',
-            participants: [{ id: 'staff1', name: 'Dr. Smith', role: 'physician' }],
-            lastMessage: 'Patient in room 305 needs immediate attention',
+            id: "1",
+            participants: [{ id: "staff1", name: "Dr. Smith", role: "physician" }],
+            lastMessage: "Patient in room 305 needs immediate attention",
             lastUpdated: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
-            unreadCount: 2
+            unreadCount: 2,
           },
           {
-            id: '2',
-            participants: [{ id: 'staff2', name: 'Nurse Johnson', role: 'nurse' }],
-            lastMessage: 'Medication administered for patient in ICU',
+            id: "2",
+            participants: [{ id: "staff2", name: "Nurse Johnson", role: "nurse" }],
+            lastMessage: "Medication administered for patient in ICU",
             lastUpdated: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
-            unreadCount: 0
+            unreadCount: 0,
           },
           {
-            id: '3',
-            participants: [{ id: 'staff3', name: 'Dr. Williams', role: 'surgeon' }],
-            lastMessage: 'OR 2 is ready for the 3PM procedure',
+            id: "3",
+            participants: [{ id: "staff3", name: "Dr. Williams", role: "surgeon" }],
+            lastMessage: "OR 2 is ready for the 3PM procedure",
             lastUpdated: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-            unreadCount: 0
-          }
+            unreadCount: 0,
+          },
         ];
         setConversations(mockConversations);
         if (mockConversations.length > 0) {
@@ -155,7 +155,7 @@ function ChatPage() {
           loadMessages(mockConversations[0].id);
         }
       } catch (error) {
-        console.error('Failed to load conversations:', error);
+        console.error("Failed to load conversations:", error);
       } finally {
         setIsLoading(false);
       }
@@ -174,30 +174,30 @@ function ChatPage() {
           // For now, we'll simulate with mock data
           const mockMessages = [
             {
-              id: '1',
+              id: "1",
               conversationId: conversationId,
-              senderId: 'staff1',
-              content: 'Patient in room 305 needs immediate attention',
-              timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString() // 10 minutes ago
+              senderId: "staff1",
+              content: "Patient in room 305 needs immediate attention",
+              timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(), // 10 minutes ago
             },
             {
-              id: '2',
+              id: "2",
               conversationId: conversationId,
-              senderId: 'user',
-              content: 'On my way to check on them now',
-              timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString() // 8 minutes ago
+              senderId: "user",
+              content: "On my way to check on them now",
+              timestamp: new Date(Date.now() - 8 * 60 * 1000).toISOString(), // 8 minutes ago
             },
             {
-              id: '3',
+              id: "3",
               conversationId: conversationId,
-              senderId: 'staff1',
-              content: 'Thanks, they\'re experiencing chest pain',
-              timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString() // 5 minutes ago
-            }
+              senderId: "staff1",
+              content: "Thanks, they're experiencing chest pain",
+              timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
+            },
           ];
           setMessages(mockMessages);
         } catch (error) {
-          console.error('Failed to load messages:', error);
+          console.error("Failed to load messages:", error);
         } finally {
           setIsLoading(false);
         }
@@ -213,7 +213,7 @@ function ChatPage() {
       const typingInterval = setInterval(() => {
         // Simulate random typing indicators
         if (Math.random() > 0.7) {
-          setTypingUsers(['Someone is typing...']);
+          setTypingUsers(["Someone is typing..."]);
         } else {
           setTypingUsers([]);
         }
@@ -225,7 +225,7 @@ function ChatPage() {
   // Scroll to bottom when messages change
   React.useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -239,26 +239,26 @@ function ChatPage() {
       const newMessage = {
         id: Date.now().toString(),
         conversationId: selectedConversationId,
-        senderId: 'user',
+        senderId: "user",
         content: inputValue,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       setMessages(prev => [...prev, newMessage]);
-      setInputValue('');
+      setInputValue("");
       // Scroll to bottom after sending
       if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
-      alert('Failed to send message. Please try again.');
+      console.error("Failed to send message:", error);
+      alert("Failed to send message. Please try again.");
     }
   };
 
   // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage(e); // Actually send the message when Enter is pressed
     }
@@ -282,10 +282,13 @@ function ChatPage() {
         <div className="chat-container">
           <div className="chat-sidebar">
             <h3>Conversations</h3>
-            <button className="btn-primary" onClick={() => {
-              // Start new conversation
-              alert('Start new conversation functionality would go here');
-            }}>
+            <button
+              className="btn-primary"
+              onClick={() => {
+                // Start new conversation
+                alert("Start new conversation functionality would go here");
+              }}
+            >
               New Message
             </button>
             <div className="conversations-list">
@@ -293,18 +296,24 @@ function ChatPage() {
                 conversations.map(conversation => (
                   <div
                     key={conversation.id}
-                    className={`conversation-item ${conversation.id === selectedConversationId ? 'active' : ''}`}
+                    className={`conversation-item ${conversation.id === selectedConversationId ? "active" : ""}`}
                     onClick={() => setSelectedConversationId(conversation.id)}
                   >
                     <div className="conversation-avatar">
-                      {conversation.participants[0]?.name.charAt(0).toUpperCase() || '?'}
+                      {conversation.participants[0]?.name.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="conversation-info">
-                      <h4>{conversation.participants[0]?.name || 'Unknown User'}</h4>
-                      <p className="conversation-preview">{conversation.lastMessage || 'No messages yet'}</p>
+                      <h4>{conversation.participants[0]?.name || "Unknown User"}</h4>
+                      <p className="conversation-preview">
+                        {conversation.lastMessage || "No messages yet"}
+                      </p>
                     </div>
                     <div className="conversation-meta">
-                      <small>{conversation.lastUpdated ? new Date(conversation.lastUpdated).toLocaleTimeString() : ''}</small>
+                      <small>
+                        {conversation.lastUpdated
+                          ? new Date(conversation.lastUpdated).toLocaleTimeString()
+                          : ""}
+                      </small>
                       {conversation.unreadCount > 0 && (
                         <span className="unread-badge">{conversation.unreadCount}</span>
                       )}
@@ -327,30 +336,45 @@ function ChatPage() {
                 <div className="chat-header">
                   <div className="chat-user-info">
                     <div className="chat-user-avatar">
-                      {conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name.charAt(0).toUpperCase() || '?'}
+                      {conversations
+                        .find(c => c.id === selectedConversationId)
+                        ?.participants[0]?.name.charAt(0)
+                        .toUpperCase() || "?"}
                     </div>
                     <div className="chat-user-details">
-                      <h4>{conversations.find(c => c.id === selectedConversationId)?.participants[0]?.name || 'Unknown User'}</h4>
+                      <h4>
+                        {conversations.find(c => c.id === selectedConversationId)?.participants[0]
+                          ?.name || "Unknown User"}
+                      </h4>
                       <p className="chat-user-status">Online</p>
                     </div>
                   </div>
                   <div className="chat-actions">
-                    <button className="btn-icon" onClick={() => {
-                      // Video call
-                      alert('Start video call');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Video call
+                        alert("Start video call");
+                      }}
+                    >
                       📹
                     </button>
-                    <button className="btn-icon" onClick={() => {
-                      // Audio call
-                      alert('Start audio call');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Audio call
+                        alert("Start audio call");
+                      }}
+                    >
                       📞
                     </button>
-                    <button className="btn-icon" onClick={() => {
-                      // Contact info
-                      alert('View contact info');
-                    }}>
+                    <button
+                      className="btn-icon"
+                      onClick={() => {
+                        // Contact info
+                        alert("View contact info");
+                      }}
+                    >
                       ℹ️
                     </button>
                   </div>
@@ -359,38 +383,41 @@ function ChatPage() {
                 <div className="chat-window">
                   <div className="chat-messages">
                     {(() => {
-                      const groups = messages.reduce((acc: Record<string, typeof messages>, message) => {
-                        const date = new Date(message.timestamp).toDateString();
-                        if (!acc[date]) {
-                          acc[date] = [];
-                        }
-                        acc[date].push(message);
-                        return acc;
-                      }, {});
+                      const groups = messages.reduce(
+                        (acc: Record<string, typeof messages>, message) => {
+                          const date = new Date(message.timestamp).toDateString();
+                          if (!acc[date]) {
+                            acc[date] = [];
+                          }
+                          acc[date].push(message);
+                          return acc;
+                        },
+                        {}
+                      );
 
-                      return Object.keys(groups).map((date) => (
+                      return Object.keys(groups).map(date => (
                         <div key={`date-group-${date}`}>
                           <div className="message-date-header">
                             <span>
                               {new Date(date).toLocaleDateString(undefined, {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
                               })}
                             </span>
                           </div>
                           {groups[date].map((message, msgIndex) => (
                             <div
                               key={`${date}-${msgIndex}`}
-                              className={`message ${message.senderId === 'user' ? 'message-sent' : 'message-received'}`}
+                              className={`message ${message.senderId === "user" ? "message-sent" : "message-received"}`}
                             >
                               <div className="message-content">
                                 <p>{message.content}</p>
                                 <small className="message-time">
                                   {new Date(message.timestamp).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
                                 </small>
                               </div>
@@ -419,21 +446,29 @@ function ChatPage() {
                   <form onSubmit={sendMessage} className="chat-input-form">
                     <div className="chat-input-wrapper">
                       <div className="chat-input-actions">
-                        <button type="button" className="btn-icon" onClick={() => {
-                          alert('Emoji picker would open here');
-                        }}>
+                        <button
+                          type="button"
+                          className="btn-icon"
+                          onClick={() => {
+                            alert("Emoji picker would open here");
+                          }}
+                        >
                           😊
                         </button>
-                        <button type="button" className="btn-icon" onClick={() => {
-                          alert('File picker would open here');
-                        }}>
+                        <button
+                          type="button"
+                          className="btn-icon"
+                          onClick={() => {
+                            alert("File picker would open here");
+                          }}
+                        >
                           📎
                         </button>
                       </div>
                       <input
                         type="text"
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={e => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Type a message..."
                         className="chat-input"
@@ -464,5 +499,5 @@ export {
   AnalyticsPage,
   NotificationsPage,
   SettingsPage,
-  ChatPage
+  ChatPage,
 };

@@ -17,11 +17,11 @@ export class ClinicalChartingService {
 
   constructor(
     @InjectRepository(ClinicalChartingEntity)
-    private readonly clinicalChartingRepository: Repository<ClinicalChartingEntity>,
+    private readonly clinicalChartingRepository: Repository<ClinicalChartingEntity>
   ) {}
 
   async createClincalChartingData(
-    dto: CreateClinicalChartingDataDto,
+    dto: CreateClinicalChartingDataDto
   ): Promise<ClinicalChartingEntity> {
     try {
       const clinicalData = this.clinicalChartingRepository.create({
@@ -43,17 +43,12 @@ export class ClinicalChartingService {
 
       return saved;
     } catch (error) {
-      this.logger.error(
-        `Error creating clinical charting data: ${error.message}`,
-      );
+      this.logger.error(`Error creating clinical charting data: ${error.message}`);
       throw error;
     }
   }
 
-  async getClinicalDataById(
-    id: string,
-    requestingUserId: string,
-  ): Promise<ClinicalChartingEntity> {
+  async getClinicalDataById(id: string, requestingUserId: string): Promise<ClinicalChartingEntity> {
     const clinicalData = await this.clinicalChartingRepository.findOne({
       where: { id, deletedAt: null },
     });
@@ -72,32 +67,23 @@ export class ClinicalChartingService {
     }
 
     // Log access
-    this.logAccess(
-      clinicalData.id,
-      requestingUserId,
-      "VIEW",
-      "Clinical data viewed",
-    );
+    this.logAccess(clinicalData.id, requestingUserId, "VIEW", "Clinical data viewed");
 
     return clinicalData;
   }
 
   async getClinicalDataByPatientId(
     patientId: string,
-    requestingUserId: string,
+    requestingUserId: string
   ): Promise<ClinicalChartingEntity[]> {
     // Verify user has access to this patient's data
     // This would typically involve checking if the user is the patient,
     // a provider for the patient, or part of the care team
     // For now, we'll implement a basic check
-    if (
-      patientId !== requestingUserId
-    ) {
+    if (patientId !== requestingUserId) {
       // In a real implementation, you'd check provider/patient relationship
       // For demo purposes, we'll allow access but log it
-      this.logger.warn(
-        `User ${requestingUserId} accessing clinical data for patient ${patientId}`,
-      );
+      this.logger.warn(`User ${requestingUserId} accessing clinical data for patient ${patientId}`);
     }
 
     const clinicalData = await this.clinicalChartingRepository.find({
@@ -106,13 +92,8 @@ export class ClinicalChartingService {
     });
 
     // Log access for each record
-    clinicalData.forEach((data) => {
-      this.logAccess(
-        data.id,
-        requestingUserId,
-        "LIST_VIEW",
-        "Clinical data list viewed",
-      );
+    clinicalData.forEach(data => {
+      this.logAccess(data.id, requestingUserId, "LIST_VIEW", "Clinical data list viewed");
     });
 
     return clinicalData;
@@ -121,14 +102,12 @@ export class ClinicalChartingService {
   async getClinicalDataByType(
     patientId: string,
     clinicalDataType: ClinicalDataType,
-    requestingUserId: string,
+    requestingUserId: string
   ): Promise<ClinicalChartingEntity[]> {
     // Verify user has access (similar to above)
-    if (
-      patientId !== requestingUserId
-    ) {
+    if (patientId !== requestingUserId) {
       this.logger.warn(
-        `User ${requestingUserId} accessing ${clinicalDataType} data for patient ${patientId}`,
+        `User ${requestingUserId} accessing ${clinicalDataType} data for patient ${patientId}`
       );
     }
 
@@ -142,12 +121,12 @@ export class ClinicalChartingService {
     });
 
     // Log access for each record
-    clinicalData.forEach((data) => {
+    clinicalData.forEach(data => {
       this.logAccess(
         data.id,
         requestingUserId,
         "FILTERED_VIEW",
-        `Clinical data filtered by type: ${clinicalDataType}`,
+        `Clinical data filtered by type: ${clinicalDataType}`
       );
     });
 
@@ -157,7 +136,7 @@ export class ClinicalChartingService {
   async updateClinicalData(
     id: string,
     dto: UpdateClinicalChartingDataDto,
-    requestingUserId: string,
+    requestingUserId: string
   ): Promise<ClinicalChartingEntity> {
     const clinicalData = await this.clinicalChartingRepository.findOne({
       where: { id, deletedAt: null },
@@ -173,9 +152,7 @@ export class ClinicalChartingService {
       clinicalData.providerId !== requestingUserId &&
       clinicalData.patientId !== requestingUserId
     ) {
-      throw new ForbiddenException(
-        "Access denied to update this clinical data",
-      );
+      throw new ForbiddenException("Access denied to update this clinical data");
     }
 
     // Update only the fields that are present in the DTO
@@ -195,20 +172,12 @@ export class ClinicalChartingService {
     const updated = await this.clinicalChartingRepository.save(clinicalData);
 
     // Log access
-    this.logAccess(
-      updated.id,
-      requestingUserId,
-      "UPDATE",
-      "Clinical data updated",
-    );
+    this.logAccess(updated.id, requestingUserId, "UPDATE", "Clinical data updated");
 
     return updated;
   }
 
-  async deactivateClinicalData(
-    id: string,
-    requestingUserId: string,
-  ): Promise<{ message: string }> {
+  async deactivateClinicalData(id: string, requestingUserId: string): Promise<{ message: string }> {
     const clinicalData = await this.clinicalChartingRepository.findOne({
       where: { id },
     });
@@ -222,9 +191,7 @@ export class ClinicalChartingService {
       clinicalData.providerId !== requestingUserId &&
       clinicalData.patientId !== requestingUserId
     ) {
-      throw new ForbiddenException(
-        "Access denied to deactivate this clinical data",
-      );
+      throw new ForbiddenException("Access denied to deactivate this clinical data");
     }
 
     clinicalData.isActive = false;
@@ -243,24 +210,14 @@ export class ClinicalChartingService {
     await this.clinicalChartingRepository.save(clinicalData);
 
     // Log access
-    this.logAccess(
-      id,
-      requestingUserId,
-      "DEACTIVATE",
-      "Clinical data deactivated",
-    );
+    this.logAccess(id, requestingUserId, "DEACTIVATE", "Clinical data deactivated");
 
     return { message: "Clinical data deactivated successfully" };
   }
 
-  private logAccess(
-    clinicalDataId: string,
-    userId: string,
-    action: string,
-    details: string,
-  ): void {
+  private logAccess(clinicalDataId: string, userId: string, action: string, details: string): void {
     this.logger.log(
-      `[ACCESS LOG] ClinicalData: ${clinicalDataId}, User: ${userId}, Action: ${action}, Details: ${details}`,
+      `[ACCESS LOG] ClinicalData: ${clinicalDataId}, User: ${userId}, Action: ${action}, Details: ${details}`
     );
     // In a production system, you would save this to a dedicated audit table
   }

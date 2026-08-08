@@ -15,7 +15,9 @@ export default function SignupPage() {
     <main className="auth-shell">
       <p className="eyebrow">Account</p>
       <h1>Create your UPCHAR account</h1>
-      <p style={{ color: "var(--ink-soft)" }}>Start booking care or managing a clinical workspace.</p>
+      <p style={{ color: "var(--ink-soft)" }}>
+        Start booking care or managing a clinical workspace.
+      </p>
       <form className="form-stack soft-panel" style={{ marginTop: "1.5rem" }} onSubmit={onSubmit}>
         <label>
           Full name

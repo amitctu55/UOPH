@@ -9,7 +9,7 @@ import {
   Wallet,
   WalletDocument,
   WalletTransaction,
-  WalletTransactionDocument
+  WalletTransactionDocument,
 } from "../../../../libs/shared/src/database/billing.model";
 
 @Injectable()
@@ -48,7 +48,7 @@ export class BillingService {
         tax: Math.round(tax * 100) / 100, // Round to 2 decimal places
         totalAmount: Math.round(totalAmount * 100) / 100,
         description,
-        status: 'unpaid',
+        status: "unpaid",
       });
 
       return await invoice.save();
@@ -79,14 +79,14 @@ export class BillingService {
       throw new NotFoundException("Invoice not found");
     }
 
-    if (invoice.status !== 'unpaid') {
+    if (invoice.status !== "unpaid") {
       throw new BadRequestException("Only unpaid invoices can be issued");
     }
 
     // For our workflow, issuing an invoice means it's now partially paid (awaiting payment)
     // In a real system, you might have different states like 'issued', 'sent', etc.
     // But based on the Mongoose schema, we only have: unpaid, partially_paid, paid
-    invoice.status = 'partially_paid';
+    invoice.status = "partially_paid";
     invoice.issueDate = new Date();
     invoice.dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
@@ -110,7 +110,7 @@ export class BillingService {
       amount,
       paymentMethod: method,
       transactionId,
-      status: 'pending', // Initial status before processing
+      status: "pending", // Initial status before processing
     });
 
     const saved = await payment.save();
@@ -118,7 +118,7 @@ export class BillingService {
     // Mark as completed
     const paidPayment = await this.paymentModel.findByIdAndUpdate(
       saved._id,
-      { status: 'completed', paidAt: new Date() },
+      { status: "completed", paidAt: new Date() },
       { new: true }
     );
 
@@ -127,7 +127,7 @@ export class BillingService {
     }
 
     // Update invoice
-    invoice.status = 'paid';
+    invoice.status = "paid";
     await invoice.save();
 
     return paidPayment;
@@ -156,9 +156,9 @@ export class BillingService {
     // Create transaction record
     const transaction = new this.walletTransactionModel({
       walletId: wallet._id,
-      transactionType: 'credit',
+      transactionType: "credit",
       amount,
-      description: 'Funds added to wallet',
+      description: "Funds added to wallet",
     });
 
     await transaction.save();
@@ -183,9 +183,9 @@ export class BillingService {
     // Create transaction record
     const transaction = new this.walletTransactionModel({
       walletId: wallet._id,
-      transactionType: 'debit',
+      transactionType: "debit",
       amount,
-      description: 'Payment from wallet',
+      description: "Payment from wallet",
     });
 
     await transaction.save();
@@ -196,10 +196,13 @@ export class BillingService {
 
   async getPaymentHistory(patientId: string): Promise<Payment[]> {
     // First get invoices for this patient
-    const invoices = await this.invoiceModel.find({ patientId }).select('_id').exec();
+    const invoices = await this.invoiceModel.find({ patientId }).select("_id").exec();
     const invoiceIds = invoices.map(invoice => invoice._id);
 
     // Then get payments for those invoices
-    return this.paymentModel.find({ billId: { $in: invoiceIds } }).sort({ createdAt: -1 }).exec();
+    return this.paymentModel
+      .find({ billId: { $in: invoiceIds } })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 }

@@ -10,7 +10,7 @@ import { UserModule } from "./user/user.module";
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || "development"}`,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/upchar'),
+    MongooseModule.forRoot(process.env.MONGODB_URI || "mongodb://localhost:27017/upchar"),
     HealthModule,
     UserModule,
   ],

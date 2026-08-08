@@ -31,7 +31,7 @@ export default function FAQPage() {
       />
       <section className="section">
         <div className="list-clean">
-          {faqs.map((item) => (
+          {faqs.map(item => (
             <details key={item.q} className="soft-panel">
               <summary style={{ cursor: "pointer", fontWeight: 600 }}>{item.q}</summary>
               <p style={{ marginTop: "0.75rem" }}>{item.a}</p>

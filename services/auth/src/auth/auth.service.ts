@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { LoginDto } from "./dto/login.dto";
@@ -24,7 +20,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   private signTokens(user: PublicUser): AuthTokens {
@@ -53,7 +49,7 @@ export class AuthService {
 
     const passwordValid = await this.userService.validatePassword(
       loginDto.password,
-      user.passwordHash,
+      user.passwordHash
     );
     if (!passwordValid) {
       throw new UnauthorizedException("Invalid credentials");

@@ -34,10 +34,7 @@ export class PatientController {
   @ApiOperation({ summary: "Create patient profile" })
   @ApiResponse({ status: 201, description: "Patient profile created" })
   @ApiResponse({ status: 400, description: "Invalid input" })
-  async createPatient(
-    @Body() dto: CreatePatientDto,
-    @Req() _request: any
-  ): Promise<PatientEntity> {
+  async createPatient(@Body() dto: CreatePatientDto, @Req() _request: any): Promise<PatientEntity> {
     // In a real implementation, you would validate that the user has permission
     // to create a patient profile (e.g., they are the user themselves or an admin)
     return this.patientService.createPatient(dto);
@@ -50,9 +47,7 @@ export class PatientController {
   @ApiOperation({ summary: "Get patient by ID" })
   @ApiResponse({ status: 200, description: "Patient found" })
   @ApiResponse({ status: 404, description: "Patient not found" })
-  async getPatientById(
-    @Param("id", ParseUUIDPipe) id: string
-  ): Promise<PatientEntity> {
+  async getPatientById(@Param("id", ParseUUIDPipe) id: string): Promise<PatientEntity> {
     return this.patientService.getPatientById(id);
   }
 
@@ -63,9 +58,7 @@ export class PatientController {
   @ApiOperation({ summary: "Get patient by user ID" })
   @ApiResponse({ status: 200, description: "Patient found" })
   @ApiResponse({ status: 404, description: "Patient not found" })
-  async getPatientByUserId(
-    @Param("userId", ParseUUIDPipe) userId: string
-  ): Promise<PatientEntity> {
+  async getPatientByUserId(@Param("userId", ParseUUIDPipe) userId: string): Promise<PatientEntity> {
     return this.patientService.getPatientByUserId(userId);
   }
 
@@ -92,9 +85,7 @@ export class PatientController {
   @ApiOperation({ summary: "Deactivate patient" })
   @ApiResponse({ status: 200, description: "Patient deactivated" })
   @ApiResponse({ status: 404, description: "Patient not found" })
-  async deactivatePatient(
-    @Param("id", ParseUUIDPipe) id: string
-  ): Promise<{ message: string }> {
+  async deactivatePatient(@Param("id", ParseUUIDPipe) id: string): Promise<{ message: string }> {
     return this.patientService.deactivatePatient(id);
   }
 }

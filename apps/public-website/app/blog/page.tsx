@@ -31,12 +31,20 @@ export default function BlogPage() {
       />
       <section className="section">
         <div className="grid-cards cols-3">
-          {posts.map((post) => (
+          {posts.map(post => (
             <article key={post.title} className="soft-panel">
               <p className="eyebrow">{post.date}</p>
               <h3>{post.title}</h3>
               <p>{post.excerpt}</p>
-              <Link href="/contact" style={{ display: "inline-block", marginTop: "0.9rem", color: "var(--sea)", fontWeight: 600 }}>
+              <Link
+                href="/contact"
+                style={{
+                  display: "inline-block",
+                  marginTop: "0.9rem",
+                  color: "var(--sea)",
+                  fontWeight: 600,
+                }}
+              >
                 Read more →
               </Link>
             </article>
