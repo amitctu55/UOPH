@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { LoginRequest, RegisterRequest } from "upchar-shared/dist/auth/auth.dto";
+import { LoginRequest, RegisterRequest } from "upchar-shared";
 
 @Controller("auth")
 export class AuthController {
