@@ -33,7 +33,7 @@
     "format": "prettier --write \"{apps,services,libs,mobile}/**/*.{ts,tsx,js,jsx,json,css,scss,html}\"",
     "build": "npm run build --workspaces --if-present",
     "build:all": "npm run build --workspaces",
-    "prepare": "husky install"
+    "prepare": "husky install || true"
   },
   "dependencies": {
     "@nestjs/cli": "11.0.24",
@@ -51,7 +51,9 @@
     "import-local": "^3.2.0",
     "mongodb": "^7.5.0",
     "mongoose": "^9.8.0",
-    "next": "^16.2.12"
+    "next": "^16.2.12",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^5.1.0",

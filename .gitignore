@@ -7,6 +7,12 @@ package-lock.json
 .env*
 *.log
 
+# Build outputs
+.next/
+dist/
+coverage/
+*.tsbuildinfo
+
 # VS Code
 .vscode/
 
