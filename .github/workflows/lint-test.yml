@@ -76,12 +76,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup Snyk CLI
+        uses: snyk/actions/setup@v1
+
       - name: Run Snyk Security Scan
-        uses: snyk/actions/node@master
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
+        run: snyk test --all-projects --severity-threshold=high
 
       - name: OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
