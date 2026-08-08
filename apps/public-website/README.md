@@ -1,15 +1,19 @@
 # UPCHAR Public Website
 
-This is the public, SEO-first website for the UPCHAR healthcare platform.
+SEO-first Next.js site for the UPCHAR healthcare platform.
 
-## Features
-- Next.js + React + Tailwind CSS
-- Responsive site layout
-- Dark mode and accessibility-ready structure
-- SEO metadata and structured data hooks
-- PWA support scaffold
+## Pages
+- Home, About, Services (+ telemedicine / appointments / records)
+- Doctors, Hospitals, Book, Diagnostics, Pharmacy, Packages
+- Careers, Blog, Contact, FAQ, Privacy, Terms
+- Login, Signup, Forgot password
 
 ## Run locally
-1. Install dependencies: `npm install`
-2. Run the dev server: `npm run dev`
-3. Open `http://localhost:3000`
+```bash
+cd apps/public-website
+npm install --ignore-scripts
+npm run dev
+```
+Open http://localhost:3000
+
+> If the API gateway also uses port 3000, run the website with `npx next dev -p 3001`.

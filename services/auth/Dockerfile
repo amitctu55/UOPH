@@ -1,20 +1,17 @@
-FROM node:24-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package*.json ./
-RUN npm install
-COPY . ./
-RUN npm run build
+COPY package.json ./
+RUN npm install --ignore-scripts
+COPY nest-cli.json tsconfig.json tsconfig.build.json ./
+COPY src ./src
+RUN npx nest build
 
-FROM node:24-alpine AS runner
-WORKDIR ./
-RUN npm install
-COPY . ./
-RUN npm run build
-
-FROM node:24-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
+ENV NODE_ENV=production
+ENV USE_MEMORY_MONGO=false
+COPY package.json ./
+RUN npm install --omit=dev --ignore-scripts
 COPY --from=builder /app/dist ./dist
-COPY package*.json ./
-RUN npm install --production
 EXPOSE 4000
 CMD ["node", "dist/main.js"]

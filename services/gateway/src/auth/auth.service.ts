@@ -20,7 +20,7 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION || "7d",
+        expiresIn: Number(process.env.JWT_REFRESH_EXPIRATION) || 60 * 60 * 24 * 7,
       }),
     };
   }

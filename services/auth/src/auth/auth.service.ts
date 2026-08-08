@@ -1,73 +1,87 @@
-import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
-import { UserService } from "@user/user/user.service";
-import * as bcrypt from "bcrypt";
-import { UserRole } from "@user/user/entities/user.entity";
+import { UserService } from "../users/user.service";
+import { PublicUser, UserRole } from "../users/user.schema";
+
+type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+type AuthResult = AuthTokens & {
+  user: PublicUser;
+};
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async login(loginDto: LoginDto) {
-    // Find user by email (username field is email)
+  private signTokens(user: PublicUser): AuthTokens {
+    const payload = {
+      sub: user.id,
+      username: user.email,
+      roles: [user.role],
+    };
+
+    const refreshSeconds =
+      Number(this.configService.get<string>("JWT_REFRESH_EXPIRATION")) || 60 * 60 * 24 * 7;
+
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: refreshSeconds }),
+    };
+  }
+
+  async login(loginDto: LoginDto): Promise<AuthResult> {
     const user = await this.userService.getUserByEmailWithPassword(loginDto.username);
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // Validate password
-    const passwordValid = await bcrypt.compare(loginDto.password, user.passwordHash);
+    await this.userService.assertActive(user);
+
+    const passwordValid = await this.userService.validatePassword(
+      loginDto.password,
+      user.passwordHash,
+    );
     if (!passwordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const payload = { sub: user.id, username: user.email, roles: [user.role] };
-    return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION || "7d",
-      }),
-    };
+    await this.userService.touchLastLogin(String(user._id));
+    const publicUser = await this.userService.getUserById(String(user._id));
+    return { user: publicUser, ...this.signTokens(publicUser) };
   }
 
-  async register(registerDto: RegisterDto) {
-    // Check if user already exists
+  async register(registerDto: RegisterDto): Promise<AuthResult> {
     const existing = await this.userService.getUserByEmailWithPassword(registerDto.email);
     if (existing) {
       throw new ConflictException("User with this email already exists");
     }
 
-    // Derive first and last name from username (email local part or provided username)
     const username = registerDto.username.trim();
-    let firstName = username.length >= 2 ? username : "User";
-    let lastName = "User";
-    // Ensure min length 2
-    if (firstName.length < 2) firstName = "User";
-    if (lastName.length < 2) lastName = "User";
+    const firstName = username.length >= 2 ? username.slice(0, 50) : "User";
+    const lastName = "User";
 
-    const createUserDto = {
-      email: registerDto.email.toLowerCase(),
+    const publicUser = await this.userService.createUser({
+      email: registerDto.email,
       firstName,
       lastName,
       password: registerDto.password,
-      phone: undefined,
-      role: UserRole.PATIENT, // default role
-    };
+      role: UserRole.PATIENT,
+    });
 
-    const user = await this.userService.createUser(createUserDto);
-    const userWithoutPassword = user;
-    const payload = { sub: user.id, username: user.email, roles: [user.role] };
-    return {
-      ...userWithoutPassword,
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: process.env.JWT_REFRESH_EXPIRATION || "7d",
-      }),
-    };
+    return { user: publicUser, ...this.signTokens(publicUser) };
   }
 }

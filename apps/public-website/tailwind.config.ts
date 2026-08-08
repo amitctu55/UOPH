@@ -5,13 +5,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#0f4c81",
-        secondary: "#16a34a",
-        surface: "#ffffff",
-        muted: "#6b7280",
+        primary: "#0b6e4f",
+        secondary: "#c45c3a",
+        ink: "#10241f",
+        paper: "#f3f7f4",
+        sea: {
+          DEFAULT: "#0b6e4f",
+          deep: "#084c37",
+        },
       },
-      boxShadow: {
-        card: "0 20px 25px -5px rgba(15,23,42,0.08), 0 10px 10px -5px rgba(15,23,42,0.04)",
+      fontFamily: {
+        display: ["Fraunces", "Georgia", "serif"],
+        body: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },
