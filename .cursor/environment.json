@@ -1,0 +1,17 @@
+{
+  "name": "UPCHAR Healthcare Platform",
+  "install": "./.cursor/scripts/cloud-agent-install.sh",
+  "ports": [
+    {
+      "name": "Public website",
+      "port": 3001
+    }
+  ],
+  "terminals": [
+    {
+      "name": "Public Website",
+      "command": "npm run dev --workspace=upchar-public-website -- -p 3001 -H 0.0.0.0",
+      "description": "Next.js public website dev server (landing pages, booking, auth UI)"
+    }
+  ]
+}
