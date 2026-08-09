@@ -10,7 +10,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "incremental": true,
+    "incremental": false,
     "skipLibCheck": true,
     "strict": true,
     "noImplicitReturns": true,
@@ -25,6 +25,6 @@
       "@libs/*": ["libs/*"]
     }
   },
-  "include": ["src/auth/**/*.ts", "src/session/**/*.ts"],
+  "include": ["src/index.ts", "src/auth/**/*.ts", "src/session/**/*.ts"],
   "exclude": ["node_modules", "dist", "src/database"]
 }
